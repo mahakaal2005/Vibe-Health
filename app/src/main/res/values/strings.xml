@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">Vibe Health</string>
+    <string name="app_tagline">Your wellness companion</string>
+    
+    <!-- Content Descriptions -->
+    <string name="vibe_health_logo">Vibe Health Logo</string>
+    
+    <!-- Authentication -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="sign_in_subtitle">Sign in to continue</string>
+    <string name="create_account">Create Account</string>
+    <string name="create_account_button">Create Account</string>
+    <string name="join_wellness_journey">Join your wellness journey</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="dont_have_account">Don\'t have an account? Sign Up</string>
+    <string name="already_have_account">Already have an account? Sign In</string>
+    <string name="terms_conditions">I agree to Terms &amp; Conditions</string>
+    
+    <!-- Error Messages -->
+    <string name="error_email_required">Email is required</string>
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_password_too_short">Password must be at least 8 characters long</string>
+    <string name="error_passwords_dont_match">Passwords do not match</string>
+    <string name="error_network">Please check your internet connection and try again</string>
+    <string name="error_invalid_credentials">The email or password you entered is incorrect</string>
+    <string name="error_user_not_found">No account found with this email address</string>
+    <string name="error_email_already_exists">An account with this email already exists</string>
+    <string name="error_weak_password">Password must be at least 8 characters long</string>
+    <string name="error_user_disabled">This account has been disabled. Please contact support</string>
+    <string name="error_too_many_requests">Too many attempts. Please try again later</string>
+    <string name="error_unknown">Something went wrong. Please try again</string>
 </resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Placeholder logo design - circular with heart and wellness symbol -->
+    <group>
+        <!-- Outer circle -->
+        <path
+            android:fillColor="@color/white"
+            android:pathData="M60,10 C32.4,10 10,32.4 10,60 C10,87.6 32.4,110 60,110 C87.6,110 110,87.6 110,60 C110,32.4 87.6,10 60,10 Z M60,100 C37.9,100 20,82.1 20,60 C20,37.9 37.9,20 60,20 C82.1,20 100,37.9 100,60 C100,82.1 82.1,100 60,100 Z" />
+        
+        <!-- Heart symbol -->
+        <path
+            android:fillColor="@color/white"
+            android:pathData="M60,75 L50,65 C45,60 45,52 50,47 C55,42 63,42 68,47 L60,55 L52,47 C57,42 65,42 70,47 C75,52 75,60 70,65 L60,75 Z" />
+        
+        <!-- Wellness rings -->
+        <path
+            android:fillColor="@color/white"
+            android:fillAlpha="0.7"
+            android:pathData="M60,35 C48.4,35 39,44.4 39,56 C39,67.6 48.4,77 60,77 C71.6,77 81,67.6 81,56 C81,44.4 71.6,35 60,35 Z M60,70 C52.3,70 46,63.7 46,56 C46,48.3 52.3,42 60,42 C67.7,42 74,48.3 74,56 C74,63.7 67.7,70 60,70 Z" />
+    </group>
+</vector>

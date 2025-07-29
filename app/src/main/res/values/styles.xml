@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Vibe Health Design System Styles -->
+    
+    <!-- Base VibeHealth Style -->
+    <style name="VibeHealth">
+        <!-- Base style for all VibeHealth components -->
+    </style>
+    
+    <!-- Primary Button Style -->
+    <style name="VibeHealth.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0.025</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/sage_green</item>
+        <item name="cornerRadius">@dimen/corner_radius</item>
+        <item name="elevation">2dp</item>
+        <item name="rippleColor">@color/white</item>
+    </style>
+    
+    <!-- Text Input Layout Style -->
+    <style name="VibeHealth.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusBottomEnd">@dimen/corner_radius</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/corner_radius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/corner_radius</item>
+        <item name="boxCornerRadiusTopStart">@dimen/corner_radius</item>
+        <item name="boxStrokeColor">@color/sage_green</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxStrokeErrorColor">@color/error</item>
+        <item name="hintTextColor">@color/text_secondary</item>
+        <item name="errorTextColor">@color/error</item>
+        <item name="endIconTint">@color/text_input_end_icon_tint</item>
+        <item name="errorIconTint">@android:color/transparent</item>
+    </style>
+    
+    <!-- Password Input Layout Style -->
+    <style name="VibeHealth.TextInputLayout.Password" parent="VibeHealth.TextInputLayout">
+        <item name="passwordToggleEnabled">true</item>
+        <item name="errorIconDrawable">@null</item>
+    </style>
+    
+    <!-- Text Input Edit Text Style -->
+    <style name="VibeHealth.TextInputEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
+        <item name="android:layout_height">@dimen/input_field_height</item>
+        <item name="android:paddingHorizontal">@dimen/spacing_medium</item>
+        <item name="android:paddingVertical">@dimen/spacing_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Base Text Style -->
+    <style name="VibeHealth.Text">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Link Text Style -->
+    <style name="VibeHealth.Text.Link">
+        <item name="android:textColor">@color/soft_coral</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:paddingHorizontal">@dimen/spacing_small</item>
+        <item name="android:paddingVertical">@dimen/spacing_small</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+    
+    <!-- Heading Text Style -->
+    <style name="VibeHealth.Text.Heading2">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <!-- Body Text Style -->
+    <style name="VibeHealth.Text.Body">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+</resources>

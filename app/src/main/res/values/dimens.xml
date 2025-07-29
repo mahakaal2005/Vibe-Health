@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Vibe Health Design System - 8-Point Grid System -->
+    
+    <!-- Base spacing unit -->
+    <dimen name="spacing_base">8dp</dimen>
+    
+    <!-- Spacing scale -->
+    <dimen name="spacing_micro">4dp</dimen>  <!-- 0.5 × base -->
+    <dimen name="spacing_small">8dp</dimen>  <!-- 1 × base -->
+    <dimen name="spacing_medium">16dp</dimen> <!-- 2 × base -->
+    <dimen name="spacing_large">24dp</dimen>  <!-- 3 × base -->
+    <dimen name="spacing_xlarge">32dp</dimen> <!-- 4 × base -->
+    <dimen name="spacing_xxlarge">48dp</dimen> <!-- 6 × base -->
+    
+    <!-- Component dimensions -->
+    <dimen name="button_height">48dp</dimen>
+    <dimen name="input_field_height">56dp</dimen>
+    <dimen name="corner_radius">8dp</dimen>
+    <dimen name="touch_target_min">48dp</dimen>
+    
+    <!-- Progress indicators -->
+    <dimen name="progress_small">20dp</dimen>
+    <dimen name="progress_medium">24dp</dimen>
+    <dimen name="progress_large">32dp</dimen>
+    
+    <!-- Logo and branding -->
+    <dimen name="logo_splash_size">120dp</dimen>
+    <dimen name="logo_auth_size">80dp</dimen>
+
+    <!-- Status Bar -->
+    <dimen name="status_bar_height">24dp</dimen>
+</resources>

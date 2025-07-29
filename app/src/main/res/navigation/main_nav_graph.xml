@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <!-- Home Fragment (Dashboard) -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.vibehealth.android.ui.home.HomeFragment"
+        android:label="Home" />
+
+    <!-- Prescriptions Fragment -->
+    <fragment
+        android:id="@+id/prescriptionsFragment"
+        android:name="com.vibehealth.android.ui.prescriptions.PrescriptionsFragment"
+        android:label="Prescriptions" />
+
+    <!-- Discover Fragment -->
+    <fragment
+        android:id="@+id/discoverFragment"
+        android:name="com.vibehealth.android.ui.discover.DiscoverFragment"
+        android:label="Discover" />
+
+    <!-- Profile Fragment -->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.vibehealth.android.ui.profile.ProfileFragment"
+        android:label="Profile" />
+
+</navigation>

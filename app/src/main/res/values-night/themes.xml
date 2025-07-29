@@ -1,7 +1,31 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Dark theme for Vibe Health -->
     <style name="Base.Theme.VibeHealth" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- Vibe Health Design System Colors - Dark Mode -->
+        <item name="colorPrimary">@color/sage_green</item>
+        <item name="colorOnPrimary">@color/text_primary_dark</item>
+        <item name="colorSecondary">@color/warm_gray_green</item>
+        <item name="colorOnSecondary">@color/text_primary_dark</item>
+        <item name="colorTertiary">@color/soft_coral</item>
+        <item name="colorOnTertiary">@color/text_primary_dark</item>
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/text_primary_dark</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorOnSurface">@color/text_primary_dark</item>
+        <item name="colorBackground">@color/background_light</item>
+        <item name="colorOnBackground">@color/text_primary_dark</item>
+        
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Splash Screen Theme - Dark Mode -->
+    <style name="Theme.VibeHealth.Splash" parent="Base.Theme.VibeHealth">
+        <item name="android:windowBackground">@drawable/splash_gradient</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 </resources>

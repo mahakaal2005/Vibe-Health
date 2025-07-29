@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Vibe Health Design System Colors -->
+    
+    <!-- Primary Colors -->
+    <color name="sage_green">#6B8E6B</color>
+    <color name="warm_gray_green">#7A8471</color>
+    <color name="soft_coral">#B5846B</color>
+    
+    <!-- Supporting Colors -->
+    <color name="background_light">#FAFAFA</color>
+    <color name="background_dark">#121212</color>
+    <color name="text_primary">#2C2C2C</color>
+    <color name="text_secondary">#6B6B6B</color>
+    <color name="error">#D32F2F</color>
+    <color name="success">#388E3C</color>
+    <color name="warning">#F57C00</color>
+    
+    <!-- Dark Mode Colors -->
+    <color name="sage_green_dark">#8FA68F</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B3B3B3</color>
+    
+    <!-- System Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Gradient Colors for Splash -->
+    <color name="sage_green_gradient_start">#6B8E6B</color>
+    <color name="sage_green_gradient_end">#8FA68F</color>
 </resources>

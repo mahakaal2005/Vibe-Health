@@ -1,9 +1,33 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.VibeHealth" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Vibe Health Design System Colors -->
+        <item name="colorPrimary">@color/sage_green</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/warm_gray_green</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorTertiary">@color/soft_coral</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="colorSurface">@color/background_light</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorBackground">@color/background_light</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.VibeHealth" parent="Base.Theme.VibeHealth" />
+    
+    <!-- Splash Screen Theme -->
+    <style name="Theme.VibeHealth.Splash" parent="Base.Theme.VibeHealth">
+        <item name="android:windowBackground">@drawable/splash_gradient</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
 </resources>

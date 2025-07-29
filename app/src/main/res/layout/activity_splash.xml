@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splash_gradient"
+    tools:context=".ui.splash.SplashActivity">
+
+    <!-- Vibe Health Logo -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="@dimen/logo_splash_size"
+        android:layout_height="@dimen/logo_splash_size"
+        android:layout_marginBottom="@dimen/spacing_xxlarge"
+        android:contentDescription="@string/vibe_health_logo"
+        android:src="@drawable/ic_vibe_health_logo"
+        app:layout_constraintBottom_toTopOf="@+id/progress_indicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:tint="@color/white" />
+
+    <!-- App Name Text -->
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo" />
+
+    <!-- Tagline -->
+    <TextView
+        android:id="@+id/tagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:text="@string/app_tagline"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:alpha="0.9"
+        android:fontFamily="sans-serif"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_name" />
+
+    <!-- Loading Progress Indicator -->
+    <ProgressBar
+        android:id="@+id/progress_indicator"
+        android:layout_width="@dimen/progress_medium"
+        android:layout_height="@dimen/progress_medium"
+        android:layout_marginTop="@dimen/spacing_xxlarge"
+        android:indeterminateTint="@color/white"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tagline" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

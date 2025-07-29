@@ -1,0 +1,13 @@
+# This file contains the local configuration for the Vibe Health project
+# Copy this file to local.properties and fill in your actual values
+# local.properties is gitignored for security
+
+# SDK location (automatically filled by Android Studio)
+sdk.dir=/path/to/android/sdk
+
+# API Keys (add your actual keys here)
+# NEWS_API_KEY=your_news_api_key_here
+# YOUTUBE_API_KEY=your_youtube_api_key_here
+
+# Firebase configuration is handled by google-services.json
+# Make sure to replace the placeholder google-services.json with your actual Firebase config

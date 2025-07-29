@@ -25,14 +25,10 @@ class SplashViewModel @Inject constructor(
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
     
-    init {
-        checkAuthenticationState()
-    }
-    
     /**
-     * Check current authentication state and navigate accordingly
+     * Handle authentication state changes during splash
      */
-    private fun checkAuthenticationState() {
+    fun observeAuthState() {
         viewModelScope.launch {
             // Show splash screen for minimum duration for branding
             delay(1500) // 1.5 seconds minimum splash duration
@@ -53,33 +49,6 @@ class SplashViewModel @Inject constructor(
                 _navigationEvent.value = NavigationEvent.NavigateToLogin
             } finally {
                 _isLoading.value = false
-            }
-        }
-    }
-    
-    /**
-     * Handle authentication state changes during splash
-     */
-    fun observeAuthState() {
-        viewModelScope.launch {
-            authRepository.getAuthStateFlow().collect { authState ->
-                when (authState) {
-                    is AuthState.Authenticated -> {
-                        _navigationEvent.value = NavigationEvent.NavigateToMain
-                        _isLoading.value = false
-                    }
-                    is AuthState.NotAuthenticated -> {
-                        _navigationEvent.value = NavigationEvent.NavigateToLogin
-                        _isLoading.value = false
-                    }
-                    is AuthState.Error -> {
-                        _navigationEvent.value = NavigationEvent.NavigateToLogin
-                        _isLoading.value = false
-                    }
-                    is AuthState.Loading -> {
-                        _isLoading.value = true
-                    }
-                }
             }
         }
     }

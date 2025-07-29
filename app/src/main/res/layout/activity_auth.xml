@@ -7,16 +7,6 @@
     android:background="@color/background_light"
     android:fitsSystemWindows="true">
 
-    <!-- Status Bar Background -->
-    <View
-        android:id="@+id/status_bar_background"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/status_bar_height"
-        android:background="@color/background_light"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <!-- Navigation Host Fragment for Auth Flow -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment_auth"
@@ -26,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/status_bar_background"
+        app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/auth_nav_graph" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

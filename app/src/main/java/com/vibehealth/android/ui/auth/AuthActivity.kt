@@ -2,6 +2,7 @@ package com.vibehealth.android.ui.auth
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.vibehealth.android.R
@@ -27,7 +28,12 @@ class AuthActivity : AppCompatActivity() {
         setContentView(binding.root)
         
         setupNavigation()
-        handleDeepLinks()
+        setupBackPressedCallback()
+        
+        // Handle deep links after a brief delay to ensure navigation is fully set up
+        binding.root.post {
+            handleDeepLinks()
+        }
     }
     
     /**
@@ -58,31 +64,55 @@ class AuthActivity : AppCompatActivity() {
         intent?.data?.let { uri ->
             when (uri.path) {
                 "/login" -> {
-                    // Navigate to login (default)
+                    // Login is the default start destination, no navigation needed
+                    return
                 }
                 "/register" -> {
-                    // Navigate to register
+                    // Navigate to register only if explicitly requested via deep link
                     val navHostFragment = supportFragmentManager
                         .findFragmentById(R.id.nav_host_fragment_auth) as NavHostFragment
                     val navController = navHostFragment.navController
-                    navController.navigate(R.id.registerFragment)
+                    
+                    // Post the navigation to avoid conflicts with initial fragment loading
+                    binding.root.post {
+                        if (navController.currentDestination?.id == R.id.loginFragment) {
+                            navController.navigate(R.id.action_login_to_register)
+                        }
+                    }
                 }
             }
         }
     }
     
     /**
-     * Handle back button press with proper navigation
+     * Set up back button handling using modern OnBackPressedDispatcher
      */
-    override fun onBackPressed() {
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment_auth) as NavHostFragment
-        val navController = navHostFragment.navController
-        
-        if (!navController.popBackStack()) {
-            // If can't go back in navigation, finish activity
-            super.onBackPressed()
+    private fun setupBackPressedCallback() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val navHostFragment = supportFragmentManager
+                    .findFragmentById(R.id.nav_host_fragment_auth) as NavHostFragment
+                val navController = navHostFragment.navController
+                
+                when (navController.currentDestination?.id) {
+                    R.id.loginFragment -> {
+                        // On login fragment, exit the app
+                        finish()
+                    }
+                    R.id.registerFragment -> {
+                        // On register fragment, go back to login and clear back stack
+                        navController.navigate(R.id.action_register_to_login)
+                    }
+                    else -> {
+                        // Default behavior
+                        if (!navController.popBackStack()) {
+                            finish()
+                        }
+                    }
+                }
+            }
         }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
     
     /**

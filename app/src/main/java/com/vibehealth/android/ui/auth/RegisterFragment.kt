@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.activity.OnBackPressedCallback
 import com.google.android.material.textfield.TextInputLayout
 import android.text.SpannableString
 import android.text.Spanned
@@ -60,11 +61,30 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupBackPressedCallback()
         setupAccessibility()
         setupResponsiveLayout()
         setupUI()
         setupObservers()
         setupClickListeners()
+    }
+    
+    /**
+     * Set up back button handling - go back to login fragment
+     */
+    private fun setupBackPressedCallback() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // On register fragment, go back to login
+                try {
+                    findNavController().navigate(R.id.action_register_to_login)
+                } catch (e: Exception) {
+                    // Fallback: finish activity if navigation fails
+                    requireActivity().finish()
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
     /**

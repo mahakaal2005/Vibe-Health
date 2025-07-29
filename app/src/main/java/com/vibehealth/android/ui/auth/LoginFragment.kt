@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.activity.OnBackPressedCallback
 import com.google.android.material.textfield.TextInputLayout
 import android.text.SpannableString
 import android.text.Spanned
@@ -60,11 +61,25 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        setupBackPressedCallback()
         setupAccessibility()
         setupResponsiveLayout()
         setupUI()
         setupObservers()
         setupClickListeners()
+    }
+    
+    /**
+     * Set up back button handling - exit app when on login fragment
+     */
+    private fun setupBackPressedCallback() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // On login fragment, exit the app
+                requireActivity().finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
     
     /**

@@ -2,22 +2,22 @@
 <resources>
     <!-- Vibe Health Design System Colors -->
     
-    <!-- Primary Colors -->
-    <color name="sage_green">#6B8E6B</color>
-    <color name="warm_gray_green">#7A8471</color>
-    <color name="soft_coral">#B5846B</color>
+    <!-- Primary Colors (Enhanced) -->
+    <color name="sage_green">#4CAF50</color>
+    <color name="warm_gray_green">#66BB6A</color>
+    <color name="soft_coral">#FF6B6B</color>
     
     <!-- Supporting Colors -->
-    <color name="background_light">#FAFAFA</color>
+    <color name="background_light">#F4CBA3</color>
     <color name="background_dark">#121212</color>
     <color name="text_primary">#2C2C2C</color>
     <color name="text_secondary">#6B6B6B</color>
-    <color name="error">#D32F2F</color>
-    <color name="success">#388E3C</color>
-    <color name="warning">#F57C00</color>
+    <color name="error">#F44336</color>
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FF9800</color>
     
     <!-- Dark Mode Colors -->
-    <color name="sage_green_dark">#8FA68F</color>
+    <color name="sage_green_dark">#388E3C</color>
     <color name="surface_dark">#1E1E1E</color>
     <color name="text_primary_dark">#FFFFFF</color>
     <color name="text_secondary_dark">#B3B3B3</color>
@@ -26,7 +26,72 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Gradient Colors for Splash -->
-    <color name="sage_green_gradient_start">#6B8E6B</color>
-    <color name="sage_green_gradient_end">#8FA68F</color>
+    <!-- Gradient Colors (Enhanced) -->
+    <color name="sage_green_gradient_start">#4CAF50</color>
+    <color name="sage_green_gradient_end">#81C784</color>
+    
+    <!-- Energy & Activity Colors -->
+    <color name="energy_orange">#FF9800</color>
+    <color name="energy_orange_dark">#F57C00</color>
+    <color name="energy_orange_light">#FFB74D</color>
+    <color name="energy_yellow">#FFC107</color>
+    <color name="energy_yellow_dark">#FFA000</color>
+    <color name="energy_yellow_light">#FFECB3</color>
+    
+    <!-- Calm & Wellness Colors -->
+    <color name="calm_blue">#42A5F5</color>
+    <color name="calm_blue_dark">#1976D2</color>
+    <color name="calm_blue_light">#90CAF9</color>
+    <color name="wellness_teal">#26A69A</color>
+    <color name="wellness_teal_dark">#00695C</color>
+    <color name="wellness_teal_light">#80CBC4</color>
+    
+    <!-- Progress Ring Colors -->
+    <color name="progress_ring_move">#4CAF50</color>
+    <color name="progress_ring_exercise">#FF9800</color>
+    <color name="progress_ring_stand">#42A5F5</color>
+    
+    <!-- Achievement Colors -->
+    <color name="achievement_gold">#FFD700</color>
+    <color name="achievement_silver">#C0C0C0</color>
+    <color name="achievement_bronze">#CD7F32</color>
+    
+    <!-- Sleep & Recovery Colors -->
+    <color name="sleep_purple">#7E57C2</color>
+    <color name="sleep_purple_dark">#512DA8</color>
+    <color name="sleep_purple_light">#B39DDB</color>
+    <color name="recovery_indigo">#5C6BC0</color>
+    <color name="recovery_indigo_dark">#3F51B5</color>
+    <color name="recovery_indigo_light">#9FA8DA</color>
+    
+    <!-- Chart Colors -->
+    <color name="chart_primary">#4CAF50</color>
+    <color name="chart_secondary">#FF9800</color>
+    <color name="chart_tertiary">#42A5F5</color>
+    <color name="chart_quaternary">#FF6B6B</color>
+    <color name="chart_quinary">#7E57C2</color>
+    
+    <!-- Additional Gradients -->
+    <color name="energy_gradient_start">#FF9800</color>
+    <color name="energy_gradient_end">#FFB74D</color>
+    <color name="calm_gradient_start">#42A5F5</color>
+    <color name="calm_gradient_end">#81C784</color>
+    <color name="sunset_gradient_start">#FF6B6B</color>
+    <color name="sunset_gradient_end">#FF9800</color>
+    <color name="wellness_gradient_start">#4CAF50</color>
+    <color name="wellness_gradient_end">#26A69A</color>
+    
+    <!-- State Colors -->
+    <color name="info_blue">#2196F3</color>
+    <color name="info_blue_light">#BBDEFB</color>
+    <color name="success_light">#C8E6C9</color>
+    <color name="warning_light">#FFE0B2</color>
+    <color name="error_light">#FFCDD2</color>
+    
+    <!-- Input Field Colors -->
+    <!-- text_input_end_icon_tint is defined in color/text_input_end_icon_tint.xml as a selector -->
+    
+    <!-- Navigation Colors -->
+    <color name="navigation_selected">@color/sage_green</color>
+    <color name="navigation_unselected">@color/text_secondary</color>
 </resources>

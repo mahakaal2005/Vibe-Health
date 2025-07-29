@@ -10,10 +10,17 @@
         <item name="colorOnTertiary">@color/text_primary_dark</item>
         <item name="colorError">@color/error</item>
         <item name="colorOnError">@color/text_primary_dark</item>
-        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorSurface">@color/background_light</item>
         <item name="colorOnSurface">@color/text_primary_dark</item>
         <item name="colorBackground">@color/background_light</item>
         <item name="colorOnBackground">@color/text_primary_dark</item>
+        <item name="colorSurfaceVariant">@color/background_light</item>
+        <item name="colorSurfaceContainer">@color/background_light</item>
+        <item name="colorSurfaceContainerHigh">@color/background_light</item>
+        <item name="colorSurfaceContainerHighest">@color/background_light</item>
+        
+        <!-- Window background -->
+        <item name="android:windowBackground">@color/background_light</item>
         
         <!-- Status bar -->
         <item name="android:statusBarColor">@android:color/transparent</item>

@@ -2,24 +2,102 @@
 <resources>
     <!-- Vibe Health Design System Colors - Dark Mode -->
     
-    <!-- Primary Colors (adapted for dark mode) -->
-    <color name="sage_green">#8FA68F</color>
-    <color name="warm_gray_green">#8A9481</color>
-    <color name="soft_coral">#C5947B</color>
+    <!-- Primary Colors (Dark Mode Adapted) -->
+    <color name="sage_green">#81C784</color>
+    <color name="warm_gray_green">#A5D6A7</color>
+    <color name="soft_coral">#FF8A80</color>
     
-    <!-- Supporting Colors -->
-    <color name="background_light">#121212</color>
+    <!-- Supporting Colors - Dark Mode -->
+    <color name="background_light">#0F0E0D</color>
     <color name="background_dark">#000000</color>
     <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#B3B3B3</color>
-    <color name="error">#F44336</color>
-    <color name="success">#4CAF50</color>
-    <color name="warning">#FF9800</color>
+    <color name="error">#FF5252</color>
+    <color name="success">#69F0AE</color>
+    <color name="warning">#FFB74D</color>
     
-    <!-- Surface Colors -->
+    <!-- Dark Mode Colors -->
+    <color name="sage_green_dark">#4CAF50</color>
     <color name="surface_dark">#1E1E1E</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B3B3B3</color>
     
-    <!-- Gradient Colors for Splash (Dark Mode) -->
-    <color name="sage_green_gradient_start">#8FA68F</color>
-    <color name="sage_green_gradient_end">#6B8E6B</color>
+    <!-- System Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Gradient Colors - Dark Mode -->
+    <color name="sage_green_gradient_start">#81C784</color>
+    <color name="sage_green_gradient_end">#A5D6A7</color>
+    
+    <!-- Energy & Activity Colors - Dark Mode -->
+    <color name="energy_orange">#FFB74D</color>
+    <color name="energy_orange_dark">#FF8F00</color>
+    <color name="energy_orange_light">#FFCC80</color>
+    <color name="energy_yellow">#FFEB3B</color>
+    <color name="energy_yellow_dark">#FFC107</color>
+    <color name="energy_yellow_light">#FFF176</color>
+    
+    <!-- Calm & Wellness Colors - Dark Mode -->
+    <color name="calm_blue">#64B5F6</color>
+    <color name="calm_blue_dark">#2196F3</color>
+    <color name="calm_blue_light">#BBDEFB</color>
+    <color name="wellness_teal">#4DB6AC</color>
+    <color name="wellness_teal_dark">#26A69A</color>
+    <color name="wellness_teal_light">#B2DFDB</color>
+    
+    <!-- Progress Ring Colors - Dark Mode -->
+    <color name="progress_ring_move">#81C784</color>
+    <color name="progress_ring_exercise">#FFB74D</color>
+    <color name="progress_ring_stand">#64B5F6</color>
+    
+    <!-- Achievement Colors - Dark Mode -->
+    <color name="achievement_gold">#FFD54F</color>
+    <color name="achievement_silver">#E0E0E0</color>
+    <color name="achievement_bronze">#FFAB91</color>
+    
+    <!-- Sleep & Recovery Colors - Dark Mode -->
+    <color name="sleep_purple">#9575CD</color>
+    <color name="sleep_purple_dark">#7E57C2</color>
+    <color name="sleep_purple_light">#D1C4E9</color>
+    <color name="recovery_indigo">#7986CB</color>
+    <color name="recovery_indigo_dark">#5C6BC0</color>
+    <color name="recovery_indigo_light">#C5CAE9</color>
+    
+    <!-- Chart Colors - Dark Mode -->
+    <color name="chart_primary">#81C784</color>
+    <color name="chart_secondary">#FFB74D</color>
+    <color name="chart_tertiary">#64B5F6</color>
+    <color name="chart_quaternary">#FF8A80</color>
+    <color name="chart_quinary">#9575CD</color>
+    
+    <!-- Additional Gradients - Dark Mode -->
+    <color name="energy_gradient_start">#FFB74D</color>
+    <color name="energy_gradient_end">#FFCC80</color>
+    <color name="calm_gradient_start">#64B5F6</color>
+    <color name="calm_gradient_end">#81C784</color>
+    <color name="sunset_gradient_start">#FF8A80</color>
+    <color name="sunset_gradient_end">#FFB74D</color>
+    <color name="wellness_gradient_start">#81C784</color>
+    <color name="wellness_gradient_end">#4DB6AC</color>
+    
+    <!-- State Colors - Dark Mode -->
+    <color name="info_blue">#42A5F5</color>
+    <color name="info_blue_light">#E3F2FD</color>
+    <color name="success_light">#E8F5E8</color>
+    <color name="warning_light">#FFF3E0</color>
+    <color name="error_light">#FFEBEE</color>
+    
+    <!-- Additional Dark Mode Surfaces -->
+    <color name="surface_elevated">#2C2C2C</color>
+    <color name="surface_variant">#424242</color>
+    <color name="outline">#616161</color>
+    <color name="outline_variant">#757575</color>
+    
+    <!-- Input Field Colors -->
+    <!-- text_input_end_icon_tint is defined in color/text_input_end_icon_tint.xml as a selector -->
+    
+    <!-- Navigation Colors -->
+    <color name="navigation_selected">@color/sage_green</color>
+    <color name="navigation_unselected">@color/text_secondary_dark</color>
 </resources>

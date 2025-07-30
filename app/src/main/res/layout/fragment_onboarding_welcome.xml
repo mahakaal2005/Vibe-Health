@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light"
+    android:fitsSystemWindows="true"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_light"
+        android:paddingHorizontal="@dimen/spacing_large"
+        android:paddingVertical="@dimen/spacing_medium">
+
+        <!-- Progress Indicator -->
+        <TextView
+            android:id="@+id/tv_progress_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="1/4"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1/4" />
+
+        <!-- Vibe Health Logo -->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="@dimen/logo_auth_size"
+            android:layout_height="@dimen/logo_auth_size"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:contentDescription="@string/welcome_illustration"
+            android:src="@drawable/ic_discover_outlined"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_progress_indicator"
+            app:tint="@color/sage_green" />
+
+        <!-- Welcome Back Heading -->
+        <TextView
+            android:id="@+id/welcome_heading"
+            style="@style/VibeHealth.Text.Heading2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xlarge"
+            android:text="@string/welcome_to_vibe_health"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logo" />
+
+        <!-- Sign in subtitle -->
+        <TextView
+            android:id="@+id/subtitle"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:text="@string/personalize_wellness_journey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/welcome_heading" />
+
+        <!-- Features List -->
+        <LinearLayout
+            android:id="@+id/ll_features"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/subtitle">
+
+            <!-- Feature 1: Calculate Goals -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_small"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginEnd="@dimen/spacing_medium"
+                    android:background="@drawable/circle_sage_green" />
+
+                <TextView
+                    style="@style/VibeHealth.Text.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/calculate_daily_goals"
+                    android:textColor="@color/text_primary"
+                    tools:text="Calculate your daily goals" />
+
+            </LinearLayout>
+
+            <!-- Feature 2: Track Progress -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_small"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginEnd="@dimen/spacing_medium"
+                    android:background="@drawable/circle_sage_green" />
+
+                <TextView
+                    style="@style/VibeHealth.Text.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/track_your_progress"
+                    android:textColor="@color/text_primary"
+                    tools:text="Track your progress" />
+
+            </LinearLayout>
+
+            <!-- Feature 3: Get Insights -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_small"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginEnd="@dimen/spacing_medium"
+                    android:background="@drawable/circle_sage_green" />
+
+                <TextView
+                    style="@style/VibeHealth.Text.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/get_personalized_insights"
+                    android:textColor="@color/text_primary"
+                    tools:text="Get personalized insights" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Sign In Button Container -->
+        <FrameLayout
+            android:id="@+id/sign_in_button_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_features">
+
+            <!-- Get Started Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_get_started"
+                style="@style/VibeHealth.Button.Primary"
+                android:layout_width="match_parent"
+                android:text="@string/get_started" />
+
+        </FrameLayout>
+
+        <!-- Sign Up Link -->
+        <TextView
+            android:id="@+id/tv_step_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xlarge"
+            android:fontFamily="sans-serif"
+            android:minHeight="@dimen/touch_target_min"
+            android:paddingHorizontal="@dimen/spacing_medium"
+            android:paddingVertical="@dimen/spacing_small"
+            android:text="@string/step_indicator"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sign_in_button_container" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

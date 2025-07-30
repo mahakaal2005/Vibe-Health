@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    
+    <!-- Success checkmark with sage green background -->
+    <path
+        android:fillColor="@color/sage_green"
+        android:pathData="M32,4C49.67,4 64,18.33 64,36C64,53.67 49.67,68 32,68C14.33,68 0,53.67 0,36C0,18.33 14.33,4 32,4Z"/>
+    
+    <!-- White checkmark -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M26,42L18,34L20.83,31.17L26,36.34L43.17,19.17L46,22L26,42Z"/>
+</vector>

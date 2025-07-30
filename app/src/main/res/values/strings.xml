@@ -35,4 +35,83 @@
     <string name="error_user_disabled">This account has been disabled. Please contact support</string>
     <string name="error_too_many_requests">Too many attempts. Please try again later</string>
     <string name="error_unknown">Something went wrong. Please try again</string>
+    
+    <!-- Onboarding -->
+    <string name="welcome_to_vibe_health">Welcome to Vibe Health!</string>
+    <string name="personalize_wellness_journey">Let\'s personalize your wellness journey with a few quick questions.</string>
+    <string name="calculate_daily_goals">Calculate your daily goals</string>
+    <string name="track_your_progress">Track your progress</string>
+    <string name="get_personalized_insights">Get personalized insights</string>
+    <string name="get_started">Get Started</string>
+    <string name="step_indicator">Step %1$d of %2$d</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="tell_us_about_yourself">Tell us about yourself</string>
+    <string name="full_name">Full Name</string>
+    <string name="birthday">Birthday</string>
+    <string name="select_date">Select Date</string>
+    <string name="helps_calculate_goals">This helps us calculate your personalized daily goals</string>
+    <string name="physical_information">Physical Information</string>
+    <string name="unit_system">Unit System</string>
+    <string name="metric">Metric</string>
+    <string name="imperial">Imperial</string>
+    <string name="height_cm">Height (cm)</string>
+    <string name="height_ft">Height (ft\'in\")</string>
+    <string name="weight_kg">Weight (kg)</string>
+    <string name="weight_lbs">Weight (lbs)</string>
+    <string name="gender">Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="other">Other</string>
+    <string name="prefer_not_to_say">Prefer not to say</string>
+    <string name="continue_button">Continue</string>
+    <string name="youre_all_set">You\'re all set!</string>
+    <string name="calculating_goals">We\'re calculating your personalized daily goals...</string>
+    <string name="wellness_journey_starts">Your wellness journey starts now. Let\'s make every day count!</string>
+    <string name="enter_vibe_health">Enter Vibe Health</string>
+
+    <!-- Onboarding Validation Errors -->
+    <string name="error_name_required">Name is required</string>
+    <string name="error_name_too_short">Name must be at least 2 characters</string>
+    <string name="error_name_too_long">Name must be less than 50 characters</string>
+    <string name="error_birthday_required">Birthday is required</string>
+    <string name="error_birthday_future">Birthday cannot be in the future</string>
+    <string name="error_birthday_invalid_age">Please enter a valid birth date</string>
+    <string name="error_height_required">Height is required</string>
+    <string name="error_height_invalid">Please enter a valid height</string>
+    <string name="error_weight_required">Weight is required</string>
+    <string name="error_weight_invalid">Please enter a valid weight</string>
+    <string name="error_gender_required">Please select a gender option</string>
+
+    <!-- Content Descriptions for Onboarding -->
+    <string name="welcome_illustration">Welcome illustration</string>
+    <string name="success_checkmark">Success checkmark</string>
+    <string name="loading_animation">Loading animation</string>
+    <string name="progress_indicator">Progress indicator</string>
+    <string name="back_button">Back</string>
+    <string name="date_picker_button">Select birthday</string>
+    <string name="unit_system_toggle">Unit system selection</string>
+    
+    <!-- Enhanced Error Messages for Onboarding -->
+    <string name="error_network_offline">You\'re offline. Please check your internet connection and try again.</string>
+    <string name="error_network_timeout">Connection timed out. Please try again.</string>
+    <string name="error_storage_failed">Unable to save your information. Please try again.</string>
+    <string name="error_validation_failed">Please check your information and try again.</string>
+    <string name="error_service_unavailable">Service is temporarily unavailable. Please try again later.</string>
+    <string name="error_request_timeout">Request timed out. Please try again.</string>
+    <string name="error_permission_denied">Permission denied. Please contact support.</string>
+    <string name="error_quota_exceeded">Service limit reached. Please try again later.</string>
+    <string name="error_firebase_general">Unable to connect to our servers. Please try again.</string>
+    <string name="error_unknown_onboarding">Something went wrong. Please try again or contact support.</string>
+    
+    <!-- Missing strings for new layouts -->
+    <string name="success_icon">Success icon</string>
+    <string name="setup_complete">Setup Complete!</string>
+    <string name="ready_to_start_journey">You\'re all set! Ready to start your wellness journey.</string>
+    <string name="your_profile_summary">Your Profile Summary</string>
+    <string name="start_wellness_journey">Start Your Wellness Journey</string>
+    <string name="physical_measurements">Physical measurements</string>
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+    <string name="cm">cm</string>
+    <string name="kg">kg</string>
 </resources>

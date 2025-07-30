@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/spacing_medium"
+        android:paddingVertical="@dimen/spacing_small">
+
+        <!-- Toolbar with Progress -->
+        <LinearLayout
+            android:id="@+id/ll_toolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Back Button -->
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back_button"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/text_primary" />
+
+            <!-- Progress Indicator -->
+            <TextView
+                android:id="@+id/tv_progress_indicator"
+                style="@style/VibeHealth.Text.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="3/4"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                tools:text="3/4" />
+
+        </LinearLayout>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/VibeHealth.Onboarding.ProgressBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:progress="50"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_toolbar"
+            tools:progress="50" />
+
+        <!-- Heading -->
+        <TextView
+            android:id="@+id/tv_heading"
+            style="@style/VibeHealth.Text.Heading2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/physical_measurements"
+            android:textColor="@color/text_primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progress_bar"
+            tools:text="Physical measurements" />
+
+        <!-- Gender Selection -->
+        <TextView
+            android:id="@+id/tv_gender_label"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/gender"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_heading"
+            tools:text="Gender" />
+
+        <RadioGroup
+            android:id="@+id/rg_gender"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:orientation="vertical"
+            android:checkedButton="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_gender_label">
+
+            <RadioButton
+                android:id="@+id/rb_male"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_target_min"
+                android:text="@string/male"
+                android:textColor="@color/text_primary"
+                android:buttonTint="@color/sage_green"
+                android:layout_marginVertical="@dimen/gender_option_spacing"
+                android:checked="false"
+                tools:text="Male" />
+
+            <RadioButton
+                android:id="@+id/rb_female"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_target_min"
+                android:text="@string/female"
+                android:textColor="@color/text_primary"
+                android:buttonTint="@color/sage_green"
+                android:layout_marginVertical="@dimen/gender_option_spacing"
+                android:checked="false"
+                tools:text="Female" />
+
+            <RadioButton
+                android:id="@+id/rb_other"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_target_min"
+                android:text="@string/other"
+                android:textColor="@color/text_primary"
+                android:buttonTint="@color/sage_green"
+                android:layout_marginVertical="@dimen/gender_option_spacing"
+                android:checked="false"
+                tools:text="Other" />
+
+            <RadioButton
+                android:id="@+id/rb_prefer_not_to_say"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_target_min"
+                android:text="@string/prefer_not_to_say"
+                android:textColor="@color/text_primary"
+                android:buttonTint="@color/sage_green"
+                android:layout_marginVertical="@dimen/gender_option_spacing"
+                android:checked="false"
+                tools:text="Prefer not to say" />
+
+        </RadioGroup>
+
+        <!-- Height Input -->
+        <TextView
+            android:id="@+id/tv_height_label"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/height"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rg_gender"
+            tools:text="Height" />
+
+        <LinearLayout
+            android:id="@+id/ll_height_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_height_label">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_height"
+                style="@style/VibeHealth.TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_small"
+                android:hint="@string/height">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_height"
+                    style="@style/VibeHealth.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    tools:text="175" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_height_unit"
+                style="@style/VibeHealth.Onboarding.UnitToggle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/input_field_height"
+                android:text="@string/cm"
+                android:textColor="@color/text_primary"
+                tools:text="cm" />
+
+        </LinearLayout>
+
+        <!-- Weight Input -->
+        <TextView
+            android:id="@+id/tv_weight_label"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/weight"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_height_input"
+            tools:text="Weight" />
+
+        <LinearLayout
+            android:id="@+id/ll_weight_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_weight_label">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_weight"
+                style="@style/VibeHealth.TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_small"
+                android:hint="@string/weight">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_weight"
+                    style="@style/VibeHealth.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    tools:text="70" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_weight_unit"
+                style="@style/VibeHealth.Onboarding.UnitToggle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/input_field_height"
+                android:text="@string/kg"
+                android:textColor="@color/text_primary"
+                tools:text="kg" />
+
+        </LinearLayout>
+
+        <!-- Continue Button -->
+        <Button
+            android:id="@+id/btn_continue"
+            style="@style/VibeHealth.Button.Primary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:enabled="false"
+            android:text="@string/continue_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_weight_input"
+            tools:text="Continue" />
+
+        <!-- Bottom Spacer -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spacing_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_continue" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

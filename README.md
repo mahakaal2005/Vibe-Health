@@ -111,7 +111,7 @@ Technical Considerations
 Platform Requirements
 Target Platforms: The application will be a native Android mobile application.
 
-Performance Requirements: The UI must be smooth and responsive, especially the triple-ring dashboard animations. The app should have a fast startup time and minimal battery consumption.
+Performance Requirements: The UI must be smooth and responsive, especially the triple-ring dashboard animations. The app should have a fast startup time and minimal battery consumption. The app must be compatible with Android 15+ devices supporting 16KB page sizes.
 
 Technology Preferences
 Frontend/Mobile: The app will be built using the native Android stack: Kotlin for logic and XML for layouts.
@@ -125,7 +125,7 @@ AI Integration: Future AI features will be implemented by integrating with pre-t
 Architecture Considerations
 Service Architecture: The architecture must support a dual-storage model for prescriptions: a default cloud-based storage via the BaaS and an optional, user-selected local-only storage using Room. The Android app will communicate with the BaaS provider for cloud features and manage the local Room database for user-specified offline data.
 
-Data Security: Security is paramount. The chosen BaaS must have robust security rules, and any data stored locally in the Room database must be properly encrypted.
+Data Security: Security is paramount. The chosen BaaS must have robust security rules, and any data stored locally in the Room database must be properly encrypted using androidx.security (16KB page size compatible).
 
 Scalability: The BaaS platform should be able to scale automatically to handle user growth without manual intervention.
 
@@ -135,7 +135,7 @@ Budget: The project will operate with a $0 budget. It will rely on the free tier
 
 Timeline: While not explicitly defined, the phased MVP approach implies a goal of launching a core, high-quality product as quickly as possible, followed by iterative updates.
 
-Technology: The application must be a native Android app built using Kotlin and XML.
+Technology: The application must be a native Android app built using Kotlin and XML, with 16KB page size compatibility for Google Play compliance.
 
 Resources: The primary resource for development will be you, the stakeholder, assisted by AI tools and this BMad framework.
 

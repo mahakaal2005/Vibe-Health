@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/spacing_medium"
+        android:paddingVertical="@dimen/spacing_small">
+
+        <!-- Toolbar with Progress -->
+        <LinearLayout
+            android:id="@+id/ll_toolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Back Button -->
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back_button"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/text_primary" />
+
+            <!-- Progress Indicator -->
+            <TextView
+                android:id="@+id/tv_progress_indicator"
+                style="@style/VibeHealth.Text.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="2/4"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                tools:text="2/4" />
+
+        </LinearLayout>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/VibeHealth.Onboarding.ProgressBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:progress="25"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_toolbar"
+            tools:progress="25" />
+
+        <!-- Heading -->
+        <TextView
+            android:id="@+id/tv_heading"
+            style="@style/VibeHealth.Text.Heading2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/tell_us_about_yourself"
+            android:textColor="@color/text_primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progress_bar"
+            tools:text="Tell us about yourself" />
+
+        <!-- Full Name Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_full_name"
+            style="@style/VibeHealth.TextInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:hint="@string/full_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_heading">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_full_name"
+                style="@style/VibeHealth.TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName|textCapWords"
+                android:maxLength="50"
+                tools:text="John Doe" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Birthday Label -->
+        <TextView
+            android:id="@+id/tv_birthday_label"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/birthday"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/til_full_name"
+            tools:text="Birthday" />
+
+        <!-- Birthday Picker Button -->
+        <Button
+            android:id="@+id/btn_birthday_picker"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/input_field_height"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:contentDescription="@string/date_picker_button"
+            android:gravity="start|center_vertical"
+            android:paddingHorizontal="@dimen/spacing_medium"
+            android:text="@string/select_date"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_secondary"
+            app:cornerRadius="@dimen/corner_radius"
+            app:icon="@drawable/ic_calendar"
+            app:iconGravity="end"
+            app:iconTint="@color/text_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_birthday_label"
+            app:strokeColor="@color/sage_green"
+            app:strokeWidth="1dp"
+            tools:text="January 15, 1990" />
+
+        <!-- Birthday Error Text -->
+        <TextView
+            android:id="@+id/tv_birthday_error"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_micro"
+            android:paddingHorizontal="@dimen/spacing_medium"
+            android:textColor="@color/error"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_birthday_picker"
+            tools:text="Birthday is required"
+            tools:visibility="visible" />
+
+        <!-- Helper Text -->
+        <TextView
+            android:id="@+id/tv_helper_text"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/helps_calculate_goals"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_birthday_error"
+            tools:text="This helps us calculate your personalized daily goals" />
+
+        <!-- Continue Button -->
+        <Button
+            android:id="@+id/btn_continue"
+            style="@style/VibeHealth.Button.Primary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:enabled="false"
+            android:text="@string/continue_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_helper_text"
+            tools:text="Continue" />
+
+        <!-- Bottom Spacer -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spacing_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_continue" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

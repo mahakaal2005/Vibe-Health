@@ -9,16 +9,17 @@
     
     <!-- Primary Button Style -->
     <style name="VibeHealth.Button.Primary" parent="Widget.Material3.Button">
-        <item name="android:layout_height">@dimen/button_height</item>
-        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minHeight">48dp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">14sp</item>
         <item name="android:letterSpacing">0.025</item>
         <item name="android:textColor">@color/white</item>
         <item name="backgroundTint">@color/sage_green</item>
-        <item name="cornerRadius">@dimen/corner_radius</item>
+        <item name="cornerRadius">8dp</item>
         <item name="elevation">2dp</item>
         <item name="rippleColor">@color/white</item>
+        <item name="android:textAllCaps">false</item>
     </style>
     
     <!-- Text Input Layout Style -->
@@ -45,12 +46,14 @@
     
     <!-- Text Input Edit Text Style -->
     <style name="VibeHealth.TextInputEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
-        <item name="android:layout_height">@dimen/input_field_height</item>
-        <item name="android:paddingHorizontal">@dimen/spacing_medium</item>
-        <item name="android:paddingVertical">@dimen/spacing_medium</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:paddingVertical">16dp</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">sans-serif</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
     </style>
     
     <!-- Base Text Style -->
@@ -86,5 +89,89 @@
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">@color/text_secondary</item>
+    </style>
+    
+    <!-- Onboarding Styles - Real device optimized -->
+    <style name="VibeHealth.Onboarding.Title" parent="VibeHealth.Text.Heading2">
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_marginHorizontal">@dimen/spacing_small</item>
+        <item name="android:textSize">20sp</item> <!-- Reduced from 24sp -->
+    </style>
+
+    <style name="VibeHealth.Onboarding.Subtitle" parent="VibeHealth.Text.Body">
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_marginHorizontal">@dimen/spacing_small</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small</item>
+        <item name="android:textSize">14sp</item> <!-- Reduced from 16sp -->
+    </style>
+
+    <style name="VibeHealth.Onboarding.ProgressBar" parent="Widget.Material3.LinearProgressIndicator">
+        <item name="android:layout_height">@dimen/progress_bar_height</item>
+        <item name="trackColor">@color/text_secondary</item>
+        <item name="indicatorColor">@color/sage_green</item>
+    </style>
+
+    <style name="VibeHealth.Onboarding.UnitToggle" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_height">@dimen/unit_toggle_height</item>
+        <item name="strokeColor">@color/sage_green</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="VibeHealth.Onboarding.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="buttonTint">@color/sage_green</item>
+        <item name="android:layout_marginVertical">@dimen/gender_option_spacing</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+    </style>
+    
+    <!-- Error Text Style -->
+    <style name="VibeHealth.Text.Error">
+        <item name="android:textColor">@color/error</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Success Text Style -->
+    <style name="VibeHealth.Text.Success">
+        <item name="android:textColor">@color/success</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Caption Text Style -->
+    <style name="VibeHealth.Text.Caption">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Base Accessibility Style -->
+    <style name="VibeHealth.Accessibility">
+        <!-- Base accessibility style for all VibeHealth accessibility components -->
+    </style>
+    
+    <!-- Accessibility Focus Style -->
+    <style name="VibeHealth.Accessibility.Focus" parent="VibeHealth.Accessibility">
+        <item name="android:background">@drawable/focus_indicator</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+    
+    <!-- High Contrast Button Style -->
+    <style name="VibeHealth.Button.HighContrast" parent="VibeHealth.Button.Primary">
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/text_primary</item>
+        <item name="strokeColor">@color/white</item>
+        <item name="strokeWidth">2dp</item>
+    </style>
+    
+    <!-- Large Text Support -->
+    <style name="VibeHealth.Text.Large" parent="VibeHealth.Text">
+        <item name="android:textSize">20sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+    </style>
+    
+    <style name="VibeHealth.Text.Heading2.Large" parent="VibeHealth.Text.Heading2">
+        <item name="android:textSize">30sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 </resources>

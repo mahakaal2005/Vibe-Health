@@ -37,4 +37,12 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
+    
+    <!-- DatePicker Theme -->
+    <style name="DatePickerTheme" parent="ThemeOverlay.Material3.MaterialCalendar">
+        <item name="colorPrimary">@color/sage_green</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/background_light</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+    </style>
 </resources>

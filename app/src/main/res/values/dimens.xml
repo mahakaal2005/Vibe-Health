@@ -5,15 +5,15 @@
     <!-- Base spacing unit -->
     <dimen name="spacing_base">8dp</dimen>
     
-    <!-- Spacing scale -->
-    <dimen name="spacing_micro">4dp</dimen>  <!-- 0.5 × base -->
-    <dimen name="spacing_small">8dp</dimen>  <!-- 1 × base -->
-    <dimen name="spacing_medium">16dp</dimen> <!-- 2 × base -->
-    <dimen name="spacing_large">24dp</dimen>  <!-- 3 × base -->
-    <dimen name="spacing_xlarge">32dp</dimen> <!-- 4 × base -->
-    <dimen name="spacing_xxlarge">48dp</dimen> <!-- 6 × base -->
+    <!-- Spacing scale - Standard Android phone optimized -->
+    <dimen name="spacing_micro">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+    <dimen name="spacing_xlarge">32dp</dimen>
+    <dimen name="spacing_xxlarge">40dp</dimen>
     
-    <!-- Component dimensions -->
+    <!-- Component dimensions - Standard Android phone -->
     <dimen name="button_height">48dp</dimen>
     <dimen name="input_field_height">56dp</dimen>
     <dimen name="corner_radius">8dp</dimen>
@@ -30,4 +30,18 @@
 
     <!-- Status Bar -->
     <dimen name="status_bar_height">24dp</dimen>
+    
+    <!-- Onboarding specific dimensions -->
+    <dimen name="onboarding_illustration_size">120dp</dimen>
+    <dimen name="onboarding_illustration_compact">100dp</dimen>
+    <dimen name="onboarding_checkmark_size">64dp</dimen>
+    <dimen name="onboarding_padding_horizontal">24dp</dimen>
+    <dimen name="onboarding_padding_vertical">16dp</dimen>
+    <dimen name="onboarding_margin_small">8dp</dimen>
+    <dimen name="onboarding_margin_medium">24dp</dimen>
+    <dimen name="onboarding_title_text_size">28sp</dimen>
+    <dimen name="onboarding_subtitle_text_size">16sp</dimen>
+    <dimen name="progress_bar_height">4dp</dimen>
+    <dimen name="unit_toggle_height">40dp</dimen>
+    <dimen name="gender_option_spacing">12dp</dimen>
 </resources>

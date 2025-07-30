@@ -1,0 +1,33 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Welcome illustration with sage green theme -->
+    <path
+        android:fillColor="@color/sage_green"
+        android:pathData="M60,20C71.05,20 80,28.95 80,40C80,51.05 71.05,60 60,60C48.95,60 40,51.05 40,40C40,28.95 48.95,20 60,20Z"/>
+    
+    <path
+        android:fillColor="@color/background_light"
+        android:pathData="M60,25C68.28,25 75,31.72 75,40C75,48.28 68.28,55 60,55C51.72,55 45,48.28 45,40C45,31.72 51.72,25 60,25Z"/>
+    
+    <!-- Heart symbol in center -->
+    <path
+        android:fillColor="@color/soft_coral"
+        android:pathData="M60,45L55,40C52,37 52,33 55,30C58,27 62,27 65,30C68,33 68,37 65,40L60,45Z"/>
+    
+    <!-- Wellness rings -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/sage_green"
+        android:strokeWidth="3"
+        android:pathData="M60,70C76.57,70 90,83.43 90,100C90,116.57 76.57,130 60,130C43.43,130 30,116.57 30,100C30,83.43 43.43,70 60,70Z"/>
+    
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/warm_gray_green"
+        android:strokeWidth="2"
+        android:pathData="M60,80C71.05,80 80,88.95 80,100C80,111.05 71.05,120 60,120C48.95,120 40,111.05 40,100C40,88.95 48.95,80 60,80Z"/>
+</vector>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/spacing_medium"
+        android:paddingVertical="@dimen/spacing_large">
+
+        <!-- Progress Indicator -->
+        <TextView
+            android:id="@+id/tv_progress_indicator"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="4/4"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="4/4" />
+
+        <!-- Success Icon -->
+        <ImageView
+            android:id="@+id/iv_success_icon"
+            android:layout_width="@dimen/onboarding_checkmark_size"
+            android:layout_height="@dimen/onboarding_checkmark_size"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:contentDescription="@string/success_checkmark"
+            android:src="@drawable/ic_check_circle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_progress_indicator"
+            app:tint="@color/sage_green" />
+
+        <!-- Completion Title -->
+        <TextView
+            android:id="@+id/tv_completion_title"
+            style="@style/VibeHealth.Onboarding.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/youre_all_set"
+            android:textColor="@color/text_primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_success_icon"
+            tools:text="You're all set!" />
+
+        <!-- Completion Message -->
+        <TextView
+            android:id="@+id/tv_completion_message"
+            style="@style/VibeHealth.Onboarding.Subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/wellness_journey_starts"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_completion_title"
+            tools:text="Your wellness journey starts now. Let's make every day count!" />
+
+        <!-- Loading Animation -->
+        <ProgressBar
+            android:id="@+id/pb_calculating"
+            android:layout_width="@dimen/progress_medium"
+            android:layout_height="@dimen/progress_medium"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/sage_green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_completion_message" />
+
+        <!-- Calculating Text -->
+        <TextView
+            android:id="@+id/tv_calculating"
+            style="@style/VibeHealth.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/calculating_goals"
+            android:textAlignment="center"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pb_calculating"
+            tools:text="We're calculating your personalized daily goals..." />
+
+        <!-- Enter App Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_enter_app"
+            style="@style/VibeHealth.Button.Primary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:text="@string/enter_vibe_health"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_calculating"
+            tools:text="Enter Vibe Health"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

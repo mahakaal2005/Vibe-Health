@@ -22,7 +22,7 @@ import android.text.style.ForegroundColorSpan
 import com.vibehealth.android.MainActivity
 import com.vibehealth.android.R
 import com.vibehealth.android.core.accessibility.AccessibilityHelper
-import com.vibehealth.android.core.responsive.ResponsiveLayoutHelper
+
 import com.vibehealth.android.databinding.FragmentLoginBinding
 import com.vibehealth.android.domain.auth.AuthState
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,9 +45,7 @@ class LoginFragment : Fragment() {
     
     @Inject
     lateinit var accessibilityHelper: AccessibilityHelper
-    
-    @Inject
-    lateinit var responsiveLayoutHelper: ResponsiveLayoutHelper
+
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -174,41 +172,47 @@ class LoginFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
+                    // Check if fragment is still attached and binding is still valid
+                    if (!isAdded || _binding == null) return@collect
+                    val currentBinding = _binding ?: return@collect
+                    
                     // Update loading state
-                    binding.signInButton.isEnabled = !uiState.isLoading
-                    binding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
-                    binding.signInButton.visibility = if (uiState.isLoading) View.INVISIBLE else View.VISIBLE
+                    currentBinding.signInButton.isEnabled = !uiState.isLoading
+                    currentBinding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
+                    currentBinding.signInButton.visibility = if (uiState.isLoading) View.INVISIBLE else View.VISIBLE
                     
                     // Update email validation
-                    binding.emailInputLayout.error = uiState.emailError
-                    binding.emailInputLayout.isErrorEnabled = uiState.emailError != null
+                    currentBinding.emailInputLayout.error = uiState.emailError
+                    currentBinding.emailInputLayout.isErrorEnabled = uiState.emailError != null
                     
                     // Update password validation
-                    binding.passwordInputLayout.error = uiState.passwordError
-                    binding.passwordInputLayout.isErrorEnabled = uiState.passwordError != null
+                    currentBinding.passwordInputLayout.error = uiState.passwordError
+                    currentBinding.passwordInputLayout.isErrorEnabled = uiState.passwordError != null
                     
                     // Ensure password toggle is always visible and properly configured
-                    binding.passwordInputLayout.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+                    currentBinding.passwordInputLayout.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
                     
                     // Ensure password toggle icon remains sage green even in error state
-                    binding.passwordInputLayout.setEndIconTintList(
+                    currentBinding.passwordInputLayout.setEndIconTintList(
                         androidx.core.content.ContextCompat.getColorStateList(requireContext(), R.color.text_input_end_icon_tint)
                     )
                     
                     // Show general error message with animation
-                    if (uiState.errorMessage != null && binding.errorMessage.visibility != View.VISIBLE) {
-                        binding.errorMessage.text = uiState.errorMessage
-                        binding.errorMessage.visibility = View.VISIBLE
-                        binding.errorMessage.startAnimation(
+                    if (uiState.errorMessage != null && currentBinding.errorMessage.visibility != View.VISIBLE) {
+                        currentBinding.errorMessage.text = uiState.errorMessage
+                        currentBinding.errorMessage.visibility = View.VISIBLE
+                        currentBinding.errorMessage.startAnimation(
                             android.view.animation.AnimationUtils.loadAnimation(context, R.anim.error_fade_in)
                         )
                         // Auto-hide error after 5 seconds
-                        binding.errorMessage.postDelayed({
-                            binding.errorMessage.visibility = View.GONE
-                            viewModel.clearError()
+                        currentBinding.errorMessage.postDelayed({
+                            _binding?.let { safeBinding ->
+                                safeBinding.errorMessage.visibility = View.GONE
+                                viewModel.clearError()
+                            }
                         }, 5000)
                     } else if (uiState.errorMessage == null) {
-                        binding.errorMessage.visibility = View.GONE
+                        currentBinding.errorMessage.visibility = View.GONE
                     }
                 }
             }
@@ -389,32 +393,37 @@ class LoginFragment : Fragment() {
      * Set up responsive layout for different screen sizes
      */
     private fun setupResponsiveLayout() {
-        // Apply safe area insets
-        responsiveLayoutHelper.applySafeAreaInsets(binding.root)
+        // Standard Android phone layout - no responsive adjustments needed
+        // Handle keyboard visibility for better UX
+        val currentBinding = _binding ?: return
         
-        // Adjust layout for screen size
-        responsiveLayoutHelper.adjustLayoutForScreenSize(binding.root)
-        
-        // Handle keyboard visibility
-        responsiveLayoutHelper.handleKeyboardVisibility(binding.root) { isVisible ->
-            if (isVisible) {
-                // Scroll to focused input when keyboard appears
-                val focusedView = binding.root.findFocus()
+        currentBinding.root.viewTreeObserver.addOnGlobalLayoutListener {
+            // Check if fragment is still attached and binding is still valid
+            if (!isAdded || _binding == null) return@addOnGlobalLayoutListener
+            
+            val rect = android.graphics.Rect()
+            _binding?.root?.getWindowVisibleDisplayFrame(rect) ?: return@addOnGlobalLayoutListener
+            val screenHeight = _binding?.root?.rootView?.height ?: return@addOnGlobalLayoutListener
+            val keypadHeight = screenHeight - rect.bottom
+            
+            if (keypadHeight > screenHeight * 0.15) {
+                // Keyboard is visible - scroll to focused input
+                val focusedView = _binding?.root?.findFocus()
                 focusedView?.let { view ->
-                    binding.root.post {
-                        binding.root.scrollTo(0, view.bottom)
+                    _binding?.root?.post {
+                        _binding?.root?.scrollTo(0, view.bottom)
                     }
                 }
             }
         }
-        
-        // Handle display cutout
-        if (responsiveLayoutHelper.supportsEdgeToEdge()) {
-            responsiveLayoutHelper.handleDisplayCutout(binding.root)
-        }
     }
     
     override fun onDestroyView() {
+        // Cancel any pending operations to prevent crashes
+        _binding?.root?.removeCallbacks(null)
+        _binding?.errorMessage?.removeCallbacks(null)
+        _binding?.passwordInputLayout?.removeCallbacks(null)
+        
         super.onDestroyView()
         hasShownSuccess = false
         _binding = null

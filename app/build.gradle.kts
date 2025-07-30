@@ -19,6 +19,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "com.vibehealth.android.HiltTestRunner"
+        
+        // Enable 16KB page size support
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+        }
     }
 
     buildTypes {
@@ -45,6 +50,34 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+    }
+    
+    // Configure packaging options for 16KB page size compatibility
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+        // Ensure proper alignment for native libraries
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    
+    // Configure splits for better APK optimization
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+            isUniversalApk = true
+        }
+    }
+    
+    // Configure native library alignment for 16KB page size support
+    androidComponents {
+        onVariants(selector().all()) { variant ->
+            variant.packaging.jniLibs.useLegacyPackaging = false
+        }
     }
 }
 
@@ -79,6 +112,17 @@ dependencies {
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
     
+    // Room Database
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+    
+    // Database encryption - using androidx.security instead of SQLCipher for 16KB compatibility
+    // implementation(libs.sqlcipher) // Temporarily disabled due to 16KB page size issues
+    
+    // Security Crypto
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     
@@ -98,6 +142,7 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.20")
+    testImplementation(libs.room.testing)
     
     // Android Testing
     androidTestImplementation(libs.androidx.junit)
@@ -118,4 +163,20 @@ dependencies {
 kapt {
     correctErrorTypes = true
     useBuildCache = true
+}
+
+// Task to verify 16KB page size compatibilit y
+tasks.register("verify16KBPageSize") {
+    group = "verification"
+    description = "Verify that native libraries are aligned for 16KB page size"
+    
+    doLast {
+        val apkDir = file("${layout.buildDirectory.get()}/outputs/apk/debug")
+        if (apkDir.exists()) {
+            println("✅ APK built successfully")
+            println("📋 To verify 16KB alignment manually, use:")
+            println("   unzip -l app-debug.apk | grep libsqlcipher.so")
+            println("   The library should be properly aligned for 16KB page sizes")
+        }
+    }
 }

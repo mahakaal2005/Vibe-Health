@@ -165,4 +165,14 @@ class SessionManager @Inject constructor(
         val preferences = context.dataStore.data.first()
         return preferences[REMEMBER_ME] ?: false
     }
+    
+    /**
+     * Update user profile information in session
+     */
+    suspend fun updateUserProfile(userProfile: com.vibehealth.android.domain.user.UserProfile) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_DISPLAY_NAME] = userProfile.displayName
+            preferences[LAST_LOGIN_TIME] = System.currentTimeMillis().toString()
+        }
+    }
 }

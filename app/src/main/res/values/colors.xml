@@ -8,7 +8,7 @@
     <color name="soft_coral">#FF6B6B</color>
     
     <!-- Supporting Colors -->
-    <color name="background_light">#F4CBA3</color>
+    <color name="background_light">#f5f1eb</color>
     <color name="background_dark">#121212</color>
     <color name="text_primary">#2C2C2C</color>
     <color name="text_secondary">#6B6B6B</color>

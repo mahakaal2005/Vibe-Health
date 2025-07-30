@@ -36,6 +36,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var userProfileRepository: UserProfileRepository
     
+    @Inject
+    lateinit var integrationManager: com.vibehealth.android.core.integration.OnboardingIntegrationManager
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -119,24 +122,27 @@ class MainActivity : AppCompatActivity() {
      * Check if user needs onboarding
      */
     private fun checkOnboardingStatus(user: com.vibehealth.android.domain.auth.User) {
+        // Check if user just completed onboarding
+        val onboardingJustCompleted = intent.getBooleanExtra("onboarding_just_completed", false)
+        if (onboardingJustCompleted) {
+            return // Stay on main app
+        }
+        
         lifecycleScope.launch {
             try {
-                val hasCompletedOnboarding = userProfileRepository.hasCompletedOnboarding(user.uid)
+                val navigationDecision = integrationManager.handleExistingUserOnboardingCheck(user.uid)
                 
-                hasCompletedOnboarding.fold(
-                    onSuccess = { completed ->
-                        if (!completed) {
-                            navigateToOnboarding()
-                        }
-                        // If completed, stay on main app
-                    },
-                    onFailure = { error ->
-                        // Handle error - for now, assume onboarding needed
+                when (navigationDecision) {
+                    com.vibehealth.android.core.integration.NavigationDecision.NAVIGATE_TO_ONBOARDING -> {
                         navigateToOnboarding()
                     }
-                )
+                    com.vibehealth.android.core.integration.NavigationDecision.NAVIGATE_TO_MAIN_APP -> {
+                        // Stay on main app - user has completed onboarding
+                    }
+                }
             } catch (e: Exception) {
-                // Handle error - assume onboarding needed
+                // Handle error - assume onboarding needed for safety
+                android.util.Log.e("MainActivity", "Failed to check onboarding status", e)
                 navigateToOnboarding()
             }
         }
@@ -146,13 +152,11 @@ class MainActivity : AppCompatActivity() {
      * Navigate to onboarding flow
      */
     private fun navigateToOnboarding() {
-        // TODO: Implement onboarding navigation when onboarding is created
-        // For now, stay on main app
-        
-        // Future implementation:
-        // val intent = Intent(this, OnboardingActivity::class.java)
-        // startActivity(intent)
-        // finish()
+        val intent = Intent(this, com.vibehealth.android.ui.onboarding.OnboardingActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
     
     /**

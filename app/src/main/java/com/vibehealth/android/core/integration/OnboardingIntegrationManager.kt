@@ -66,15 +66,30 @@ class OnboardingIntegrationManager @Inject constructor(
      */
     suspend fun completeOnboardingIntegration(userProfile: UserProfile): OnboardingResult {
         return try {
-            // Step 1: Save user profile
+            android.util.Log.d("OnboardingIntegration", "Starting onboarding integration for user: ${userProfile.userId}")
+            
+            // Step 0: Ensure user document exists in Firestore with proper structure
+            val authService = com.vibehealth.android.data.auth.AuthService(
+                com.google.firebase.auth.FirebaseAuth.getInstance(),
+                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            )
+            val ensureResult = authService.ensureUserDocumentExists()
+            if (ensureResult.isFailure) {
+                android.util.Log.e("OnboardingIntegration", "Failed to ensure user document exists")
+            }
+            
+            // Step 1: Save complete user profile
+            android.util.Log.d("OnboardingIntegration", "Saving user profile: $userProfile")
             val saveResult = userRepository.saveUserProfile(userProfile)
             if (saveResult.isFailure) {
+                android.util.Log.e("OnboardingIntegration", "Failed to save user profile: ${saveResult.exceptionOrNull()}")
                 return OnboardingResult.Error(
                     exception = Exception(saveResult.exceptionOrNull() ?: Exception("Save failed")),
                     userMessage = "Unable to save your profile. Please try again.",
                     canRetry = true
                 )
             }
+            android.util.Log.d("OnboardingIntegration", "✅ User profile saved successfully")
 
             // Step 2: Trigger goal calculation (with rollback on failure)
             val goalResult = triggerGoalCalculationWithRollback(userProfile)

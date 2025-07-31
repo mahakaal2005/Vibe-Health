@@ -3,7 +3,7 @@ package com.vibehealth.android.ui.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vibehealth.android.domain.dashboard.DashboardUseCase
-import com.vibehealth.android.data.user.UserRepository
+import com.vibehealth.android.domain.auth.AuthRepository
 import com.vibehealth.android.ui.dashboard.models.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val dashboardUseCase: DashboardUseCase,
-    private val userRepository: UserRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     
     private val _dashboardState = MutableStateFlow(DashboardState.loading())
@@ -42,8 +42,8 @@ class DashboardViewModel @Inject constructor(
     fun startDashboardUpdates() {
         dataUpdateJob?.cancel()
         dataUpdateJob = viewModelScope.launch {
-            userRepository.getCurrentUserId()?.let { userId ->
-                dashboardUseCase.getDashboardData(userId)
+            authRepository.getCurrentUser()?.let { user ->
+                dashboardUseCase.getDashboardData(user.uid)
                     .flowOn(Dispatchers.IO)
                     .collect { newState ->
                         val previousState = _dashboardState.value

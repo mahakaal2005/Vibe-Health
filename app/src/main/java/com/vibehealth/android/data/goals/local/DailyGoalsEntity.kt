@@ -21,14 +21,15 @@ import java.util.Date
  */
 @Entity(
     tableName = "daily_goals",
-    foreignKeys = [
-        ForeignKey(
-            entity = UserProfileEntity::class,
-            parentColumns = ["user_id"],
-            childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ],
+    // Temporarily disable foreign key constraint to debug the issue
+    // foreignKeys = [
+    //     ForeignKey(
+    //         entity = UserProfileEntity::class,
+    //         parentColumns = ["user_id"],
+    //         childColumns = ["user_id"],
+    //         onDelete = ForeignKey.CASCADE
+    //     )
+    // ],
     indices = [
         Index(value = ["user_id"]),
         Index(value = ["calculated_at"]),

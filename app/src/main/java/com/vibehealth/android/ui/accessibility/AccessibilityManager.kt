@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import com.vibehealth.android.R
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.pow
 
 /**
  * Accessibility manager for WCAG 2.1 Level AA compliance.
@@ -180,9 +181,9 @@ class AccessibilityManager @Inject constructor(
         val g = Color.green(color) / 255.0
         val b = Color.blue(color) / 255.0
         
-        val rLinear = if (r <= 0.03928) r / 12.92 else kotlin.math.pow((r + 0.055) / 1.055, 2.4)
-        val gLinear = if (g <= 0.03928) g / 12.92 else kotlin.math.pow((g + 0.055) / 1.055, 2.4)
-        val bLinear = if (b <= 0.03928) b / 12.92 else kotlin.math.pow((b + 0.055) / 1.055, 2.4)
+        val rLinear = if (r <= 0.03928) r / 12.92 else ((r + 0.055) / 1.055).pow(2.4)
+        val gLinear = if (g <= 0.03928) g / 12.92 else ((g + 0.055) / 1.055).pow(2.4)
+        val bLinear = if (b <= 0.03928) b / 12.92 else ((b + 0.055) / 1.055).pow(2.4)
         
         return 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear
     }

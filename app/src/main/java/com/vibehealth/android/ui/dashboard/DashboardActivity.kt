@@ -5,8 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.vibehealth.android.databinding.ActivityDashboardBinding
-import com.vibehealth.android.ui.dashboard.models.DashboardState
-import com.vibehealth.android.ui.dashboard.models.AnimationEvent
+import com.vibehealth.android.ui.dashboard.models.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

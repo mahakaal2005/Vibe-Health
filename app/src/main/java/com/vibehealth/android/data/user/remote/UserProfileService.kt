@@ -49,11 +49,31 @@ class UserProfileService @Inject constructor() {
                     updatedAt = java.util.Date()
                 )
 
+                // Create a complete data map to ensure all fields are saved
+                val profileData = mapOf(
+                    "userId" to sanitizedProfile.userId,
+                    "email" to sanitizedProfile.email,
+                    "displayName" to sanitizedProfile.displayName,
+                    "firstName" to sanitizedProfile.firstName,
+                    "lastName" to sanitizedProfile.lastName,
+                    "birthday" to sanitizedProfile.birthday,
+                    "gender" to sanitizedProfile.gender.name,
+                    "unitSystem" to sanitizedProfile.unitSystem.name,
+                    "heightInCm" to sanitizedProfile.heightInCm,
+                    "weightInKg" to sanitizedProfile.weightInKg,
+                    "hasCompletedOnboarding" to sanitizedProfile.hasCompletedOnboarding,
+                    "createdAt" to sanitizedProfile.createdAt,
+                    "updatedAt" to sanitizedProfile.updatedAt
+                )
+
+                android.util.Log.d("UserProfileService", "Saving complete user profile data: $profileData")
+
                 firestore.collection(USERS_COLLECTION)
                     .document(userProfile.userId)
-                    .set(sanitizedProfile)
+                    .set(profileData)
                     .await()
 
+                android.util.Log.d("UserProfileService", "User profile saved successfully to Firestore")
                 Result.success(sanitizedProfile)
             } catch (e: Exception) {
                 android.util.Log.e("UserProfileService", "Failed to save user profile", e)
@@ -100,11 +120,31 @@ class UserProfileService @Inject constructor() {
                     updatedAt = java.util.Date()
                 )
 
+                // Create a complete data map to ensure all fields are updated
+                val profileData = mapOf(
+                    "userId" to sanitizedProfile.userId,
+                    "email" to sanitizedProfile.email,
+                    "displayName" to sanitizedProfile.displayName,
+                    "firstName" to sanitizedProfile.firstName,
+                    "lastName" to sanitizedProfile.lastName,
+                    "birthday" to sanitizedProfile.birthday,
+                    "gender" to sanitizedProfile.gender.name,
+                    "unitSystem" to sanitizedProfile.unitSystem.name,
+                    "heightInCm" to sanitizedProfile.heightInCm,
+                    "weightInKg" to sanitizedProfile.weightInKg,
+                    "hasCompletedOnboarding" to sanitizedProfile.hasCompletedOnboarding,
+                    "createdAt" to sanitizedProfile.createdAt,
+                    "updatedAt" to sanitizedProfile.updatedAt
+                )
+
+                android.util.Log.d("UserProfileService", "Updating complete user profile data: $profileData")
+
                 firestore.collection(USERS_COLLECTION)
                     .document(userProfile.userId)
-                    .set(sanitizedProfile)
+                    .set(profileData)
                     .await()
 
+                android.util.Log.d("UserProfileService", "User profile updated successfully in Firestore")
                 Result.success(sanitizedProfile)
             } catch (e: Exception) {
                 android.util.Log.e("UserProfileService", "Failed to update user profile", e)

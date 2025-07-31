@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.vibehealth.android.core.utils.UnitConversionUtils
 import com.vibehealth.android.core.utils.ConversionResult
 import com.vibehealth.android.core.validation.OnboardingValidationHelper
@@ -279,11 +280,23 @@ class OnboardingViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
+                // Ensure userId is set from current Firebase user
+                val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+                val userId = currentUser?.uid ?: profile.userId
+                
+                if (userId.isBlank()) {
+                    android.util.Log.e("OnboardingViewModel", "No valid user ID found")
+                    _onboardingState.value = OnboardingState.Error("Authentication error. Please try again.")
+                    return@launch
+                }
+
                 val completedProfile = profile.copy(
+                    userId = userId,
+                    email = currentUser?.email ?: profile.email,
                     hasCompletedOnboarding = true,
                     updatedAt = Date()
                 )
-                android.util.Log.d("OnboardingViewModel", "Created completed profile: $completedProfile")
+                android.util.Log.d("OnboardingViewModel", "Created completed profile with userId: $userId")
 
                 // Use integration manager for complete onboarding flow
                 val integrationResult = integrationManager.completeOnboardingIntegration(completedProfile)

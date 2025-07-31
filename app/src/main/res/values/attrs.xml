@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="colorBackground" format="color" />
+    <!-- Custom attributes for Vibe Health theme -->
+    <attr name="colorSuccess" format="color" />
+    <attr name="colorWarning" format="color" />
+    <attr name="colorInfo" format="color" />
 </resources>

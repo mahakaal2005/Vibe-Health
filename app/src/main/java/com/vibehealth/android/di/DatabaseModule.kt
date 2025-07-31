@@ -50,6 +50,11 @@ abstract class DatabaseModule {
         }
 
         @Provides
+        fun provideGoalDao(database: AppDatabase): com.vibehealth.android.data.goals.local.GoalDao {
+            return database.goalDao()
+        }
+
+        @Provides
         @Singleton
         fun provideUserProfileService(): UserProfileService {
             return UserProfileService()

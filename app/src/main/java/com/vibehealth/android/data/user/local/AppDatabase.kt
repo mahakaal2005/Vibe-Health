@@ -4,23 +4,30 @@ import android.content.Context
 import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.vibehealth.android.data.goals.local.DailyGoalsEntity
+import com.vibehealth.android.data.goals.local.GoalDao
+import com.vibehealth.android.data.goals.local.GoalsTypeConverters
 // Removed SQLCipher imports for 16KB page size compatibility
 // import net.sqlcipher.database.SQLiteDatabase
 // import net.sqlcipher.database.SupportFactory
 
 /**
- * Room database class with encryption support using SQLCipher
+ * Room database class with encryption support and goal calculation entities
  */
 @Database(
-    entities = [UserProfileEntity::class],
-    version = 1,
+    entities = [
+        UserProfileEntity::class,
+        DailyGoalsEntity::class
+    ],
+    version = 2,
     exportSchema = false,
     autoMigrations = []
 )
-@TypeConverters(DatabaseTypeConverters::class)
+@TypeConverters(DatabaseTypeConverters::class, GoalsTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userProfileDao(): UserProfileDao
+    abstract fun goalDao(): GoalDao
 
     companion object {
         private const val DATABASE_NAME = "vibe_health_database"
@@ -62,7 +69,7 @@ abstract class AppDatabase : RoomDatabase() {
          */
         private fun getAllMigrations(): Array<Migration> {
             return arrayOf(
-                // Future migrations will be added here
+                DatabaseMigrations.MIGRATION_1_2
             )
         }
 
@@ -112,12 +119,32 @@ abstract class AppDatabase : RoomDatabase() {
 object DatabaseMigrations {
     
     /**
-     * Migration from version 1 to 2 (example for future use)
+     * Migration from version 1 to 2 - Add daily goals table
      */
     val MIGRATION_1_2 = object : Migration(1, 2) {
         override fun migrate(database: SupportSQLiteDatabase) {
-            // Example migration - add new column
-            // database.execSQL("ALTER TABLE user_profiles ADD COLUMN new_column TEXT")
+            // Create daily_goals table
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS `daily_goals` (
+                    `id` TEXT NOT NULL PRIMARY KEY,
+                    `user_id` TEXT NOT NULL,
+                    `steps_goal` INTEGER NOT NULL,
+                    `calories_goal` INTEGER NOT NULL,
+                    `heart_points_goal` INTEGER NOT NULL,
+                    `calculated_at` TEXT NOT NULL,
+                    `calculation_source` TEXT NOT NULL,
+                    `created_at` INTEGER NOT NULL,
+                    `updated_at` INTEGER NOT NULL,
+                    `last_sync_at` INTEGER,
+                    `is_dirty` INTEGER NOT NULL DEFAULT 0,
+                    FOREIGN KEY(`user_id`) REFERENCES `user_profiles`(`user_id`) ON DELETE CASCADE
+                )
+            """.trimIndent())
+            
+            // Create indexes for performance
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_daily_goals_user_id` ON `daily_goals` (`user_id`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_daily_goals_calculated_at` ON `daily_goals` (`calculated_at`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_daily_goals_user_id_calculated_at` ON `daily_goals` (`user_id`, `calculated_at`)")
         }
     }
 
@@ -126,7 +153,7 @@ object DatabaseMigrations {
      */
     fun getAllMigrations(): Array<Migration> {
         return arrayOf(
-            // MIGRATION_1_2 // Uncomment when needed
+            MIGRATION_1_2
         )
     }
 }

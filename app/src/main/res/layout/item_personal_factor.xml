@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/spacing_medium">
+
+    <ImageView
+        android:id="@+id/iconPersonalFactor"
+        android:layout_width="@dimen/icon_size_small"
+        android:layout_height="@dimen/icon_size_small"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:contentDescription="@string/personal_factor_icon"
+        app:tint="?attr/colorPrimary"
+        tools:src="@drawable/ic_age" />
+
+    <TextView
+        android:id="@+id/textPersonalFactor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.VibeHealth.Body2"
+        android:textColor="?attr/colorOnSurface"
+        tools:text="Age: 25 years" />
+
+</LinearLayout>

@@ -135,6 +135,125 @@ data class UserProfile(
                weightInKg > 0.0
     }
 
+    /**
+     * Check if the user profile is suitable for goal calculation.
+     * 
+     * This validates that all required fields are present and within
+     * reasonable ranges for WHO-based goal calculations.
+     * 
+     * @return true if profile can be used for goal calculation
+     */
+    fun isValidForGoalCalculation(): Boolean {
+        // Check if basic onboarding data is complete
+        if (!isOnboardingDataComplete()) {
+            return false
+        }
+        
+        // Validate age is within reasonable bounds (13-120 years)
+        val age = getAge()
+        if (age < 13 || age > 120) {
+            return false
+        }
+        
+        // Validate height is within reasonable bounds (100-250 cm)
+        if (heightInCm < 100 || heightInCm > 250) {
+            return false
+        }
+        
+        // Validate weight is within reasonable bounds (30-300 kg)
+        if (weightInKg < 30.0 || weightInKg > 300.0) {
+            return false
+        }
+        
+        return true
+    }
+
+    /**
+     * Get BMI (Body Mass Index) calculation.
+     * 
+     * @return BMI value or null if height/weight are invalid
+     */
+    fun getBMI(): Double? {
+        return if (heightInCm > 0 && weightInKg > 0) {
+            val heightInMeters = heightInCm / 100.0
+            weightInKg / (heightInMeters * heightInMeters)
+        } else {
+            null
+        }
+    }
+
+    /**
+     * Get BMI category based on WHO standards.
+     * 
+     * @return BMI category string or null if BMI cannot be calculated
+     */
+    fun getBMICategory(): String? {
+        val bmi = getBMI() ?: return null
+        
+        return when {
+            bmi < 18.5 -> "Underweight"
+            bmi < 25.0 -> "Normal weight"
+            bmi < 30.0 -> "Overweight"
+            else -> "Obese"
+        }
+    }
+
+    /**
+     * Check if profile data has changed in ways that affect goal calculation.
+     * 
+     * @param other Previous version of the profile
+     * @return true if goal-affecting fields have changed
+     */
+    fun hasGoalCalculationRelevantChanges(other: UserProfile): Boolean {
+        return birthday != other.birthday ||
+               gender != other.gender ||
+               heightInCm != other.heightInCm ||
+               weightInKg != other.weightInKg
+    }
+
+    /**
+     * Get age category for goal calculation adjustments.
+     * 
+     * @return Age category string based on WHO guidelines
+     */
+    fun getAgeCategory(): String {
+        val age = getAge()
+        return when {
+            age < 18 -> "Youth"
+            age in 18..64 -> "Adult"
+            age >= 65 -> "Older Adult"
+            else -> "Unknown"
+        }
+    }
+
+    /**
+     * Convert UserProfile to GoalCalculationInput for goal calculations.
+     * 
+     * This method handles the conversion from the user's profile data
+     * to the format required by goal calculation algorithms, including
+     * age calculation from birthday and validation of input ranges.
+     * 
+     * @return GoalCalculationInput if profile data is valid, null otherwise
+     */
+    fun toGoalCalculationInput(): com.vibehealth.android.domain.goals.GoalCalculationInput? {
+        // Validate that required profile data is present
+        if (!isValidForGoalCalculation()) {
+            return null
+        }
+        
+        // Calculate age from birthday
+        val age = getAge()
+        
+        return com.vibehealth.android.domain.goals.GoalCalculationInput(
+            age = age,
+            gender = gender,
+            heightInCm = heightInCm,
+            weightInKg = weightInKg,
+            // Default to LIGHT activity level for urban professionals
+            activityLevel = com.vibehealth.android.domain.goals.ActivityLevel.DEFAULT_FOR_URBAN_PROFESSIONALS
+        )
+    }
+
 
 
     /**

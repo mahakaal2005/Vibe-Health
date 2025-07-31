@@ -8,7 +8,7 @@
     <color name="soft_coral">#FF6B6B</color>
     
     <!-- Supporting Colors -->
-    <color name="background_light">#f5f1eb</color>
+    <color name="background_light">#f6f2ec</color>
     <color name="background_dark">#121212</color>
     <color name="text_primary">#2C2C2C</color>
     <color name="text_secondary">#6B6B6B</color>
@@ -94,4 +94,18 @@
     <!-- Navigation Colors -->
     <color name="navigation_selected">@color/sage_green</color>
     <color name="navigation_unselected">@color/text_secondary</color>
+
+    <!-- Surface and outline colors -->
+    <color name="surface">#FFFFFF</color>
+    <color name="outline">#E0E0E0</color>
+    
+    <!-- Additional missing colors -->
+    <color name="primary_text">@color/text_primary</color>
+    <color name="secondary_text">@color/text_secondary</color>
+    <color name="tertiary_text">@color/text_secondary</color>
+    <color name="primary_color">@color/sage_green</color>
+    <color name="success_color">@color/success</color>
+    <color name="error_color">@color/error</color>
+    <color name="warning_color">@color/warning</color>
+    <color name="error_background">@color/error_light</color>
 </resources>

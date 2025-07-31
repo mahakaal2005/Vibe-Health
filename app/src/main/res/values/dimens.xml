@@ -39,6 +39,22 @@
     <dimen name="onboarding_padding_vertical">16dp</dimen>
     <dimen name="onboarding_margin_small">8dp</dimen>
     <dimen name="onboarding_margin_medium">24dp</dimen>
+
+    <!-- Card dimensions -->
+    <dimen name="card_elevation_default">4dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+
+    <!-- Icon sizes -->
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="icon_size_medium">24dp</dimen>
+    <dimen name="icon_size_large">32dp</dimen>
+    <dimen name="icon_size_xlarge">48dp</dimen>
+    
+    <!-- Additional spacing -->
+    <dimen name="spacing_xl">32dp</dimen>
+
+    <!-- Extra small spacing -->
+    <dimen name="spacing_xs">4dp</dimen>
     <dimen name="onboarding_title_text_size">28sp</dimen>
     <dimen name="onboarding_subtitle_text_size">16sp</dimen>
     <dimen name="progress_bar_height">4dp</dimen>

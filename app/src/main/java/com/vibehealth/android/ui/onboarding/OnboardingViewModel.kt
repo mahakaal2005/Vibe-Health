@@ -34,7 +34,8 @@ class OnboardingViewModel @Inject constructor(
     private val integrationManager: com.vibehealth.android.core.integration.OnboardingIntegrationManager,
     private val progressManager: com.vibehealth.android.core.persistence.OnboardingProgressManager,
     private val performanceOptimizer: com.vibehealth.android.core.performance.OnboardingPerformanceOptimizer,
-    private val autoSaveManager: com.vibehealth.android.core.autosave.OnboardingAutoSaveManager
+    private val autoSaveManager: com.vibehealth.android.core.autosave.OnboardingAutoSaveManager,
+    private val goalCalculationUseCase: com.vibehealth.android.domain.goals.GoalCalculationUseCase
 ) : ViewModel() {
 
     companion object {
@@ -76,8 +77,13 @@ class OnboardingViewModel @Inject constructor(
     private val _errorRecoveryEvent = MutableLiveData<ErrorRecoveryEvent>()
     val errorRecoveryEvent: LiveData<ErrorRecoveryEvent> = _errorRecoveryEvent
 
+    // Goal calculation state
+    private val _goalCalculationState = MutableLiveData<OnboardingGoalCalculationState>()
+    val goalCalculationState: LiveData<OnboardingGoalCalculationState> = _goalCalculationState
+
     // Debouncing for validation
     private var validationJob: Job? = null
+    private var goalCalculationJob: Job? = null
     private var retryAttempts = 0
 
     // State persistence for process death recovery
@@ -286,6 +292,10 @@ class OnboardingViewModel @Inject constructor(
                 when (integrationResult) {
                     is OnboardingResult.Success -> {
                         android.util.Log.d("OnboardingViewModel", "Onboarding completed successfully")
+                        
+                        // Trigger goal calculation after successful onboarding
+                        triggerInitialGoalCalculation(completedProfile.userId)
+                        
                         _onboardingState.value = OnboardingState.Completed
                         _currentStep.value = OnboardingStep.COMPLETION
                         _progressPercentage.value = 1.0f
@@ -487,9 +497,63 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Trigger initial goal calculation after onboarding completion.
+     * 
+     * @param userId User ID to calculate goals for
+     */
+    private fun triggerInitialGoalCalculation(userId: String) {
+        goalCalculationJob?.cancel()
+        goalCalculationJob = viewModelScope.launch {
+            try {
+                _goalCalculationState.value = OnboardingGoalCalculationState.Calculating(
+                    "Setting up your personalized wellness goals..."
+                )
+
+                val result = goalCalculationUseCase.calculateAndStoreGoals(userId)
+
+                when (result) {
+                    is com.vibehealth.android.domain.goals.GoalCalculationResult.Success -> {
+                        _goalCalculationState.value = OnboardingGoalCalculationState.Success(
+                            goals = result.goals,
+                            message = "Your personalized goals are ready!"
+                        )
+                        android.util.Log.d("OnboardingViewModel", "Goal calculation successful: ${result.goals}")
+                    }
+                    
+                    is com.vibehealth.android.domain.goals.GoalCalculationResult.Error -> {
+                        _goalCalculationState.value = OnboardingGoalCalculationState.Failed(
+                            message = "We'll set up your goals shortly. You can continue to your dashboard.",
+                            canRetry = true
+                        )
+                        android.util.Log.w("OnboardingViewModel", "Goal calculation failed: ${result.message}")
+                    }
+                }
+
+            } catch (e: Exception) {
+                _goalCalculationState.value = OnboardingGoalCalculationState.Failed(
+                    message = "We'll set up your goals shortly. You can continue to your dashboard.",
+                    canRetry = true
+                )
+                android.util.Log.e("OnboardingViewModel", "Goal calculation error", e)
+            }
+        }
+    }
+
+    /**
+     * Retry goal calculation if it failed during onboarding.
+     */
+    fun retryGoalCalculation() {
+        val profile = _userProfile.value
+        if (profile != null && profile.hasCompletedOnboarding) {
+            triggerInitialGoalCalculation(profile.userId)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         validationJob?.cancel()
+        goalCalculationJob?.cancel()
         validationHelper.clearCache()
         autoSaveManager.cleanup()
     }
@@ -506,3 +570,16 @@ data class OnboardingSavedState(
     val unitSystem: UnitSystem,
     val validationErrors: ValidationErrors
 )
+
+/**
+ * State of goal calculation during onboarding.
+ */
+sealed class OnboardingGoalCalculationState {
+    object NotStarted : OnboardingGoalCalculationState()
+    data class Calculating(val message: String) : OnboardingGoalCalculationState()
+    data class Success(
+        val goals: com.vibehealth.android.domain.goals.DailyGoals,
+        val message: String
+    ) : OnboardingGoalCalculationState()
+    data class Failed(val message: String, val canRetry: Boolean) : OnboardingGoalCalculationState()
+}

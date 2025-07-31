@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Section Header -->
+    <LinearLayout
+        android:id="@+id/layoutSectionHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_medium">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_medium"
+            android:layout_height="@dimen/icon_size_medium"
+            android:layout_marginEnd="@dimen/spacing_medium"
+            android:contentDescription="@string/goals_icon"
+            android:src="@drawable/ic_goals"
+            app:tint="?attr/colorPrimary" />
+
+        <TextView
+            android:id="@+id/textSectionTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/daily_wellness_goals"
+            android:textAppearance="@style/TextAppearance.VibeHealth.Headline6"
+            android:textColor="?attr/colorOnSurface" />
+
+        <ImageView
+            android:id="@+id/indicatorStatus"
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_height="@dimen/icon_size_small"
+            android:layout_marginEnd="@dimen/spacing_small"
+            android:contentDescription="@string/goal_status_indicator"
+            android:src="@drawable/ic_check_circle"
+            app:tint="?attr/colorPrimary" />
+
+        <ImageView
+            android:id="@+id/iconExpand"
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_height="@dimen/icon_size_small"
+            android:contentDescription="@string/expand_collapse"
+            android:src="@drawable/ic_expand_more"
+            app:tint="?attr/colorOnSurfaceVariant" />
+
+    </LinearLayout>
+
+    <!-- Goals Content -->
+    <LinearLayout
+        android:id="@+id/layoutGoalsContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <!-- Loading Indicator -->
+        <ProgressBar
+            android:id="@+id/progressCalculation"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_medium"
+            android:indeterminate="true"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <!-- Goal Values -->
+        <LinearLayout
+            android:id="@+id/layoutGoalValues"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_medium"
+            android:paddingVertical="@dimen/spacing_small">
+
+            <!-- Steps Goal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="@dimen/spacing_small">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:layout_marginEnd="@dimen/spacing_medium"
+                    android:contentDescription="@string/steps_icon"
+                    android:src="@drawable/ic_steps"
+                    app:tint="?attr/colorPrimary" />
+
+                <TextView
+                    android:id="@+id/textStepsLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/steps"
+                    android:textAppearance="@style/TextAppearance.VibeHealth.Body2"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                <TextView
+                    android:id="@+id/textStepsValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.VibeHealth.Subtitle1"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="10,000 steps" />
+
+            </LinearLayout>
+
+            <!-- Calories Goal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="@dimen/spacing_small">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:layout_marginEnd="@dimen/spacing_medium"
+                    android:contentDescription="@string/calories_icon"
+                    android:src="@drawable/ic_calories"
+                    app:tint="?attr/colorSecondary" />
+
+                <TextView
+                    android:id="@+id/textCaloriesLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/calories"
+                    android:textAppearance="@style/TextAppearance.VibeHealth.Body2"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                <TextView
+                    android:id="@+id/textCaloriesValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.VibeHealth.Subtitle1"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="2,000 calories" />
+
+            </LinearLayout>
+
+            <!-- Heart Points Goal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="@dimen/spacing_small">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:layout_marginEnd="@dimen/spacing_medium"
+                    android:contentDescription="@string/heart_points_icon"
+                    android:src="@drawable/ic_heart_points"
+                    app:tint="?attr/colorTertiary" />
+
+                <TextView
+                    android:id="@+id/textHeartPointsLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/heart_points"
+                    android:textAppearance="@style/TextAppearance.VibeHealth.Body2"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                <TextView
+                    android:id="@+id/textHeartPointsValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.VibeHealth.Subtitle1"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="30 heart points" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Goal Details (Expandable) -->
+        <LinearLayout
+            android:id="@+id/layoutGoalDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_medium"
+            android:paddingBottom="@dimen/spacing_medium"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="@dimen/spacing_small"
+                android:background="?attr/colorOutlineVariant" />
+
+            <!-- Source Information -->
+            <LinearLayout
+                android:id="@+id/layoutSourceInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_small"
+                        android:layout_height="@dimen/icon_size_small"
+                        android:layout_marginEnd="@dimen/spacing_small"
+                        android:contentDescription="@string/calculation_source_icon"
+                        android:src="@drawable/ic_who_logo"
+                        app:tint="?attr/colorPrimary" />
+
+                    <TextView
+                        android:id="@+id/textCalculationSource"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                        android:textColor="?attr/colorPrimary"
+                        tools:text="WHO Standards" />
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_small"
+                        android:layout_height="@dimen/icon_size_small"
+                        android:contentDescription="@string/learn_more"
+                        android:src="@drawable/ic_info"
+                        app:tint="?attr/colorOnSurfaceVariant" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textLastCalculated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:layout_marginStart="@dimen/spacing_large"
+                    android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    tools:text="Last calculated today at 2:30 PM" />
+
+            </LinearLayout>
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonLearnMore"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_small"
+                    android:text="@string/learn_more"
+                    app:icon="@drawable/ic_info" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonRecalculate"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recalculate"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_refresh"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/layoutEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_large"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iconEmptyState"
+            android:layout_width="@dimen/icon_size_xlarge"
+            android:layout_height="@dimen/icon_size_xlarge"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:contentDescription="@string/no_goals_icon"
+            android:src="@drawable/ic_goals_empty"
+            app:tint="?attr/colorOnSurfaceVariant" />
+
+        <TextView
+            android:id="@+id/textEmptyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_small"
+            android:textAppearance="@style/TextAppearance.VibeHealth.Subtitle1"
+            android:textColor="?attr/colorOnSurface"
+            tools:text="No Goals Calculated" />
+
+        <TextView
+            android:id="@+id/textEmptyDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.VibeHealth.Body2"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            tools:text="Complete your profile information to get personalized wellness goals based on WHO standards." />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonCalculateGoals"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/calculate_my_goals"
+            app:icon="@drawable/ic_calculate" />
+
+    </LinearLayout>
+
+</LinearLayout>

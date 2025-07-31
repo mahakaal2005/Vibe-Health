@@ -2,10 +2,10 @@
 <resources>
     <!-- Vibe Health Design System Colors - Dark Mode -->
     
-    <!-- Primary Colors (Dark Mode Adapted) -->
-    <color name="sage_green">#81C784</color>
-    <color name="warm_gray_green">#A5D6A7</color>
-    <color name="soft_coral">#FF8A80</color>
+    <!-- Primary Colors (Dark Mode UI/UX Specification) -->
+    <color name="sage_green">#8BA88B</color>
+    <color name="warm_gray_green">#9AA49A</color>
+    <color name="soft_coral">#D5A48B</color>
     
     <!-- Supporting Colors - Dark Mode -->
     <color name="background_light">#0F0E0D</color>
@@ -46,10 +46,10 @@
     <color name="wellness_teal_dark">#26A69A</color>
     <color name="wellness_teal_light">#B2DFDB</color>
     
-    <!-- Progress Ring Colors - Dark Mode -->
-    <color name="progress_ring_move">#81C784</color>
-    <color name="progress_ring_exercise">#FFB74D</color>
-    <color name="progress_ring_stand">#64B5F6</color>
+    <!-- Progress Ring Colors - Dark Mode (UI/UX Specification) -->
+    <color name="progress_ring_steps">#8BA88B</color>
+    <color name="progress_ring_calories">#9AA49A</color>
+    <color name="progress_ring_heart_points">#D5A48B</color>
     
     <!-- Achievement Colors - Dark Mode -->
     <color name="achievement_gold">#FFD54F</color>

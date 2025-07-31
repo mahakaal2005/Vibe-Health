@@ -2,10 +2,10 @@
 <resources>
     <!-- Vibe Health Design System Colors -->
     
-    <!-- Primary Colors (Enhanced) -->
-    <color name="sage_green">#4CAF50</color>
-    <color name="warm_gray_green">#66BB6A</color>
-    <color name="soft_coral">#FF6B6B</color>
+    <!-- Primary Colors (UI/UX Specification) -->
+    <color name="sage_green">#6B8E6B</color>
+    <color name="warm_gray_green">#7A8471</color>
+    <color name="soft_coral">#B5846B</color>
     
     <!-- Supporting Colors -->
     <color name="background_light">#f6f2ec</color>
@@ -46,10 +46,10 @@
     <color name="wellness_teal_dark">#00695C</color>
     <color name="wellness_teal_light">#80CBC4</color>
     
-    <!-- Progress Ring Colors -->
-    <color name="progress_ring_move">#4CAF50</color>
-    <color name="progress_ring_exercise">#FF9800</color>
-    <color name="progress_ring_stand">#42A5F5</color>
+    <!-- Progress Ring Colors (UI/UX Specification) -->
+    <color name="progress_ring_steps">#6B8E6B</color>
+    <color name="progress_ring_calories">#7A8471</color>
+    <color name="progress_ring_heart_points">#B5846B</color>
     
     <!-- Achievement Colors -->
     <color name="achievement_gold">#FFD700</color>

@@ -203,4 +203,14 @@
     <string name="needs_update">Needs update</string>
     <string name="profile_goals_accessibility_description">Profile goals section</string>
     <string name="goal_source_info_description">Goal source information</string>
+    
+    <!-- Dashboard strings -->
+    <string name="triple_ring_progress_description">Daily wellness progress rings showing steps, calories, and heart points</string>
+    <string name="goals_calculated_who_standards">Goals calculated based on WHO standards</string>
+    <string name="error_icon_description">Error icon</string>
+    <string name="setup_goals_icon_description">Setup goals icon</string>
+    <string name="complete_profile_setup">Complete Profile Setup</string>
+    <string name="complete_profile_to_see_goals">Complete your profile to see personalized wellness goals</string>
+    <string name="complete_setup">Complete Setup</string>
+    <string name="refresh_data">Refresh data</string>
 </resources>

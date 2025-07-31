@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/spacing_large"
+    android:background="@color/background_light"
+    tools:context=".ui.dashboard.DashboardActivity">
+
+    <!-- Date and greeting section -->
+    <TextView
+        android:id="@+id/dateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:textAppearance="@style/TextAppearance.VibeHealth.Headline6"
+        android:textColor="@color/text_primary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Today, January 31" />
+
+    <TextView
+        android:id="@+id/greetingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:textAppearance="@style/TextAppearance.VibeHealth.Body1"
+        android:textColor="@color/text_secondary"
+        app:layout_constraintTop_toBottomOf="@id/dateText"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Your wellness journey continues" />
+
+    <!-- Loading state -->
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/tripleRingView"
+        app:layout_constraintBottom_toBottomOf="@id/tripleRingView"
+        app:layout_constraintStart_toStartOf="@id/tripleRingView"
+        app:layout_constraintEnd_toEndOf="@id/tripleRingView"
+        tools:visibility="visible" />
+
+    <!-- Triple ring centerpiece -->
+    <com.vibehealth.android.ui.components.TripleRingView
+        android:id="@+id/tripleRingView"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_marginTop="@dimen/spacing_extra_large"
+        android:contentDescription="@string/triple_ring_progress_description"
+        app:layout_constraintTop_toBottomOf="@id/greetingText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Goal source information -->
+    <TextView
+        android:id="@+id/goalSourceText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:text="@string/goals_calculated_who_standards"
+        android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/tripleRingView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Progress summary cards container -->
+    <LinearLayout
+        android:id="@+id/progressSummaryContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/spacing_large"
+        android:weightSum="3"
+        app:layout_constraintTop_toBottomOf="@id/goalSourceText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Steps summary card -->
+        <include
+            android:id="@+id/stepsCard"
+            layout="@layout/component_progress_summary_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/spacing_small" />
+
+        <!-- Calories summary card -->
+        <include
+            android:id="@+id/caloriesCard"
+            layout="@layout/component_progress_summary_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_small"
+            android:layout_marginEnd="@dimen/spacing_small" />
+
+        <!-- Heart Points summary card -->
+        <include
+            android:id="@+id/heartPointsCard"
+            layout="@layout/component_progress_summary_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_small" />
+
+    </LinearLayout>
+
+    <!-- Error state -->
+    <LinearLayout
+        android:id="@+id/errorStateContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_large"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/tripleRingView"
+        app:layout_constraintBottom_toBottomOf="@id/tripleRingView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/errorIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_error_outline"
+            android:contentDescription="@string/error_icon_description"
+            app:tint="@color/text_secondary" />
+
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:textAppearance="@style/TextAppearance.VibeHealth.Body1"
+            android:textColor="@color/text_primary"
+            android:gravity="center"
+            tools:text="Unable to load your wellness data" />
+
+        <Button
+            android:id="@+id/retryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/retry"
+            style="@style/Widget.VibeHealth.Button.Outlined" />
+
+    </LinearLayout>
+
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/emptyStateContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_large"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/tripleRingView"
+        app:layout_constraintBottom_toBottomOf="@id/tripleRingView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/emptyIcon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_goal_calculation"
+            android:contentDescription="@string/setup_goals_icon_description"
+            app:tint="@color/sage_green" />
+
+        <TextView
+            android:id="@+id/emptyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/complete_profile_setup"
+            android:textAppearance="@style/TextAppearance.VibeHealth.Headline6"
+            android:textColor="@color/text_primary"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/emptyMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:text="@string/complete_profile_to_see_goals"
+            android:textAppearance="@style/TextAppearance.VibeHealth.Body2"
+            android:textColor="@color/text_secondary"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/setupButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/complete_setup"
+            style="@style/Widget.VibeHealth.Button" />
+
+    </LinearLayout>
+
+    <!-- Floating Action Button for refresh -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/refreshFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:src="@drawable/ic_refresh"
+        android:contentDescription="@string/refresh_data"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:backgroundTint="@color/sage_green"
+        app:tint="@android:color/white" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

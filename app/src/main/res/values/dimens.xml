@@ -52,6 +52,7 @@
     
     <!-- Additional spacing -->
     <dimen name="spacing_xl">32dp</dimen>
+    <dimen name="spacing_extra_large">48dp</dimen>
 
     <!-- Extra small spacing -->
     <dimen name="spacing_xs">4dp</dimen>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_small"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation_default"
+    app:cardBackgroundColor="@color/surface"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:contentDescription="@string/goal_card_accessibility_description">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_medium">
+
+        <!-- Ring type icon and label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/spacing_small">
+
+            <ImageView
+                android:id="@+id/ringTypeIcon"
+                android:layout_width="@dimen/icon_size_medium"
+                android:layout_height="@dimen/icon_size_medium"
+                android:layout_marginEnd="@dimen/spacing_small"
+                android:contentDescription="@string/steps_icon"
+                app:tint="@color/sage_green"
+                tools:src="@drawable/ic_directions_walk" />
+
+            <TextView
+                android:id="@+id/ringTypeLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                android:textColor="@color/text_secondary"
+                android:textAllCaps="true"
+                tools:text="STEPS" />
+
+            <!-- Progress percentage -->
+            <TextView
+                android:id="@+id/progressPercentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                android:textColor="@color/sage_green"
+                android:textStyle="bold"
+                tools:text="75%" />
+
+        </LinearLayout>
+
+        <!-- Current value -->
+        <TextView
+            android:id="@+id/currentValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.VibeHealth.Headline5"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            tools:text="7,500" />
+
+        <!-- Target value and unit -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/targetLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="of"
+                android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                android:textColor="@color/text_secondary"
+                android:layout_marginEnd="@dimen/spacing_xs" />
+
+            <TextView
+                android:id="@+id/targetValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.VibeHealth.Body2"
+                android:textColor="@color/text_secondary"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                tools:text="10,000" />
+
+            <TextView
+                android:id="@+id/unitLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                android:textColor="@color/text_secondary"
+                tools:text="steps" />
+
+        </LinearLayout>
+
+        <!-- Progress bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/progress_bar_height"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:progressTint="@color/sage_green"
+            android:progressBackgroundTint="@color/outline"
+            android:max="100"
+            tools:progress="75" />
+
+        <!-- Goal achievement indicator -->
+        <LinearLayout
+            android:id="@+id/achievementIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/achievementIcon"
+                android:layout_width="@dimen/icon_size_small"
+                android:layout_height="@dimen/icon_size_small"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:src="@drawable/ic_check_circle"
+                android:contentDescription="@string/goals_valid"
+                app:tint="@color/success_color" />
+
+            <TextView
+                android:id="@+id/achievementText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Goal achieved!"
+                android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                android:textColor="@color/success_color"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Loading state -->
+        <LinearLayout
+            android:id="@+id/loadingState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/loadingIndicator"
+                android:layout_width="@dimen/icon_size_small"
+                android:layout_height="@dimen/icon_size_small"
+                android:layout_marginEnd="@dimen/spacing_small"
+                android:indeterminateTint="@color/sage_green" />
+
+            <TextView
+                android:id="@+id/loadingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/calculating"
+                android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                android:textColor="@color/text_secondary" />
+
+        </LinearLayout>
+
+        <!-- Error state -->
+        <LinearLayout
+            android:id="@+id/errorState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/errorIcon"
+                android:layout_width="@dimen/icon_size_small"
+                android:layout_height="@dimen/icon_size_small"
+                android:layout_marginEnd="@dimen/spacing_small"
+                android:src="@drawable/ic_error_outline"
+                android:contentDescription="@string/error_icon"
+                app:tint="@color/error_color" />
+
+            <TextView
+                android:id="@+id/errorText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/goals_unavailable"
+                android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
+                android:textColor="@color/error_color" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

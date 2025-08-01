@@ -81,6 +81,8 @@ data class DailyGoals(
  */
 enum class SyncStatus {
     SYNCED,
+    NEEDS_SYNC,
+    SYNCING,
     PENDING_SYNC,
     SYNC_FAILED,
     OFFLINE

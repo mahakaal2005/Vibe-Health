@@ -1,64 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Vibe Health Design System - 8-Point Grid System -->
-    
-    <!-- Base spacing unit -->
-    <dimen name="spacing_base">8dp</dimen>
-    
-    <!-- Spacing scale - Standard Android phone optimized -->
-    <dimen name="spacing_micro">4dp</dimen>
-    <dimen name="spacing_small">8dp</dimen>
-    <dimen name="spacing_medium">16dp</dimen>
-    <dimen name="spacing_large">24dp</dimen>
-    <dimen name="spacing_xlarge">32dp</dimen>
-    <dimen name="spacing_xxlarge">40dp</dimen>
-    
-    <!-- Component dimensions - Standard Android phone -->
-    <dimen name="button_height">48dp</dimen>
-    <dimen name="input_field_height">56dp</dimen>
+    <!-- Corner radius dimensions -->
+    <dimen name="corner_radius_4dp">4dp</dimen>
+    <dimen name="corner_radius_8dp">8dp</dimen>
+    <dimen name="corner_radius_12dp">12dp</dimen>
+    <dimen name="corner_radius_16dp">16dp</dimen>
     <dimen name="corner_radius">8dp</dimen>
-    <dimen name="touch_target_min">48dp</dimen>
-    
-    <!-- Progress indicators -->
-    <dimen name="progress_small">20dp</dimen>
-    <dimen name="progress_medium">24dp</dimen>
-    <dimen name="progress_large">32dp</dimen>
-    
-    <!-- Logo and branding -->
-    <dimen name="logo_splash_size">120dp</dimen>
-    <dimen name="logo_auth_size">80dp</dimen>
-
-    <!-- Status Bar -->
-    <dimen name="status_bar_height">24dp</dimen>
-    
-    <!-- Onboarding specific dimensions -->
-    <dimen name="onboarding_illustration_size">120dp</dimen>
-    <dimen name="onboarding_illustration_compact">100dp</dimen>
-    <dimen name="onboarding_checkmark_size">64dp</dimen>
-    <dimen name="onboarding_padding_horizontal">24dp</dimen>
-    <dimen name="onboarding_padding_vertical">16dp</dimen>
-    <dimen name="onboarding_margin_small">8dp</dimen>
-    <dimen name="onboarding_margin_medium">24dp</dimen>
-
-    <!-- Card dimensions -->
-    <dimen name="card_elevation_default">4dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
-
+    
+    <!-- Progress dimensions -->
+    <dimen name="progress_bar_height">8dp</dimen>
+    <dimen name="progress_small">24dp</dimen>
+    <dimen name="progress_medium">32dp</dimen>
+    <dimen name="progress_large">48dp</dimen>
+    <dimen name="progress_graph_height">120dp</dimen>
+    
+    <!-- Spacing dimensions -->
+    <dimen name="spacing_micro">2dp</dimen>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_8dp">8dp</dimen>
+    <dimen name="spacing_12dp">12dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_16dp">16dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+    <dimen name="spacing_24dp">24dp</dimen>
+    <dimen name="spacing_32dp">32dp</dimen>
+    <dimen name="spacing_xl">40dp</dimen>
+    <dimen name="spacing_xlarge">36dp</dimen>
+    <dimen name="spacing_extra_large">48dp</dimen>
+    <dimen name="spacing_xxlarge">64dp</dimen>
+    
     <!-- Icon sizes -->
     <dimen name="icon_size_small">16dp</dimen>
-    <dimen name="icon_size_medium">24dp</dimen>
-    <dimen name="icon_size_large">32dp</dimen>
-    <dimen name="icon_size_xlarge">48dp</dimen>
+    <dimen name="icon_size_medium">20dp</dimen>
+    <dimen name="icon_size_large">24dp</dimen>
+    <dimen name="icon_size_extra_large">32dp</dimen>
+    <dimen name="icon_size_xlarge">40dp</dimen>
     
-    <!-- Additional spacing -->
-    <dimen name="spacing_xl">32dp</dimen>
-    <dimen name="spacing_extra_large">48dp</dimen>
-
-    <!-- Extra small spacing -->
-    <dimen name="spacing_xs">4dp</dimen>
-    <dimen name="onboarding_title_text_size">28sp</dimen>
-    <dimen name="onboarding_subtitle_text_size">16sp</dimen>
-    <dimen name="progress_bar_height">4dp</dimen>
+    <!-- Elevation dimensions -->
+    <dimen name="elevation_1dp">1dp</dimen>
+    <dimen name="elevation_2dp">2dp</dimen>
+    <dimen name="card_elevation_default">2dp</dimen>
+    
+    <!-- Touch target dimensions -->
+    <dimen name="touch_target_min">48dp</dimen>
+    
+    <!-- Button dimensions -->
+    <dimen name="button_height">48dp</dimen>
+    <dimen name="input_field_height">56dp</dimen>
+    
+    <!-- Gender option dimensions -->
+    <dimen name="gender_option_spacing">16dp</dimen>
+    
+    <!-- Unit toggle dimensions -->
     <dimen name="unit_toggle_height">40dp</dimen>
-    <dimen name="gender_option_spacing">12dp</dimen>
+    
+    <!-- Logo dimensions -->
+    <dimen name="logo_splash_size">120dp</dimen>
+    <dimen name="logo_auth_size">80dp</dimen>
+    
+    <!-- Onboarding dimensions -->
+    <dimen name="onboarding_checkmark_size">48dp</dimen>
 </resources>

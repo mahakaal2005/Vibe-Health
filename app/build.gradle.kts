@@ -131,6 +131,10 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.1.0")
     kapt("androidx.hilt:hilt-compiler:1.1.0")
     
+    // OkHttp for networking
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.junit5.api)

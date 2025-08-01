@@ -1,6 +1,7 @@
 package com.vibehealth.android.ui.components
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
@@ -78,11 +79,104 @@ class TripleRingView @JvmOverloads constructor(
     init {
         setupAccessibility()
         setupAnimationManager()
+        setupProgressNavigation()
         
         // Set default ring data for preview
         if (isInEditMode) {
             setPreviewData()
         }
+    }
+    
+    /**
+     * Sets up navigation to progress history view with supportive feedback
+     */
+    private fun setupProgressNavigation() {
+        // Make the view clickable for navigation
+        isClickable = true
+        isFocusable = true
+        
+        // Add click listener for navigation to progress history
+        setOnClickListener {
+            navigateToProgressHistory()
+        }
+        
+        // Add supportive hover effects for accessibility
+        setOnHoverListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_HOVER_ENTER -> {
+                    animateSupportiveHover(true)
+                    announceForAccessibility("Tap to explore your detailed wellness progress")
+                    true
+                }
+                android.view.MotionEvent.ACTION_HOVER_EXIT -> {
+                    animateSupportiveHover(false)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+    
+    /**
+     * Navigates to progress history with supportive context
+     */
+    private fun navigateToProgressHistory() {
+        // Provide immediate supportive feedback
+        animateSupportivePress()
+        
+        // Create intent with encouraging context
+        val intent = com.vibehealth.android.ui.progress.BasicProgressActivity.createIntent(
+            context,
+            supportiveMessage = "Let's explore your wellness journey together!",
+            celebrationContext = "We're excited to show you how far you've come on your wellness journey!"
+        )
+        
+        // Start activity with supportive transition
+        context.startActivity(intent)
+        
+        // Add supportive transition animation if context is an Activity
+        (context as? android.app.Activity)?.overridePendingTransition(
+            com.vibehealth.android.R.anim.supportive_slide_in,
+            com.vibehealth.android.R.anim.gentle_fade_out
+        )
+        
+        // Announce navigation for accessibility
+        announceForAccessibility("Opening your detailed wellness progress view")
+    }
+    
+    /**
+     * Animates supportive press feedback
+     */
+    fun animateSupportivePress() {
+        // Gentle press animation that feels encouraging
+        animate()
+            .scaleX(0.95f)
+            .scaleY(0.95f)
+            .setDuration(100L)
+            .withEndAction {
+                animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(100L)
+                    .start()
+            }
+            .start()
+    }
+    
+    /**
+     * Animates supportive hover effect
+     */
+    private fun animateSupportiveHover(isHovered: Boolean) {
+        val targetScale = if (isHovered) 1.02f else 1f
+        val targetElevation = if (isHovered) 8f else 0f
+        
+        animate()
+            .scaleX(targetScale)
+            .scaleY(targetScale)
+            .translationZ(targetElevation)
+            .setDuration(150L)
+            .setInterpolator(android.view.animation.DecelerateInterpolator())
+            .start()
     }
     
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -297,11 +391,11 @@ class TripleRingView @JvmOverloads constructor(
                 info.className = TripleRingView::class.java.name
                 info.contentDescription = accessibilityHelper.generateAccessibilityDescription()
                 
-                // Add custom action for detailed progress
+                // Add custom action for detailed progress navigation
                 info.addAction(
                     AccessibilityNodeInfo.AccessibilityAction(
                         AccessibilityNodeInfo.ACTION_CLICK,
-                        "View detailed progress"
+                        "Tap to explore your detailed wellness progress and celebrate your journey"
                     )
                 )
             }

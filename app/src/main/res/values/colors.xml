@@ -17,7 +17,6 @@
     <color name="warning">#FF9800</color>
     
     <!-- Dark Mode Colors -->
-    <color name="sage_green_dark">#388E3C</color>
     <color name="surface_dark">#1E1E1E</color>
     <color name="text_primary_dark">#FFFFFF</color>
     <color name="text_secondary_dark">#B3B3B3</color>
@@ -108,4 +107,36 @@
     <color name="error_color">@color/error</color>
     <color name="warning_color">@color/warning</color>
     <color name="error_background">@color/error_light</color>
+    
+    <!-- Progress History Colors (Companion Principle) -->
+    <color name="sage_green_primary">#6B8E6B</color>
+    <color name="sage_green_light">#E8F5E8</color>
+    <color name="sage_green_dark">#5A7A5A</color>
+    <color name="warm_gray_green_primary">#7A8471</color>
+    <color name="warm_gray_green_light">#F0F2F0</color>
+    <color name="soft_coral_primary">#B5846B</color>
+    <color name="soft_coral_light">#F5F0ED</color>
+    
+    <!-- Progress Surface Colors -->
+    <color name="surface_sage_neutral">#FAFBFA</color>
+    <color name="surface_variant_sage">#F5F7F5</color>
+    
+    <!-- Progress Graph Colors -->
+    <color name="progress_background">#FAFBFA</color>
+    <color name="graph_grid_lines">#E5E7E5</color>
+    <color name="supportive_text">#6B7B6B</color>
+    <color name="celebratory_accent">#D4A088</color>
+    
+    <!-- Dark Mode Progress Colors -->
+    <color name="sage_green_primary_dark">#8FAF8F</color>
+    <color name="warm_gray_green_dark">#9AA89A</color>
+    <color name="soft_coral_dark">#D4A088</color>
+    <color name="progress_background_dark">#1A1C1A</color>
+    <color name="graph_grid_lines_dark">#2A2D2A</color>
+    <color name="supportive_text_dark">#B0C0B0</color>
+    <color name="celebratory_accent_dark">#E8B898</color>
+    
+    <!-- Accessibility Colors -->
+    <color name="sage_green_light_alpha">#1A6B8E6B</color>
+    
 </resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    
+    <!-- Sage green focus outline for accessibility -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/sage_green_primary" />
+    
+    <!-- Subtle background tint for better visibility -->
+    <solid android:color="@color/sage_green_light_alpha" />
+    
+    <!-- Rounded corners for modern feel -->
+    <corners android:radius="@dimen/corner_radius_4dp" />
+    
+</shape>

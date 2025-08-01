@@ -222,4 +222,45 @@
     <string name="needs_update">Needs update</string>
     <string name="profile_goals_accessibility_description">Profile goals section</string>
     
+    <!-- Progress History Strings with Companion Principle -->
+    <string name="your_wellness_journey">Your Wellness Journey</string>
+    <string name="progress_encouraging_context">Let\'s explore your wellness progress together!</string>
+    <string name="progress_loading_encouraging_message">Preparing your wellness journey insights... We\'re excited to show you your progress!</string>
+    <string name="progress_error_supportive_message">We\'re having trouble loading your progress right now. Your wellness journey is important to us - let\'s try again in a moment.</string>
+    <string name="progress_empty_state_encouraging_message">Your wellness journey is just beginning!</string>
+    <string name="progress_empty_state_supportive_guidance">Every step counts, and we\'re here to celebrate your progress. Start tracking your daily activities to see your progress here.</string>
+    <string name="progress_offline_supportive_message">You can still view your progress while offline. We\'ll sync everything when you\'re connected again.</string>
+    <string name="try_again_supportive">Let\'s Try Again</string>
+    
+    <!-- Progress Metrics -->
+    <string name="steps_progress_title">Steps Progress</string>
+    <string name="calories_progress_title">Calories Burned</string>
+    <string name="heart_points_progress_title">Heart Points Earned</string>
+    <string name="steps_metric">Steps</string>
+    <string name="calories_metric">Calories</string>
+    <string name="heart_points_metric">Heart Points</string>
+    
+    <!-- Supportive Messages -->
+    <string name="steps_supportive_message">Every step moves you toward better health!</string>
+    <string name="calories_supportive_message">Your energy and effort are making a difference!</string>
+    <string name="heart_points_supportive_message">Your cardiovascular health journey is important!</string>
+    <string name="progress_supportive_insights">Your commitment to wellness is inspiring!</string>
+    <string name="wellness_insights">Wellness Insights</string>
+    
+    <!-- Accessibility for Progress -->
+    <string name="accessibility_steps_progress_description">Steps progress for this week. Your movement is contributing to your overall wellness journey. Tap to explore daily step details.</string>
+    <string name="accessibility_calories_progress_description">Calories burned this week. Your energy expenditure shows great commitment to your health. Tap to see daily calorie details.</string>
+    <string name="accessibility_heart_points_progress_description">Heart points earned this week. Your cardiovascular activity is strengthening your heart. Tap to view daily heart point details.</string>
+    <string name="progress_error_accessibility_announcement">We encountered an issue loading your progress: %1$s. Your wellness data is safe and we\'re working to resolve this.</string>
+    
+    <!-- Progress States -->
+    <string name="offline_mode">Offline Mode</string>
+    <string name="error_occurred">Error Occurred</string>
+    <string name="start_wellness_journey">Start Wellness Journey</string>
+    
+    <!-- Progress Graph Height -->
+    <string name="progress_graph_height">120dp</string>
+    
+
+    
 </resources>

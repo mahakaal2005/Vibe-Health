@@ -1,6 +1,7 @@
 package com.vibehealth.android.di
 
 import android.content.Context
+import androidx.room.Room
 import com.vibehealth.android.core.security.EncryptionHelper
 import com.vibehealth.android.data.user.UserProfileRepository
 import com.vibehealth.android.data.user.local.AppDatabase
@@ -58,6 +59,18 @@ abstract class DatabaseModule {
         @Singleton
         fun provideUserProfileService(): UserProfileService {
             return UserProfileService()
+        }
+
+        @Provides
+        @Singleton
+        fun provideProgressDatabase(
+            @ApplicationContext context: Context
+        ): com.vibehealth.android.data.progress.ProgressDatabase {
+            return androidx.room.Room.databaseBuilder(
+                context,
+                com.vibehealth.android.data.progress.ProgressDatabase::class.java,
+                "progress_database"
+            ).build()
         }
     }
 }

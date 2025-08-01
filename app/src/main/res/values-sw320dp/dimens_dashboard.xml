@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ultra-compact dimensions for small screens (320dp+) -->
+    
+    <!-- Compact positioning for small screens -->
+    <dimen name="ring_to_cards_gap">16dp</dimen>
+    <dimen name="ring_bottom_margin">0dp</dimen>
+    <dimen name="enhanced_card_height">70dp</dimen>
+    <dimen name="card_internal_padding">8dp</dimen>
+    <dimen name="card_spacing">6dp</dimen>
+    
+    <!-- Smaller ring for small screens -->
+    <dimen name="ring_container_size">200dp</dimen>
+    
+    <!-- Compact typography for small screens -->
+    <dimen name="card_title_text_size">9sp</dimen>
+    <dimen name="card_number_text_size">14sp</dimen>
+    <dimen name="card_unit_text_size">8sp</dimen>
+    <dimen name="card_percentage_text_size">9sp</dimen>
+    <dimen name="motivational_quote_text_size">12sp</dimen>
+    <dimen name="greeting_text_size">12sp</dimen>
+    <dimen name="date_text_size">16sp</dimen>
+    
+    <!-- Compact icons for small screens -->
+    <dimen name="card_icon_size">14dp</dimen>
+    
+</resources>

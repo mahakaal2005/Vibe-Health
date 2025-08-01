@@ -52,6 +52,13 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var foreignKeyDebugger: com.vibehealth.android.debug.ForeignKeyDebugger
     
+    // Enhanced animation management
+    private lateinit var animationManager: com.vibehealth.android.ui.dashboard.DashboardAnimationManager
+    private lateinit var accessibilityManager: com.vibehealth.android.ui.accessibility.EnhancedAccessibilityManager
+    private var isInitialized = false
+    
+    // Motivational quotes removed for clean ring design
+    
     // Progress summary cards - we'll access them through the binding
     
     override fun onCreateView(
@@ -66,14 +73,26 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        // Initialize managers
+        animationManager = com.vibehealth.android.ui.dashboard.DashboardAnimationManager()
+        accessibilityManager = com.vibehealth.android.ui.accessibility.EnhancedAccessibilityManager(requireContext())
+        
+        // Add animation manager to lifecycle
+        lifecycle.addObserver(animationManager)
+        
         setupUI()
         setupObservers()
         
-        // Initialize dashboard with proper goal injection if needed
-        initializeDashboard()
-        
-        // Start dashboard data updates
-        dashboardViewModel.startDashboardUpdates()
+        // Only initialize once to prevent double animations
+        if (!isInitialized) {
+            isInitialized = true
+            
+            // Initialize dashboard with proper goal injection if needed
+            initializeDashboard()
+            
+            // Start dashboard data updates
+            dashboardViewModel.startDashboardUpdates()
+        }
     }
     
     private fun setupUI() {
@@ -92,9 +111,38 @@ class HomeFragment : Fragment() {
         }
         binding.greetingText.text = greeting
         
-        // Setup refresh button
+        // Motivational quote removed for clean ring design
+        
+        // Setup enhanced refresh button with animations
         binding.refreshFab.setOnClickListener {
+            // Add rotation animation
+            binding.refreshFab.animate()
+                .rotationBy(360f)
+                .setDuration(500)
+                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .start()
+            
+            // Add bounce effect
+            binding.refreshFab.animate()
+                .scaleX(0.9f)
+                .scaleY(0.9f)
+                .setDuration(100)
+                .withEndAction {
+                    binding.refreshFab.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(100)
+                        .start()
+                }
+                .start()
+            
             dashboardViewModel.refreshDashboard()
+        }
+        
+        // Add tooltip functionality
+        binding.refreshFab.setOnLongClickListener {
+            android.widget.Toast.makeText(context, "Sync Data", android.widget.Toast.LENGTH_SHORT).show()
+            true
         }
         
         // Setup retry button
@@ -164,21 +212,66 @@ class HomeFragment : Fragment() {
         binding.emptyStateContainer.visibility = View.GONE
         binding.goalSourceText.visibility = View.VISIBLE
         
-        // Update triple ring view with complete data
+        // Update triple ring view with enhanced animations
         val ringData = state.progress.getAllProgress().map { progressData ->
             RingDisplayData.fromProgressData(progressData)
         }
-        binding.tripleRingView.updateProgress(ringData, true)
+        
+        // Use enhanced animation manager
+        if (animationManager.shouldAnimateEntrance()) {
+            // Initially show rings at 0% for fill-up animation
+            val zeroProgressData = ringData.map { it.copy(progress = 0f) }
+            binding.tripleRingView.updateProgress(zeroProgressData, false)
+            
+            // Animate ring entrance
+            animationManager.animateRingEntrance(binding.tripleRingView) {
+                // Start ring fill-up animation after entrance
+                animationManager.animateRingFillUp(binding.tripleRingView, ringData)
+            }
+        } else {
+            // Subsequent updates - just update without entrance animation
+            binding.tripleRingView.alpha = 1f
+            binding.tripleRingView.scaleX = 1f
+            binding.tripleRingView.scaleY = 1f
+            binding.tripleRingView.updateProgress(ringData, true) // Still animate progress changes
+        }
+        
+        // Enhance accessibility
+        val progressDataList = listOf(
+            state.progress.stepsProgress,
+            state.progress.caloriesProgress,
+            state.progress.heartPointsProgress
+        )
+        accessibilityManager.enhanceRingAccessibility(binding.tripleRingView, progressDataList)
         
         // Update goal source text
         state.goals?.let { goals ->
             binding.goalSourceText.text = goals.calculationSource.getDisplayName()
         }
         
-        // Update progress summary cards
-        updateProgressCard(binding.stepsCard, binding.stepsCardText, state.progress.stepsProgress, RingType.STEPS)
-        updateProgressCard(binding.caloriesCard, binding.caloriesCardText, state.progress.caloriesProgress, RingType.CALORIES)
-        updateProgressCard(binding.heartPointsCard, binding.heartPointsCardText, state.progress.heartPointsProgress, RingType.HEART_POINTS)
+        // Update progress summary cards with staggered entrance animation
+        val cards = listOf(
+            Triple(binding.stepsCard, binding.stepsText, state.progress.stepsProgress to RingType.STEPS),
+            Triple(binding.caloriesCard, binding.caloriesText, state.progress.caloriesProgress to RingType.CALORIES),
+            Triple(binding.heartPointsCard, binding.heartPointsText, state.progress.heartPointsProgress to RingType.HEART_POINTS)
+        )
+        
+        cards.forEachIndexed { index, (cardView, textView, progressPair) ->
+            val (progressData, ringType) = progressPair
+            updateProgressCard(cardView, textView, progressData, ringType)
+            
+            // Enhance card accessibility
+            val materialCardView = cardView as com.google.android.material.card.MaterialCardView
+            accessibilityManager.enhanceCardAccessibility(materialCardView, progressData, ringType)
+            
+            // Apply visual hierarchy based on progress
+            val isHighestProgress = isHighestProgressCard(progressData)
+            animationManager.animateCardEmphasis(materialCardView, isHighestProgress)
+        }
+        
+        // Animate card entrance using the animation manager
+        val cardViews = cards.map { it.first }
+        animationManager.animateCardEntrance(cardViews)
     }
     
     private fun showErrorState(errorState: ErrorState?) {
@@ -224,28 +317,101 @@ class HomeFragment : Fragment() {
     }
     
     private fun updateProgressSummaryCards(progress: DailyProgress) {
-        updateProgressCard(binding.stepsCard, binding.stepsCardText, progress.stepsProgress, RingType.STEPS)
-        updateProgressCard(binding.caloriesCard, binding.caloriesCardText, progress.caloriesProgress, RingType.CALORIES)
-        updateProgressCard(binding.heartPointsCard, binding.heartPointsCardText, progress.heartPointsProgress, RingType.HEART_POINTS)
+        updateProgressCard(binding.stepsCard, binding.stepsText, progress.stepsProgress, RingType.STEPS)
+        updateProgressCard(binding.caloriesCard, binding.caloriesText, progress.caloriesProgress, RingType.CALORIES)
+        updateProgressCard(binding.heartPointsCard, binding.heartPointsText, progress.heartPointsProgress, RingType.HEART_POINTS)
     }
     
     private fun updateProgressCard(cardView: View, textView: android.widget.TextView, progressData: ProgressData, ringType: RingType) {
         // Update card visibility
         cardView.visibility = View.VISIBLE
         
-        // Update card content with progress information
-        val progressText = "${progressData.current} / ${progressData.target} ${ringType.unit}\n${(progressData.percentage * 100).toInt()}%"
-        textView.text = progressText
+        // Update main text (title)
+        textView.text = ringType.displayName
         
-        // Update card color based on progress
-        val materialCardView = cardView as com.google.android.material.card.MaterialCardView
-        val color = if (progressData.isGoalAchieved) {
-            android.graphics.Color.parseColor("#E8F5E8") // Light green for achieved goals
-        } else {
-            android.graphics.Color.parseColor("#FFFFFF") // White for in-progress goals
+        // Get number and percentage views for this card
+        val (numberView, percentageView) = when (ringType) {
+            RingType.STEPS -> Pair(binding.stepsNumber, binding.stepsPercentage)
+            RingType.CALORIES -> Pair(binding.caloriesNumber, binding.caloriesPercentage)
+            RingType.HEART_POINTS -> Pair(binding.heartPointsNumber, binding.heartPointsPercentage)
         }
-        materialCardView.setCardBackgroundColor(color)
+        
+        // Update actual numbers with proper formatting
+        val formattedNumber = when (ringType) {
+            RingType.STEPS -> {
+                val steps = progressData.current.toInt()
+                when {
+                    steps >= 1000 -> "${steps / 1000},${String.format("%03d", steps % 1000)}"
+                    else -> steps.toString()
+                }
+            }
+            RingType.CALORIES -> "${progressData.current.toInt()} kcal"
+            RingType.HEART_POINTS -> "${progressData.current.toInt()} pts"
+        }
+        numberView.text = formattedNumber
+        
+        // Update percentage
+        val percentage = (progressData.percentage * 100).toInt()
+        percentageView.text = "${percentage}%"
+        
+        // Update card appearance based on progress
+        val materialCardView = cardView as com.google.android.material.card.MaterialCardView
+        updateCardHierarchy(materialCardView, progressData, ringType)
     }
+    
+    private fun updateCardHierarchy(
+        cardView: com.google.android.material.card.MaterialCardView,
+        progressData: ProgressData,
+        ringType: RingType
+    ) {
+        val isHighestProgress = isHighestProgressCard(progressData)
+        
+        if (isHighestProgress) {
+            // Highlight the card with highest progress
+            cardView.cardElevation = dpToPx(4f)
+            cardView.setCardBackgroundColor(getHighlightColor(ringType))
+            
+            // Add subtle glow animation
+            cardView.animate()
+                .scaleX(1.02f)
+                .scaleY(1.02f)
+                .setDuration(200)
+                .start()
+        } else {
+            // Normal card appearance
+            cardView.cardElevation = dpToPx(2f)
+            cardView.setCardBackgroundColor(android.graphics.Color.WHITE)
+            
+            // Reset scale
+            cardView.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(200)
+                .start()
+        }
+    }
+    
+    private fun isHighestProgressCard(currentProgress: ProgressData): Boolean {
+        // This would be implemented to compare with other cards' progress
+        // For now, highlight cards with >75% progress
+        return currentProgress.percentage > 0.75f
+    }
+    
+    private fun getHighlightColor(ringType: RingType): Int {
+        return when (ringType) {
+            RingType.STEPS -> android.graphics.Color.parseColor("#E8F5E8") // Light sage green
+            RingType.CALORIES -> android.graphics.Color.parseColor("#F0F0E8") // Light warm gray
+            RingType.HEART_POINTS -> android.graphics.Color.parseColor("#F5E8E8") // Light coral
+        }
+    }
+    
+    // Animation methods moved to DashboardAnimationManager
+    
+    private fun dpToPx(dp: Float): Float {
+        return dp * resources.displayMetrics.density
+    }
+    
+    // Helper methods for card management
     
     private fun handleAnimationEvent(event: AnimationEvent) {
         when (event) {
@@ -270,8 +436,10 @@ class HomeFragment : Fragment() {
     
     override fun onResume() {
         super.onResume()
-        // Refresh data when fragment becomes visible
-        dashboardViewModel.refreshDashboard()
+        // Only refresh if we're returning from background, not initial load
+        if (dashboardViewModel.dashboardState.value.loadingState != LoadingState.LOADING) {
+            dashboardViewModel.refreshDashboard()
+        }
     }
     
     override fun onPause() {
@@ -418,6 +586,8 @@ class HomeFragment : Fragment() {
             }
         }
     }
+    
+    // Motivational quote methods removed for clean ring design
     
     override fun onDestroyView() {
         super.onDestroyView()

@@ -29,11 +29,13 @@ class TripleRingView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
     
     companion object {
-        private const val RING_WIDTH_DP = 24f
-        private const val RING_SPACING_DP = 16f // 8-point grid system
-        private const val CENTER_RADIUS_DP = 120f
+        private const val RING_WIDTH_DP = 10f // Slightly thicker for better visibility (6-10dp range)
+        private const val RING_SPACING_DP = 12f // Reduced spacing for compact design
+        private const val CENTER_RADIUS_DP = 80f // Smaller center radius for compact size
         private const val START_ANGLE = -90f // Start from top
         private const val MAX_SWEEP_ANGLE = 360f
+        private const val SHADOW_RADIUS_DP = 8f // Soft shadow for depth
+        private const val SHADOW_OFFSET_DP = 2f // Subtle shadow offset
     }
     
     // Ring configuration following UI/UX specifications
@@ -51,21 +53,18 @@ class TripleRingView @JvmOverloads constructor(
         style = Paint.Style.STROKE
         strokeWidth = ringWidth
         strokeCap = Paint.Cap.ROUND
+        // No shadow for clean flat design
     }
     
     private val backgroundRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = ringWidth
         strokeCap = Paint.Cap.ROUND
-        color = ContextCompat.getColor(context, R.color.outline)
-        alpha = 50 // Light background rings
+        color = Color.parseColor("#E0E0E0") // Faint gray for better visibility on beige
+        alpha = 120 // More visible background rings
     }
     
-    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textAlign = Paint.Align.CENTER
-        textSize = dpToPx(16f)
-        color = ContextCompat.getColor(context, R.color.text_primary)
-    }
+    // Removed shadow paint for clean flat design
     
     // Ring data
     private var ringsData: List<RingDisplayData> = emptyList()
@@ -104,6 +103,8 @@ class TripleRingView @JvmOverloads constructor(
         
         val centerX = width / 2f
         val centerY = height / 2f
+        
+        // No background shadow for clean flat design
         
         // Draw background rings first
         drawBackgroundRings(canvas, centerX, centerY)
@@ -159,29 +160,26 @@ class TripleRingView @JvmOverloads constructor(
      */
     fun getRingsData(): List<RingDisplayData> = ringsData
     
+    // Removed background shadow function for clean flat design
+    
     /**
      * Draws background rings to show the full circle outline.
-     * Uses different stroke patterns for accessibility and visual differentiation.
+     * Uses faint gray circular tracks for better visibility on beige background.
      */
     private fun drawBackgroundRings(canvas: Canvas, centerX: Float, centerY: Float) {
         for (i in 0..2) {
             val radius = centerRadius - (i * (ringWidth + ringSpacing))
             
-            // Create different stroke patterns for accessibility
+            // Create consistent background rings with better visibility
             val backgroundPaint = Paint(backgroundRingPaint).apply {
-                when (i) {
-                    0 -> {
-                        // Outermost ring (Steps) - solid line
-                        pathEffect = null
-                    }
-                    1 -> {
-                        // Middle ring (Calories) - dashed line
-                        pathEffect = DashPathEffect(floatArrayOf(dpToPx(8f), dpToPx(4f)), 0f)
-                    }
-                    2 -> {
-                        // Innermost ring (Heart Points) - dotted line
-                        pathEffect = DashPathEffect(floatArrayOf(dpToPx(2f), dpToPx(6f)), 0f)
-                    }
+                // All rings use solid lines for better visibility on beige background
+                pathEffect = null
+                // Slightly different opacity for each ring for subtle differentiation
+                alpha = when (i) {
+                    0 -> 140 // Outermost ring (Steps) - most visible
+                    1 -> 120 // Middle ring (Calories) - medium visibility
+                    2 -> 100 // Innermost ring (Heart Points) - subtle
+                    else -> 120
                 }
             }
             
@@ -190,8 +188,8 @@ class TripleRingView @JvmOverloads constructor(
     }
     
     /**
-     * Draws the progress rings with current progress values.
-     * Implements smooth curves and proper stroke width with visual indicators.
+     * Draws the progress rings with enhanced visibility and depth.
+     * Implements smooth curves with better contrast against beige background.
      */
     private fun drawProgressRings(canvas: Canvas, centerX: Float, centerY: Float) {
         ringsData.forEach { ringData ->
@@ -205,114 +203,72 @@ class TripleRingView @JvmOverloads constructor(
                 centerY + radius
             )
             
-            // Set ring color with proper alpha for visual hierarchy
-            ringPaint.color = ringData.color
-            ringPaint.alpha = if (ringData.progress > 0) 255 else 100
+            // Enhanced ring color with better visibility
+            val enhancedColor = enhanceColorForVisibility(ringData.color)
+            ringPaint.color = enhancedColor
+            ringPaint.alpha = if (ringData.progress > 0) 255 else 120
             
             // Calculate sweep angle based on progress
             val sweepAngle = (ringData.progress * MAX_SWEEP_ANGLE).coerceIn(0f, MAX_SWEEP_ANGLE)
             
-            // Draw progress arc with smooth curves
+            // Draw progress arc with enhanced visibility
             if (sweepAngle > 0) {
                 canvas.drawArc(rect, START_ANGLE, sweepAngle, false, ringPaint)
                 
-                // Draw progress indicator dot at the end of the arc
+                // Draw enhanced progress indicator dot
                 if (ringData.progress < 1f && ringData.progress > 0) {
-                    drawProgressIndicator(canvas, centerX, centerY, radius, START_ANGLE + sweepAngle, ringData.color)
+                    drawProgressIndicator(canvas, centerX, centerY, radius, START_ANGLE + sweepAngle, enhancedColor)
                 }
             }
-            
-            // Draw percentage text for each ring
-            drawRingPercentageText(canvas, centerX, centerY, radius, ringData)
         }
     }
     
     /**
-     * Draws a small indicator dot at the end of the progress arc.
+     * Enhances ring colors for better visibility on beige background while maintaining palette.
+     */
+    private fun enhanceColorForVisibility(originalColor: Int): Int {
+        return when (originalColor) {
+            sageGreen -> Color.parseColor("#5A7A5A") // Slightly darker sage green
+            warmGrayGreen -> Color.parseColor("#6B7562") // Slightly darker warm gray-green
+            softCoral -> Color.parseColor("#A0735A") // Slightly darker soft coral
+            else -> originalColor
+        }
+    }
+    
+    /**
+     * Draws an enhanced indicator dot with shadow for better visibility.
      */
     private fun drawProgressIndicator(canvas: Canvas, centerX: Float, centerY: Float, radius: Float, angle: Float, color: Int) {
         val indicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             this.color = color
             style = Paint.Style.FILL
+            // Add subtle shadow to indicator dot
+            setShadowLayer(dpToPx(2f), 0f, dpToPx(1f), Color.argb(60, 0, 0, 0))
         }
         
         val angleRad = Math.toRadians(angle.toDouble())
         val indicatorX = centerX + radius * kotlin.math.cos(angleRad).toFloat()
         val indicatorY = centerY + radius * kotlin.math.sin(angleRad).toFloat()
         
-        canvas.drawCircle(indicatorX, indicatorY, dpToPx(4f), indicatorPaint)
+        // Draw slightly larger indicator for better visibility
+        canvas.drawCircle(indicatorX, indicatorY, dpToPx(5f), indicatorPaint)
+        
+        // Add white center dot for better contrast
+        val centerDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = Color.WHITE
+            style = Paint.Style.FILL
+            alpha = 200
+        }
+        canvas.drawCircle(indicatorX, indicatorY, dpToPx(2f), centerDotPaint)
     }
     
-    /**
-     * Draws percentage text and current/target values for accessibility.
-     */
-    private fun drawRingPercentageText(canvas: Canvas, centerX: Float, centerY: Float, radius: Float, ringData: RingDisplayData) {
-        // Position text outside the ring
-        val textRadius = radius + ringWidth / 2 + dpToPx(8f)
-        val textAngle = START_ANGLE + 45f // Position at 45 degrees
-        val angleRad = Math.toRadians(textAngle.toDouble())
-        
-        val textX = centerX + textRadius * kotlin.math.cos(angleRad).toFloat()
-        val textY = centerY + textRadius * kotlin.math.sin(angleRad).toFloat()
-        
-        // Configure text paint for ring labels
-        val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            textAlign = Paint.Align.CENTER
-            textSize = dpToPx(12f)
-            color = ringData.color
-            isFakeBoldText = true
-        }
-        
-        // Draw percentage
-        val percentageText = "${ringData.getProgressPercentage()}%"
-        canvas.drawText(percentageText, textX, textY, labelPaint)
-        
-        // Draw ring type label below percentage
-        labelPaint.textSize = dpToPx(10f)
-        labelPaint.isFakeBoldText = false
-        labelPaint.color = ContextCompat.getColor(context, R.color.text_secondary)
-        
-        val labelText = when (ringData.ringType) {
-            RingType.STEPS -> "STEPS"
-            RingType.CALORIES -> "CAL"
-            RingType.HEART_POINTS -> "HEART"
-        }
-        
-        canvas.drawText(labelText, textX, textY + dpToPx(16f), labelPaint)
-    }
+
     
     /**
-     * Draws center content with summary information.
+     * Draws center content - now empty for clean minimalist design.
      */
     private fun drawCenterContent(canvas: Canvas, centerX: Float, centerY: Float) {
-        if (ringsData.isEmpty()) return
-        
-        // Draw today's date
-        val dateText = java.time.LocalDate.now().format(
-            java.time.format.DateTimeFormatter.ofPattern("MMM dd")
-        )
-        
-        textPaint.textSize = dpToPx(14f)
-        textPaint.color = ContextCompat.getColor(context, R.color.text_secondary)
-        canvas.drawText(dateText, centerX, centerY - dpToPx(20f), textPaint)
-        
-        // Draw overall progress summary
-        val completedGoals = ringsData.count { it.progress >= 1f }
-        val summaryText = when (completedGoals) {
-            3 -> "All Goals\nComplete!"
-            2 -> "2 of 3\nGoals"
-            1 -> "1 of 3\nGoals"
-            else -> "Keep\nGoing!"
-        }
-        
-        textPaint.textSize = dpToPx(16f)
-        textPaint.color = ContextCompat.getColor(context, R.color.text_primary)
-        
-        val lines = summaryText.split("\n")
-        lines.forEachIndexed { index, line ->
-            val yOffset = (index - lines.size / 2f + 0.5f) * dpToPx(20f)
-            canvas.drawText(line, centerX, centerY + yOffset, textPaint)
-        }
+        // No center text for clean minimalist ring design
     }
     
     /**

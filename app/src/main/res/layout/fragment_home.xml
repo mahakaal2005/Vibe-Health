@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/spacing_large"
-    android:background="@color/background_light">
+    android:background="@color/background_light"
+    android:fillViewport="true">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/spacing_medium">
 
     <!-- Date and greeting section -->
     <TextView
         android:id="@+id/dateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:textAppearance="@style/TextAppearance.VibeHealth.Headline6"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:textSize="@dimen/date_text_size"
         android:textColor="@color/text_primary"
+        android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Today, January 31" />
 
     <TextView
         android:id="@+id/greetingText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_small"
-        android:textAppearance="@style/TextAppearance.VibeHealth.Body1"
+        android:textSize="@dimen/greeting_text_size"
         android:textColor="@color/text_secondary"
         app:layout_constraintTop_toBottomOf="@id/dateText"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text="Your wellness journey continues" />
 
     <!-- Loading state -->
@@ -36,120 +43,257 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/tripleRingView"
-        app:layout_constraintBottom_toBottomOf="@id/tripleRingView"
-        app:layout_constraintStart_toStartOf="@id/tripleRingView"
-        app:layout_constraintEnd_toEndOf="@id/tripleRingView"
-        tools:visibility="visible" />
-
-    <!-- Triple ring centerpiece -->
-    <com.vibehealth.android.ui.components.TripleRingView
-        android:id="@+id/tripleRingView"
-        android:layout_width="280dp"
-        android:layout_height="280dp"
-        android:layout_marginTop="@dimen/spacing_extra_large"
-        android:contentDescription="@string/triple_ring_progress_description"
+        android:layout_marginTop="80dp"
         app:layout_constraintTop_toBottomOf="@id/greetingText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible" />
 
-    <!-- Goal source information -->
+    <!-- Enhanced ring container with motivational quote -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ringContainer"
+        android:layout_width="@dimen/ring_container_size"
+        android:layout_height="@dimen/ring_container_size"
+        app:cardCornerRadius="@dimen/ring_corner_radius"
+        app:cardElevation="@dimen/ring_elevation"
+        app:cardBackgroundColor="@android:color/white"
+        android:alpha="0.98"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginBottom="@dimen/ring_bottom_margin"
+        app:layout_constraintTop_toBottomOf="@id/greetingText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Clean triple ring - no internal text -->
+            <com.vibehealth.android.ui.components.TripleRingView
+                android:id="@+id/tripleRingView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:contentDescription="@string/triple_ring_progress_description" />
+
+            <!-- No text content for completely clean ring design -->
+
+        </FrameLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Progress summary cards container - very close to ring -->
+    <LinearLayout
+        android:id="@+id/progressSummaryContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/ring_to_cards_gap"
+        android:layout_marginStart="@dimen/spacing_medium"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:weightSum="3"
+        app:layout_constraintTop_toBottomOf="@id/ringContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Steps summary card - ultra-compact -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/stepsCard"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/enhanced_card_height"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/card_spacing"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/card_internal_padding"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/card_icon_size"
+                    android:layout_height="@dimen/card_icon_size"
+                    android:src="@drawable/ic_directions_walk"
+                    android:layout_marginBottom="4dp"
+                    app:tint="@color/sage_green" />
+
+                <TextView
+                    android:id="@+id/stepsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Steps"
+                    android:textSize="@dimen/card_title_text_size"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:id="@+id/stepsNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3,245"
+                    android:textSize="@dimen/card_number_text_size"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:id="@+id/stepsPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textSize="@dimen/card_percentage_text_size"
+                    android:textColor="@color/sage_green"
+                    android:textStyle="bold"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Calories summary card - ultra-compact -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/caloriesCard"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/enhanced_card_height"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/card_spacing"
+            android:layout_marginEnd="@dimen/card_spacing"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/card_internal_padding"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/card_icon_size"
+                    android:layout_height="@dimen/card_icon_size"
+                    android:src="@drawable/ic_local_fire_department"
+                    android:layout_marginBottom="4dp"
+                    app:tint="@color/warm_gray_green" />
+
+                <TextView
+                    android:id="@+id/caloriesText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Calories"
+                    android:textSize="@dimen/card_title_text_size"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:id="@+id/caloriesNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="157 kcal"
+                    android:textSize="@dimen/card_number_text_size"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:id="@+id/caloriesPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textSize="@dimen/card_percentage_text_size"
+                    android:textColor="@color/warm_gray_green"
+                    android:textStyle="bold"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Heart Points summary card - ultra-compact -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/heartPointsCard"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/enhanced_card_height"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/card_spacing"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/card_internal_padding"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/card_icon_size"
+                    android:layout_height="@dimen/card_icon_size"
+                    android:src="@drawable/ic_favorite"
+                    android:layout_marginBottom="4dp"
+                    app:tint="@color/soft_coral" />
+
+                <TextView
+                    android:id="@+id/heartPointsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Heart Points"
+                    android:textSize="@dimen/card_title_text_size"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:id="@+id/heartPointsNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="22 pts"
+                    android:textSize="@dimen/card_number_text_size"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:id="@+id/heartPointsPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textSize="@dimen/card_percentage_text_size"
+                    android:textColor="@color/soft_coral"
+                    android:textStyle="bold"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <!-- Goal source information - moved to bottom with more space -->
     <TextView
         android:id="@+id/goalSourceText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginBottom="@dimen/spacing_large"
         android:text="@string/goals_calculated_who_standards"
         android:textAppearance="@style/TextAppearance.VibeHealth.Caption"
         android:textColor="@color/text_secondary"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/tripleRingView"
+        app:layout_constraintTop_toBottomOf="@id/progressSummaryContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Progress summary cards container -->
-    <LinearLayout
-        android:id="@+id/progressSummaryContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="@dimen/spacing_large"
-        android:weightSum="3"
-        app:layout_constraintTop_toBottomOf="@id/goalSourceText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Steps summary card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/stepsCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="@dimen/spacing_small"
-            app:cardCornerRadius="@dimen/card_corner_radius"
-            app:cardElevation="@dimen/card_elevation_default"
-            app:cardBackgroundColor="@color/surface">
-
-            <TextView
-                android:id="@+id/stepsCardText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/spacing_medium"
-                android:text="Steps"
-                android:textAppearance="@style/TextAppearance.VibeHealth.Body1"
-                android:textColor="@color/text_primary"
-                android:gravity="center" />
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Calories summary card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/caloriesCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/spacing_small"
-            android:layout_marginEnd="@dimen/spacing_small"
-            app:cardCornerRadius="@dimen/card_corner_radius"
-            app:cardElevation="@dimen/card_elevation_default"
-            app:cardBackgroundColor="@color/surface">
-
-            <TextView
-                android:id="@+id/caloriesCardText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/spacing_medium"
-                android:text="Calories"
-                android:textAppearance="@style/TextAppearance.VibeHealth.Body1"
-                android:textColor="@color/text_primary"
-                android:gravity="center" />
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Heart Points summary card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/heartPointsCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/spacing_small"
-            app:cardCornerRadius="@dimen/card_corner_radius"
-            app:cardElevation="@dimen/card_elevation_default"
-            app:cardBackgroundColor="@color/surface">
-
-            <TextView
-                android:id="@+id/heartPointsCardText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/spacing_medium"
-                android:text="Heart Points"
-                android:textAppearance="@style/TextAppearance.VibeHealth.Body1"
-                android:textColor="@color/text_primary"
-                android:gravity="center" />
-
-        </com.google.android.material.card.MaterialCardView>
-
-    </LinearLayout>
 
     <!-- Error state -->
     <LinearLayout
@@ -158,10 +302,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="@dimen/spacing_large"
+        android:padding="@dimen/spacing_medium"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/tripleRingView"
-        app:layout_constraintBottom_toBottomOf="@id/tripleRingView"
+        android:layout_marginTop="@dimen/spacing_medium"
+        app:layout_constraintTop_toBottomOf="@id/ringContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:visibility="visible">
@@ -201,10 +345,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="@dimen/spacing_large"
+        android:padding="@dimen/spacing_medium"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/tripleRingView"
-        app:layout_constraintBottom_toBottomOf="@id/tripleRingView"
+        android:layout_marginTop="@dimen/spacing_medium"
+        app:layout_constraintTop_toBottomOf="@id/ringContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -246,17 +390,23 @@
 
     </LinearLayout>
 
-    <!-- Floating Action Button for refresh -->
+    <!-- Enhanced Floating Action Button for refresh -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/refreshFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/spacing_medium"
         android:src="@drawable/ic_refresh"
-        android:contentDescription="@string/refresh_data"
+        android:contentDescription="Sync Data"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:backgroundTint="@color/sage_green"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        app:elevation="8dp"
+        app:hoveredFocusedTranslationZ="12dp"
+        app:pressedTranslationZ="16dp"
+        app:rippleColor="@android:color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

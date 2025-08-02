@@ -78,7 +78,7 @@ class GoalCalculationService @Inject constructor(
                 )
                 
                 // Validate calculated goals are reasonable
-                if (!goals.isValid()) {
+                if (!goals.isValid) {
                     Log.w(TAG, "Calculated goals failed validation, using fallback goals: ${goals.sanitizeForLogging()}")
                     return@withContext fallbackGoalGenerator.generateFallbackGoals(
                         userId = userProfile.userId,

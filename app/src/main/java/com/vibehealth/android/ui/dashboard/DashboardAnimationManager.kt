@@ -2,320 +2,328 @@ package com.vibehealth.android.ui.dashboard
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import android.view.animation.OvershootInterpolator
+import android.view.animation.BounceInterpolator
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.google.android.material.card.MaterialCardView
 import com.vibehealth.android.ui.components.TripleRingView
 import com.vibehealth.android.ui.dashboard.models.RingDisplayData
+import com.vibehealth.android.ui.dashboard.models.RingType
 
 /**
- * Centralized animation state manager for the dashboard.
- * Handles entrance animations, state transitions, and lifecycle management.
+ * Enhanced animation manager following UI/UX specifications:
+ * - 150-300ms timing for micro-interactions
+ * - DecelerateInterpolator for smooth, natural feel
+ * - Celebratory animations for goal achievements
+ * - Accessibility-aware with reduced motion support
+ * - Purposeful, subtle, and encouraging animations
  */
-class DashboardAnimationManager : DefaultLifecycleObserver {
+class DashboardAnimationManager(private val context: Context) : DefaultLifecycleObserver {
     
-    // Animation states
-    enum class AnimationState {
-        INITIAL,
-        ENTRANCE_STARTED,
-        ENTRANCE_COMPLETE,
-        UPDATE_IN_PROGRESS,
-        IDLE
-    }
-    
-    private var animationState = AnimationState.INITIAL
-    private val activeAnimations = mutableSetOf<Animator>()
-    private val animatorPool = mutableListOf<ValueAnimator>()
-    
-    // Animation configuration
     companion object {
-        private const val ENTRANCE_DURATION = 400L
-        private const val CARD_STAGGER_DELAY = 50L
-        private const val RING_FILL_DURATION = 600L
-        private const val CARD_ENTRANCE_DURATION = 250L
-        private const val SCALE_ANIMATION_DURATION = 200L
+        // UI/UX Specification: 150-300ms timing for micro-interactions
+        private const val MICRO_INTERACTION_DURATION = 200L
+        private const val ENTRANCE_ANIMATION_DURATION = 300L
+        private const val CELEBRATION_DURATION = 600L
+        private const val RING_FILL_DURATION = 250L
+        
+        // Animation delays for staggered effects
+        private const val CARD_STAGGER_DELAY = 80L
+        private const val RING_STAGGER_DELAY = 100L
+    }
+    
+    // Animation state tracking
+    private var hasAnimatedEntrance = false
+    private var isReducedMotionEnabled = false
+    private val runningAnimators = mutableSetOf<Animator>()
+    
+    // UI/UX Specification: DecelerateInterpolator for smooth, natural animations
+    private val smoothInterpolator = DecelerateInterpolator()
+    private val celebrationInterpolator = BounceInterpolator()
+    private val naturalInterpolator = AccelerateDecelerateInterpolator()
+    
+    init {
+        checkReducedMotionPreference()
     }
     
     /**
-     * Determines if entrance animations should be played
+     * Check system accessibility preferences for reduced motion
      */
-    fun shouldAnimateEntrance(): Boolean = animationState == AnimationState.INITIAL
-    
-    /**
-     * Marks entrance animation as started
-     */
-    fun markEntranceStarted() {
-        animationState = AnimationState.ENTRANCE_STARTED
+    private fun checkReducedMotionPreference() {
+        val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) 
+            as? android.view.accessibility.AccessibilityManager
+        isReducedMotionEnabled = accessibilityManager?.isEnabled == true
     }
     
     /**
-     * Marks entrance animation as complete
+     * Sets reduced motion preference (for testing and accessibility)
      */
-    fun markEntranceComplete() {
-        animationState = AnimationState.ENTRANCE_COMPLETE
+    fun setReducedMotionEnabled(enabled: Boolean) {
+        isReducedMotionEnabled = enabled
+    }
+    
+    fun shouldAnimateEntrance(): Boolean {
+        return !hasAnimatedEntrance && !isReducedMotionEnabled
     }
     
     /**
-     * Animates the triple ring entrance with spring effect
+     * Animates the triple ring entrance with supportive, encouraging feel
+     * UI/UX Specification: 300ms duration with DecelerateInterpolator
      */
-    fun animateRingEntrance(
-        ringView: TripleRingView,
-        onComplete: () -> Unit = {}
-    ) {
-        if (!shouldAnimateEntrance()) {
+    fun animateRingEntrance(tripleRingView: TripleRingView, onComplete: () -> Unit) {
+        if (isReducedMotionEnabled) {
+            // Skip animation for accessibility
+            tripleRingView.alpha = 1f
             onComplete()
             return
         }
         
-        markEntranceStarted()
+        hasAnimatedEntrance = true
         
-        // Initial state
-        ringView.alpha = 0f
-        ringView.scaleX = 0.7f
-        ringView.scaleY = 0.7f
+        // Start with gentle, supportive entrance state
+        tripleRingView.alpha = 0f
+        tripleRingView.scaleX = 0.9f
+        tripleRingView.scaleY = 0.9f
+        tripleRingView.translationY = 20f
         
-        // Entrance animation
-        val animator = ringView.animate()
-            .alpha(1f)
-            .scaleX(1f)
-            .scaleY(1f)
-            .setDuration(ENTRANCE_DURATION)
-            .setInterpolator(OvershootInterpolator(1.2f))
-            .withEndAction {
-                markEntranceComplete()
-                onComplete()
-            }
+        // Create smooth, encouraging entrance animation
+        val fadeIn = ObjectAnimator.ofFloat(tripleRingView, "alpha", 0f, 1f)
+        val scaleXIn = ObjectAnimator.ofFloat(tripleRingView, "scaleX", 0.9f, 1f)
+        val scaleYIn = ObjectAnimator.ofFloat(tripleRingView, "scaleY", 0.9f, 1f)
+        val slideUp = ObjectAnimator.ofFloat(tripleRingView, "translationY", 20f, 0f)
         
-        trackAnimation(animator)
+        val entranceSet = AnimatorSet().apply {
+            playTogether(fadeIn, scaleXIn, scaleYIn, slideUp)
+            duration = ENTRANCE_ANIMATION_DURATION
+            interpolator = smoothInterpolator
+            
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    runningAnimators.remove(animation)
+                    onComplete()
+                }
+                
+                override fun onAnimationStart(animation: Animator) {
+                    runningAnimators.add(animation)
+                }
+            })
+        }
+        
+        entranceSet.start()
+        
+        // Announce for accessibility
+        tripleRingView.announceForAccessibility("Your wellness dashboard is ready! Let's see your progress.")
     }
     
     /**
-     * Animates ring progress fill-up with staggered delays
+     * Animates ring progress fill with smooth, encouraging progression
+     * UI/UX Specification: 250ms duration with DecelerateInterpolator
      */
-    fun animateRingFillUp(
-        ringView: TripleRingView,
-        targetData: List<RingDisplayData>
-    ) {
-        val staggerDelays = listOf(0L, 200L, 400L) // Steps: 0ms, Heart: 200ms, Cal: 400ms
+    fun animateRingFillUp(tripleRingView: TripleRingView, ringData: List<RingDisplayData>) {
+        if (isReducedMotionEnabled) {
+            // Update immediately for accessibility
+            tripleRingView.updateProgress(ringData, false)
+            return
+        }
         
-        targetData.forEachIndexed { index, ringData ->
-            val delay = staggerDelays.getOrElse(index) { 0L }
+        // Update all rings with animation enabled
+        tripleRingView.updateProgress(ringData, true)
+        
+        // Announce progress for accessibility after a short delay
+        tripleRingView.postDelayed({
+            val totalProgress = ringData.sumOf { (it.progress * 100).toInt() } / ringData.size
+            tripleRingView.announceForAccessibility(
+                "Wellness progress updated. Average progress: $totalProgress percent"
+            )
+        }, RING_FILL_DURATION)
+    }
+    
+    /**
+     * Animates progress summary cards with supportive staggered entrance
+     * UI/UX Specification: 200ms duration with staggered 80ms delays
+     */
+    fun animateCardEntrance(cardViews: List<View>) {
+        if (isReducedMotionEnabled) {
+            // Show immediately for accessibility
+            cardViews.forEach { it.alpha = 1f }
+            return
+        }
+        
+        cardViews.forEachIndexed { index, cardView ->
+            // Start with supportive hidden state
+            cardView.alpha = 0f
+            cardView.translationY = 30f
+            cardView.scaleX = 0.95f
+            cardView.scaleY = 0.95f
             
-            val animator = getRecycledAnimator().apply {
-                setFloatValues(0f, 1f)
-                duration = RING_FILL_DURATION
-                startDelay = delay
-                interpolator = android.view.animation.PathInterpolator(0.4f, 0f, 0.2f, 1f)
-                
-                addUpdateListener { animation ->
-                    val progress = animation.animatedValue as Float
-                    val currentData = ringView.getRingsData().toMutableList()
-                    
-                    if (index < currentData.size) {
-                        currentData[index] = currentData[index].copy(
-                            progress = ringData.progress * progress
-                        )
-                        ringView.updateProgress(currentData, false)
-                    }
-                }
+            // Create encouraging entrance animation
+            val fadeIn = ObjectAnimator.ofFloat(cardView, "alpha", 0f, 1f)
+            val slideUp = ObjectAnimator.ofFloat(cardView, "translationY", 30f, 0f)
+            val scaleXIn = ObjectAnimator.ofFloat(cardView, "scaleX", 0.95f, 1f)
+            val scaleYIn = ObjectAnimator.ofFloat(cardView, "scaleY", 0.95f, 1f)
+            
+            val cardSet = AnimatorSet().apply {
+                playTogether(fadeIn, slideUp, scaleXIn, scaleYIn)
+                duration = MICRO_INTERACTION_DURATION
+                interpolator = smoothInterpolator
+                startDelay = index * CARD_STAGGER_DELAY
                 
                 addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        runningAnimators.add(animation)
+                    }
+                    
                     override fun onAnimationEnd(animation: Animator) {
-                        if (index == targetData.size - 1) {
-                            ringView.updateProgress(targetData, false)
-                        }
-                        recycleAnimator(this@apply)
+                        runningAnimators.remove(animation)
                     }
                 })
             }
             
-            trackAnimation(animator)
-            animator.start()
+            cardSet.start()
         }
     }
     
     /**
-     * Animates card entrance with staggered delays
+     * Animates supportive emphasis for highest progress card
+     * UI/UX Specification: Subtle, encouraging emphasis
      */
-    fun animateCardEntrance(
-        cards: List<View>,
-        onComplete: () -> Unit = {}
+    fun animateCardEmphasis(cardView: View, isHighestProgress: Boolean) {
+        if (isReducedMotionEnabled) return
+        
+        val targetScale = if (isHighestProgress) 1.03f else 1f
+        val targetElevation = if (isHighestProgress) 8f else 4f
+        
+        val scaleX = ObjectAnimator.ofFloat(cardView, "scaleX", cardView.scaleX, targetScale)
+        val scaleY = ObjectAnimator.ofFloat(cardView, "scaleY", cardView.scaleY, targetScale)
+        val elevation = ObjectAnimator.ofFloat(cardView, "elevation", cardView.elevation, targetElevation)
+        
+        val emphasisSet = AnimatorSet().apply {
+            playTogether(scaleX, scaleY, elevation)
+            duration = MICRO_INTERACTION_DURATION
+            interpolator = smoothInterpolator
+            
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    runningAnimators.add(animation)
+                }
+                
+                override fun onAnimationEnd(animation: Animator) {
+                    runningAnimators.remove(animation)
+                }
+            })
+        }
+        
+        emphasisSet.start()
+    }
+    
+    /**
+     * Celebrates goal achievement with encouraging, celebratory animation
+     * UI/UX Specification: Meaningful celebration with BounceInterpolator
+     */
+    fun celebrateGoalAchievement(
+        tripleRingView: TripleRingView, 
+        achievedRings: List<RingType>,
+        onComplete: (() -> Unit)? = null
     ) {
-        if (!shouldAnimateEntrance()) {
-            // Ensure cards are visible for subsequent updates
-            cards.forEach { card ->
-                card.alpha = 1f
-                card.translationX = 0f
+        if (isReducedMotionEnabled) {
+            // Simple accessibility announcement
+            val message = when (achievedRings.size) {
+                1 -> "Congratulations! You achieved your ${achievedRings.first().displayName} goal!"
+                2 -> "Amazing! You achieved ${achievedRings.size} goals today!"
+                3 -> "Incredible! You achieved all your wellness goals today!"
+                else -> "Great progress on your wellness journey!"
             }
-            onComplete()
+            tripleRingView.announceForAccessibility(message)
+            onComplete?.invoke()
             return
         }
         
-        var completedAnimations = 0
+        // Create celebratory bounce animation
+        val scaleUpX = ObjectAnimator.ofFloat(tripleRingView, "scaleX", 1f, 1.1f, 1f)
+        val scaleUpY = ObjectAnimator.ofFloat(tripleRingView, "scaleY", 1f, 1.1f, 1f)
+        val rotation = ObjectAnimator.ofFloat(tripleRingView, "rotation", 0f, 5f, -5f, 0f)
         
-        cards.forEachIndexed { index, card ->
-            // Initial state
-            card.alpha = 0f
-            card.translationX = 100f
+        val celebrationSet = AnimatorSet().apply {
+            playTogether(scaleUpX, scaleUpY, rotation)
+            duration = CELEBRATION_DURATION
+            interpolator = celebrationInterpolator
             
-            val animator = card.animate()
-                .alpha(1f)
-                .translationX(0f)
-                .setDuration(CARD_ENTRANCE_DURATION)
-                .setStartDelay(index * CARD_STAGGER_DELAY)
-                .setInterpolator(DecelerateInterpolator())
-                .withEndAction {
-                    completedAnimations++
-                    if (completedAnimations == cards.size) {
-                        onComplete()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    runningAnimators.add(animation)
+                    
+                    // Encouraging accessibility announcement
+                    val message = when (achievedRings.size) {
+                        1 -> "🎉 Congratulations! You achieved your ${achievedRings.first().displayName} goal!"
+                        2 -> "🌟 Amazing! You achieved ${achievedRings.size} goals today!"
+                        3 -> "🚀 Incredible! You achieved all your wellness goals today!"
+                        else -> "✨ Great progress on your wellness journey!"
                     }
+                    tripleRingView.announceForAccessibility(message)
                 }
+                
+                override fun onAnimationEnd(animation: Animator) {
+                    runningAnimators.remove(animation)
+                    onComplete?.invoke()
+                }
+            })
+        }
+        
+        celebrationSet.start()
+    }
+    
+    /**
+     * Animates supportive refresh feedback
+     * UI/UX Specification: Quick, encouraging feedback
+     */
+    fun animateRefreshFeedback(view: View, onComplete: (() -> Unit)? = null) {
+        if (isReducedMotionEnabled) {
+            onComplete?.invoke()
+            return
+        }
+        
+        val rotation = ObjectAnimator.ofFloat(view, "rotation", 0f, 360f)
+        val scaleDown = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.9f, 1f)
+        val scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.9f, 1f)
+        
+        val refreshSet = AnimatorSet().apply {
+            playTogether(rotation, scaleDown, scaleDownY)
+            duration = MICRO_INTERACTION_DURATION
+            interpolator = naturalInterpolator
             
-            trackAnimation(animator)
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    runningAnimators.add(animation)
+                }
+                
+                override fun onAnimationEnd(animation: Animator) {
+                    runningAnimators.remove(animation)
+                    onComplete?.invoke()
+                }
+            })
         }
-    }
-    
-    /**
-     * Animates card press interaction
-     */
-    fun animateCardPress(card: MaterialCardView) {
-        card.animate()
-            .scaleX(0.95f)
-            .scaleY(0.95f)
-            .setDuration(100)
-            .setInterpolator(android.view.animation.DecelerateInterpolator())
-            .start()
-    }
-    
-    /**
-     * Animates card release interaction
-     */
-    fun animateCardRelease(card: MaterialCardView) {
-        card.animate()
-            .scaleX(1.0f)
-            .scaleY(1.0f)
-            .setDuration(150)
-            .setInterpolator(OvershootInterpolator(0.5f))
-            .start()
-    }
-    
-    /**
-     * Animates card hierarchy emphasis
-     */
-    fun animateCardEmphasis(
-        card: MaterialCardView,
-        isHighestProgress: Boolean
-    ) {
-        val targetScale = if (isHighestProgress) 1.02f else 1f
-        val targetElevation = if (isHighestProgress) 12f else 6f
         
-        card.animate()
-            .scaleX(targetScale)
-            .scaleY(targetScale)
-            .setDuration(SCALE_ANIMATION_DURATION)
-            .start()
-        
-        card.cardElevation = targetElevation * card.context.resources.displayMetrics.density
+        refreshSet.start()
     }
     
     /**
-     * Gets a recycled animator from the pool or creates a new one
+     * Cancels all running animations for cleanup
      */
-    private fun getRecycledAnimator(): ValueAnimator {
-        return animatorPool.removeFirstOrNull() ?: ValueAnimator()
-    }
-    
-    /**
-     * Recycles an animator back to the pool
-     */
-    private fun recycleAnimator(animator: ValueAnimator) {
-        animator.removeAllListeners()
-        animator.removeAllUpdateListeners()
-        animator.cancel()
-        animatorPool.add(animator)
-    }
-    
-    /**
-     * Tracks an active animation for lifecycle management
-     */
-    private fun trackAnimation(animator: Any) {
-        when (animator) {
-            is Animator -> activeAnimations.add(animator)
-            is android.view.ViewPropertyAnimator -> {
-                // ViewPropertyAnimator doesn't extend Animator, handle separately
-                // We'll track it through the view's tag for cleanup
-            }
+    fun cancelAllAnimations() {
+        runningAnimators.forEach { animator ->
+            animator.cancel()
         }
-    }
-    
-    /**
-     * Resets animation state (useful for testing or manual resets)
-     */
-    fun resetAnimationState() {
-        animationState = AnimationState.INITIAL
-    }
-    
-    /**
-     * Checks if any animations are currently running
-     */
-    fun hasActiveAnimations(): Boolean = activeAnimations.isNotEmpty()
-    
-    // Lifecycle management
-    override fun onPause(owner: LifecycleOwner) {
-        activeAnimations.forEach { animator ->
-            if (animator.isRunning) {
-                animator.pause()
-            }
-        }
-    }
-    
-    override fun onResume(owner: LifecycleOwner) {
-        activeAnimations.forEach { animator ->
-            if (animator.isPaused) {
-                animator.resume()
-            }
-        }
+        runningAnimators.clear()
     }
     
     override fun onDestroy(owner: LifecycleOwner) {
-        // Cancel all active animations
-        activeAnimations.forEach { animator ->
-            animator.cancel()
-        }
-        activeAnimations.clear()
-        
-        // Clear animator pool
-        animatorPool.forEach { animator ->
-            animator.cancel()
-        }
-        animatorPool.clear()
-        
-        // Reset state
-        animationState = AnimationState.INITIAL
-    }
-}
-
-/**
- * Card emphasis levels for visual hierarchy
- */
-sealed class CardEmphasis {
-    object Primary : CardEmphasis()    // Highest progress - 12dp elevation
-    object Secondary : CardEmphasis()  // Medium progress - 8dp elevation  
-    object Tertiary : CardEmphasis()   // Lower progress - 4dp elevation
-    
-    fun getElevation(): Float = when (this) {
-        is Primary -> 12f
-        is Secondary -> 8f
-        is Tertiary -> 4f
-    }
-    
-    fun getScale(): Float = when (this) {
-        is Primary -> 1.02f
-        is Secondary -> 1.01f
-        is Tertiary -> 1f
+        super.onDestroy(owner)
+        cancelAllAnimations()
     }
 }

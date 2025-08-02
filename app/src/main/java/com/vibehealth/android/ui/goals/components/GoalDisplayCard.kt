@@ -82,8 +82,8 @@ class GoalDisplayCard @JvmOverloads constructor(
                 goals.calculatedAt.format(formatter)
             )
             
-            updateValidityIndicator(goals.isValid())
-            updateFreshnessIndicator(goals.isFresh())
+            updateValidityIndicator(goals.isValid)
+            updateFreshnessIndicator(goals.isFresh)
         }
     }
 
@@ -285,12 +285,18 @@ class GoalDisplayCard @JvmOverloads constructor(
      */
     private fun getSourceDescription(source: com.vibehealth.android.domain.goals.CalculationSource): String {
         return when (source) {
+            com.vibehealth.android.domain.goals.CalculationSource.DEFAULT -> 
+                "Default wellness goals"
+            com.vibehealth.android.domain.goals.CalculationSource.PERSONALIZED -> 
+                "Personalized for your profile"
+            com.vibehealth.android.domain.goals.CalculationSource.MANUAL -> 
+                "Manually set goals"
             com.vibehealth.android.domain.goals.CalculationSource.WHO_STANDARD -> 
-                context.getString(R.string.who_standard_description)
+                "WHO health standards"
             com.vibehealth.android.domain.goals.CalculationSource.FALLBACK_DEFAULT -> 
-                context.getString(R.string.fallback_default_description)
+                "General health guidelines"
             com.vibehealth.android.domain.goals.CalculationSource.USER_ADJUSTED -> 
-                context.getString(R.string.user_adjusted_description)
+                "User customized goals"
         }
     }
 }

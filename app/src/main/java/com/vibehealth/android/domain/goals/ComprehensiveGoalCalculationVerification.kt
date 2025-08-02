@@ -38,7 +38,7 @@ object ComprehensiveGoalCalculationVerification {
         results.add("  Calories: ${maleGoals.caloriesGoal} (expected: ~2,400)")
         results.add("  Heart Points: ${maleGoals.heartPointsGoal} (expected: ~20)")
         results.add("  Source: ${maleGoals.calculationSource}")
-        results.add("  Valid: ${maleGoals.isValid()}")
+        results.add("  Valid: ${maleGoals.isValid}")
         results.add("")
         
         // Test Case 2: Typical Adult Female
@@ -49,7 +49,7 @@ object ComprehensiveGoalCalculationVerification {
         results.add("  Calories: ${femaleGoals.caloriesGoal} (expected: ~1,900)")
         results.add("  Heart Points: ${femaleGoals.heartPointsGoal} (expected: ~20)")
         results.add("  Source: ${femaleGoals.calculationSource}")
-        results.add("  Valid: ${femaleGoals.isValid()}")
+        results.add("  Valid: ${femaleGoals.isValid}")
         results.add("")
         
         // Test Case 3: Youth
@@ -60,7 +60,7 @@ object ComprehensiveGoalCalculationVerification {
         results.add("  Calories: ${youthGoals.caloriesGoal} (expected: ~2,200)")
         results.add("  Heart Points: ${youthGoals.heartPointsGoal} (expected: ~25)")
         results.add("  Source: ${youthGoals.calculationSource}")
-        results.add("  Valid: ${youthGoals.isValid()}")
+        results.add("  Valid: ${youthGoals.isValid}")
         results.add("")
         
         // Test Case 4: Older Adult
@@ -71,7 +71,7 @@ object ComprehensiveGoalCalculationVerification {
         results.add("  Calories: ${olderGoals.caloriesGoal} (expected: ~1,700)")
         results.add("  Heart Points: ${olderGoals.heartPointsGoal} (expected: ~17)")
         results.add("  Source: ${olderGoals.calculationSource}")
-        results.add("  Valid: ${olderGoals.isValid()}")
+        results.add("  Valid: ${olderGoals.isValid}")
         results.add("")
         
         // Test Case 5: Incomplete Profile (Fallback Test)
@@ -87,7 +87,7 @@ object ComprehensiveGoalCalculationVerification {
         results.add("  Calories: ${fallbackGoals.caloriesGoal} (expected: 1,800 fallback)")
         results.add("  Heart Points: ${fallbackGoals.heartPointsGoal} (expected: 21 fallback)")
         results.add("  Source: ${fallbackGoals.calculationSource} (expected: FALLBACK_DEFAULT)")
-        results.add("  Valid: ${fallbackGoals.isValid()}")
+        results.add("  Valid: ${fallbackGoals.isValid}")
         results.add("")
         
         // Test Case 6: Activity Level Variations
@@ -125,7 +125,7 @@ object ComprehensiveGoalCalculationVerification {
         // Validation Summary
         results.add("=== Validation Summary ===")
         val allGoals = listOf(maleGoals, femaleGoals, youthGoals, olderGoals, fallbackGoals)
-        val allValid = allGoals.all { it.isValid() }
+        val allValid = allGoals.all { it.isValid }
         val allWithinBounds = allGoals.all { 
             it.stepsGoal in 5000..20000 && 
             it.caloriesGoal in 1200..4000 && 

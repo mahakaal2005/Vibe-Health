@@ -206,8 +206,8 @@ class GoalDisplayViewModel @Inject constructor(
             calculationSource = formatCalculationSource(goals.calculationSource),
             sourceDescription = getSourceDescription(goals.calculationSource),
             lastUpdated = "Updated ${goals.calculatedAt.format(dateFormatter)}",
-            isValid = goals.isValid(),
-            isFresh = goals.isFresh()
+            isValid = goals.isValid,
+            isFresh = goals.isFresh
         )
     }
 
@@ -241,6 +241,9 @@ class GoalDisplayViewModel @Inject constructor(
      */
     private fun formatCalculationSource(source: CalculationSource): String {
         return when (source) {
+            CalculationSource.DEFAULT -> "Default Goals"
+            CalculationSource.PERSONALIZED -> "Personalized Goals"
+            CalculationSource.MANUAL -> "Manual Goals"
             CalculationSource.WHO_STANDARD -> "WHO Standards"
             CalculationSource.FALLBACK_DEFAULT -> "Health Guidelines"
             CalculationSource.USER_ADJUSTED -> "Personalized"
@@ -252,6 +255,12 @@ class GoalDisplayViewModel @Inject constructor(
      */
     private fun getSourceDescription(source: CalculationSource): String {
         return when (source) {
+            CalculationSource.DEFAULT -> 
+                "Standard wellness goals based on general health recommendations"
+            CalculationSource.PERSONALIZED -> 
+                "Goals calculated specifically for your profile and activity level"
+            CalculationSource.MANUAL -> 
+                "Goals you've set manually based on your personal preferences"
             CalculationSource.WHO_STANDARD -> 
                 "Calculated based on World Health Organization guidelines and your personal profile"
             CalculationSource.FALLBACK_DEFAULT -> 

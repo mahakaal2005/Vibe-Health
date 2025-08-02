@@ -22,9 +22,12 @@
         <!-- Window background -->
         <item name="android:windowBackground">@color/background_light</item>
         
-        <!-- Status bar -->
+        <!-- Status bar - Immersive mode -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowFullscreen">false</item>
 
         <!-- Custom attributes -->
         <item name="colorSuccess">@color/success</item>

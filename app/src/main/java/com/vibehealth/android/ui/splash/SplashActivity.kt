@@ -2,6 +2,7 @@ package com.vibehealth.android.ui.splash
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -96,11 +97,26 @@ class SplashActivity : AppCompatActivity() {
      * Navigate to main application
      */
     private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+        Log.d("VIBE_FIX_CRASH", "VIBE_FIX: SplashActivity navigateToMain() started")
         
-        // Add fade transition animation
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        try {
+            val intent = Intent(this, MainActivity::class.java)
+            Log.d("VIBE_FIX_CRASH", "VIBE_FIX: Intent created for MainActivity")
+            
+            startActivity(intent)
+            Log.d("VIBE_FIX_CRASH", "VIBE_FIX: MainActivity startActivity() called")
+            
+            finish()
+            Log.d("VIBE_FIX_CRASH", "VIBE_FIX: SplashActivity finish() called")
+            
+            // Add fade transition animation
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            Log.d("VIBE_FIX_CRASH", "VIBE_FIX: Transition animation applied")
+            
+        } catch (e: Exception) {
+            Log.e("VIBE_FIX_CRASH", "VIBE_FIX: FATAL ERROR in navigateToMain()", e)
+            Log.e("VIBE_FIX_CRASH", "VIBE_FIX: Navigation exception: ${e.message}")
+            throw e
+        }
     }
 }

@@ -1,237 +1,165 @@
 package com.vibehealth.android.ui.components
 
-import android.animation.*
-import android.view.View
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.BounceInterpolator
-import com.vibehealth.android.ui.dashboard.models.RingType
 import com.vibehealth.android.ui.dashboard.models.RingDisplayData
+import com.vibehealth.android.ui.dashboard.models.RingType
 
 /**
- * Animation manager for TripleRingView following UI/UX motion guidelines.
- * Implements smooth progress animations with 150-300ms timing and celebratory animations.
+ * Manages ring-specific animations for TripleRingView
+ * Implements UI/UX specifications for smooth, encouraging ring animations
  */
 class RingAnimationManager {
     
     companion object {
-        private const val PROGRESS_ANIMATION_DURATION = 250L // 150-300ms per UI/UX spec
-        private const val CELEBRATION_ANIMATION_DURATION = 1000L
-        private const val REDUCED_MOTION_DURATION = 100L // For accessibility
+        // UI/UX Specification: 150-300ms timing
+        private const val RING_FILL_DURATION = 250L
+        private const val CELEBRATION_DURATION = 600L
+        private const val PROGRESS_UPDATE_DURATION = 200L
     }
     
-    private val animationConfig = RingAnimationConfig()
-    private var currentAnimator: Animator? = null
     private var isReducedMotionEnabled = false
+    private val runningAnimators = mutableSetOf<Animator>()
+    
+    // UI/UX Specification: DecelerateInterpolator for smooth animations
+    private val smoothInterpolator = DecelerateInterpolator()
+    private val celebrationInterpolator = BounceInterpolator()
     
     /**
-     * Configuration for ring animations following UI/UX specifications.
-     */
-    data class RingAnimationConfig(
-        val duration: Long = PROGRESS_ANIMATION_DURATION,
-        val interpolator: android.view.animation.Interpolator = DecelerateInterpolator(),
-        val celebrationDuration: Long = CELEBRATION_ANIMATION_DURATION
-    )
-    
-    /**
-     * Sets reduced motion preference for accessibility.
+     * Sets reduced motion preference for accessibility
      */
     fun setReducedMotionEnabled(enabled: Boolean) {
         isReducedMotionEnabled = enabled
     }
     
     /**
-     * Animates progress update with smooth transitions.
-     * Uses DecelerateInterpolator for natural feel per UI/UX requirements.
+     * Animates progress update between ring states
+     * UI/UX Specification: Smooth 200ms transitions
      */
     fun animateProgressUpdate(
         tripleRingView: TripleRingView,
         fromData: List<RingDisplayData>,
         toData: List<RingDisplayData>,
-        onComplete: () -> Unit = {}
+        onComplete: (() -> Unit)? = null
     ) {
-        if (!shouldAnimate()) {
-            tripleRingView.updateProgress(toData, false)
-            onComplete()
+        if (isReducedMotionEnabled) {
+            // Update immediately for accessibility
+            tripleRingView.invalidate()
+            onComplete?.invoke()
             return
         }
         
-        // Cancel any existing animation
-        currentAnimator?.cancel()
-        
-        val animator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = getOptimizedDuration(animationConfig.duration)
-            interpolator = animationConfig.interpolator
+        // Create smooth progress transition animation
+        val progressAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = PROGRESS_UPDATE_DURATION
+            interpolator = smoothInterpolator
             
-            addUpdateListener { animation ->
-                val progress = animation.animatedValue as Float
-                val interpolatedData = interpolateRingData(fromData, toData, progress)
-                tripleRingView.updateProgress(interpolatedData, true)
+            addUpdateListener { animator ->
+                val progress = animator.animatedValue as Float
+                
+                // Interpolate between old and new progress values
+                val interpolatedData = fromData.zip(toData) { from, to ->
+                    val interpolatedProgress = from.progress + (to.progress - from.progress) * progress
+                    to.copy(progress = interpolatedProgress)
+                }
+                
+                // Update the view with interpolated data
+                tripleRingView.updateRingsData(interpolatedData)
+                tripleRingView.invalidate()
             }
             
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    currentAnimator = null
-                    onComplete()
+                override fun onAnimationStart(animation: Animator) {
+                    runningAnimators.add(animation)
                 }
                 
-                override fun onAnimationCancel(animation: Animator) {
-                    currentAnimator = null
+                override fun onAnimationEnd(animation: Animator) {
+                    runningAnimators.remove(animation)
+                    
+                    // Ensure final state is set
+                    tripleRingView.updateRingsData(toData)
+                    tripleRingView.invalidate()
+                    
+                    onComplete?.invoke()
                 }
             })
         }
         
-        currentAnimator = animator
-        animator.start()
+        progressAnimator.start()
     }
     
     /**
-     * Celebrates goal achievement with purposeful and meaningful animations.
-     * Uses BounceInterpolator for celebratory feel per UI/UX motion design principles.
+     * Celebrates goal achievement with encouraging animation
+     * UI/UX Specification: Meaningful, celebratory feedback
      */
     fun celebrateGoalAchievement(
         tripleRingView: TripleRingView,
-        achievedRings: List<RingType>,
-        onComplete: () -> Unit = {}
+        achievedRings: List<RingType>
     ) {
-        if (!shouldAnimate() || achievedRings.isEmpty()) {
-            onComplete()
+        if (isReducedMotionEnabled) {
+            // Simple accessibility announcement
+            val message = when (achievedRings.size) {
+                1 -> "Goal achieved: ${achievedRings.first().displayName}!"
+                else -> "${achievedRings.size} goals achieved today!"
+            }
+            tripleRingView.announceForAccessibility(message)
             return
         }
         
-        // Cancel any existing animation
-        currentAnimator?.cancel()
-        
-        // Create celebration animation set
-        val animatorSet = AnimatorSet()
-        val animations = mutableListOf<Animator>()
-        
-        // Scale animation for celebration
-        val scaleUpX = ObjectAnimator.ofFloat(tripleRingView, "scaleX", 1f, 1.1f, 1f)
-        val scaleUpY = ObjectAnimator.ofFloat(tripleRingView, "scaleY", 1f, 1.1f, 1f)
-        
-        scaleUpX.duration = getOptimizedDuration(animationConfig.celebrationDuration)
-        scaleUpY.duration = getOptimizedDuration(animationConfig.celebrationDuration)
-        scaleUpX.interpolator = BounceInterpolator()
-        scaleUpY.interpolator = BounceInterpolator()
-        
-        animations.add(scaleUpX)
-        animations.add(scaleUpY)
-        
-        // Pulse animation for achieved rings
-        val pulseAnimator = createPulseAnimation(tripleRingView, achievedRings.size)
-        animations.add(pulseAnimator)
-        
-        animatorSet.playTogether(animations)
-        animatorSet.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                currentAnimator = null
-                onComplete()
+        // Create celebratory ring pulse animation
+        val pulseAnimator = ValueAnimator.ofFloat(1f, 1.2f, 1f).apply {
+            duration = CELEBRATION_DURATION
+            interpolator = celebrationInterpolator
+            repeatCount = 2
+            
+            addUpdateListener { animator ->
+                val scale = animator.animatedValue as Float
+                tripleRingView.scaleX = scale
+                tripleRingView.scaleY = scale
             }
             
-            override fun onAnimationCancel(animation: Animator) {
-                currentAnimator = null
-            }
-        })
-        
-        currentAnimator = animatorSet
-        animatorSet.start()
-        
-        // Announce achievement for accessibility
-        announceAchievement(tripleRingView, achievedRings)
-    }
-    
-    /**
-     * Creates a subtle pulse animation for goal achievement.
-     */
-    private fun createPulseAnimation(view: View, achievedCount: Int): Animator {
-        val pulseCount = when (achievedCount) {
-            3 -> 3 // All goals - triple pulse
-            2 -> 2 // Two goals - double pulse
-            else -> 1 // Single goal - single pulse
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    runningAnimators.add(animation)
+                    
+                    // Encouraging accessibility announcement
+                    val message = when (achievedRings.size) {
+                        1 -> "🎉 Congratulations! You achieved your ${achievedRings.first().displayName} goal!"
+                        else -> "🌟 Amazing! You achieved ${achievedRings.size} goals today!"
+                    }
+                    tripleRingView.announceForAccessibility(message)
+                }
+                
+                override fun onAnimationEnd(animation: Animator) {
+                    runningAnimators.remove(animation)
+                    
+                    // Reset scale
+                    tripleRingView.scaleX = 1f
+                    tripleRingView.scaleY = 1f
+                }
+            })
         }
         
-        val pulseAnimator = ValueAnimator.ofFloat(1f, 1.05f, 1f)
-        pulseAnimator.duration = getOptimizedDuration(300L)
-        pulseAnimator.repeatCount = pulseCount - 1
-        pulseAnimator.interpolator = DecelerateInterpolator()
-        
-        pulseAnimator.addUpdateListener { animation ->
-            val scale = animation.animatedValue as Float
-            view.scaleX = scale
-            view.scaleY = scale
-        }
-        
-        return pulseAnimator
+        pulseAnimator.start()
     }
     
     /**
-     * Interpolates between two sets of ring data for smooth animation.
-     */
-    private fun interpolateRingData(
-        fromData: List<RingDisplayData>,
-        toData: List<RingDisplayData>,
-        progress: Float
-    ): List<RingDisplayData> {
-        if (fromData.size != toData.size) return toData
-        
-        return fromData.mapIndexed { index, from ->
-            val to = toData[index]
-            val interpolatedProgress = from.progress + (to.progress - from.progress) * progress
-            
-            to.copy(
-                progress = interpolatedProgress,
-                isAnimating = true
-            )
-        }
-    }
-    
-    /**
-     * Checks if animations should be played based on accessibility settings.
-     */
-    private fun shouldAnimate(): Boolean {
-        return !isReducedMotionEnabled
-    }
-    
-    /**
-     * Gets optimized animation duration based on accessibility settings.
-     */
-    private fun getOptimizedDuration(baseDuration: Long): Long {
-        return if (isReducedMotionEnabled) {
-            REDUCED_MOTION_DURATION
-        } else {
-            baseDuration
-        }
-    }
-    
-    /**
-     * Announces goal achievement for screen readers.
-     */
-    private fun announceAchievement(view: View, achievedRings: List<RingType>) {
-        val announcement = when (achievedRings.size) {
-            3 -> "Congratulations! All three wellness goals achieved today!"
-            2 -> "Great progress! Two wellness goals achieved today!"
-            1 -> {
-                val ringName = achievedRings.first().displayName
-                "Well done! $ringName goal achieved today!"
-            }
-            else -> return
-        }
-        
-        view.announceForAccessibility(announcement)
-    }
-    
-    /**
-     * Cancels any currently running animations.
+     * Cancels all running animations
      */
     fun cancelAnimations() {
-        currentAnimator?.cancel()
-        currentAnimator = null
+        runningAnimators.forEach { it.cancel() }
+        runningAnimators.clear()
     }
-    
-    /**
-     * Checks if animations are currently running.
-     */
-    fun isAnimating(): Boolean {
-        return currentAnimator?.isRunning == true
-    }
+}
+
+/**
+ * Extension function to update rings data in TripleRingView
+ */
+private fun TripleRingView.updateRingsData(data: List<RingDisplayData>) {
+    // This would need to be implemented in TripleRingView
+    // For now, we'll use the existing updateProgress method
+    updateProgress(data, false)
 }

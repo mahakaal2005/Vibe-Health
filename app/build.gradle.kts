@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp) // VIBE_FIX: Replaced KAPT with KSP
 }
 
 android {
@@ -98,7 +98,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.fragment)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler) // VIBE_FIX: Replaced kapt with ksp
     
     // Navigation
     implementation(libs.navigation.fragment)
@@ -115,7 +115,7 @@ dependencies {
     // Room Database
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler) // VIBE_FIX: Replaced kapt with ksp
     
     // Database encryption - using androidx.security instead of SQLCipher for 16KB compatibility
     // implementation(libs.sqlcipher) // Temporarily disabled due to 16KB page size issues
@@ -129,7 +129,7 @@ dependencies {
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("androidx.hilt:hilt-work:1.1.0")
-    kapt("androidx.hilt:hilt-compiler:1.1.0")
+    ksp("androidx.hilt:hilt-compiler:1.1.0") // VIBE_FIX: Replaced kapt with ksp
     
     // OkHttp for networking
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -160,13 +160,14 @@ dependencies {
     
     // Hilt Testing
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
+    kspAndroidTest("com.google.dagger:hilt-android-compiler:2.48") // VIBE_FIX: Replaced kaptAndroidTest with kspAndroidTest
 }
 
-// KAPT configuration to fix annotation processing issues
-kapt {
-    correctErrorTypes = true
-    useBuildCache = true
+// VIBE_FIX: KSP configuration (replaces KAPT)
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
+    arg("room.expandProjection", "true")
 }
 
 // Task to verify 16KB page size compatibilit y

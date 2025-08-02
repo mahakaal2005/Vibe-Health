@@ -95,8 +95,8 @@ class ProfileGoalsSection @JvmOverloads constructor(
                 goals.calculatedAt.format(formatter)
             )
             
-            updateGoalStatus(goals.isValid(), goals.isFresh())
-            buttonRecalculate.visibility = if (goals.isFresh()) View.GONE else View.VISIBLE
+            updateGoalStatus(goals.isValid, goals.isFresh)
+            buttonRecalculate.visibility = if (goals.isFresh) View.GONE else View.VISIBLE
         }
     }
 

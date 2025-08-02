@@ -199,7 +199,7 @@ class GoalCalculationUseCase @Inject constructor(
             try {
                 val goals = goalRepository.getCurrentGoalsSync(userId)
                 goals?.let { 
-                    it.isValid() && it.isFresh() && it.calculationSource != CalculationSource.FALLBACK_DEFAULT
+                    it.isValid && it.isFresh && it.calculationSource != CalculationSource.FALLBACK_DEFAULT
                 } ?: false
             } catch (e: Exception) {
                 Log.e(TAG, "Error checking if user has valid goals: $userId", e)
@@ -255,7 +255,7 @@ class GoalCalculationUseCase @Inject constructor(
      */
     private fun isRecalculationNeeded(userProfile: UserProfile, previousGoals: DailyGoals): Boolean {
         // Always recalculate if goals are old
-        if (!previousGoals.isFresh()) {
+        if (!previousGoals.isFresh) {
             return true
         }
         
@@ -353,7 +353,7 @@ class GoalCalculationUseCase @Inject constructor(
         val issues = mutableListOf<String>()
         
         // Basic range validation (already done in DailyGoals.isValid())
-        if (!goals.isValid()) {
+        if (!goals.isValid) {
             issues.add("Goals are outside acceptable ranges")
         }
         

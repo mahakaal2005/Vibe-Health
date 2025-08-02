@@ -57,6 +57,12 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.VibeHealth" />
+            
+        <activity
+            android:name=".ui.progress.BasicProgressActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.VibeHealth" />
     </application>
 
 </manifest>

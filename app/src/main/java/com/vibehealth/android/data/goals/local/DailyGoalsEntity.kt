@@ -1,141 +1,87 @@
 package com.vibehealth.android.data.goals.local
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.vibehealth.android.data.user.local.DatabaseTypeConverters
-import com.vibehealth.android.data.user.local.UserProfileEntity
-import com.vibehealth.android.domain.goals.CalculationSource
-import com.vibehealth.android.domain.goals.DailyGoals
 import java.time.LocalDateTime
-import java.util.Date
 
 /**
- * Room entity for DailyGoals with proper field mappings and encryption support.
- * 
- * This entity stores calculated daily wellness goals with foreign key relationship
- * to UserProfile and proper indexing for performance.
+ * VIBE_FIX: Phase 2 - Room entity for daily goals
  */
-@Entity(
-    tableName = "daily_goals",
-    // Temporarily disable foreign key constraint to debug the issue
-    // foreignKeys = [
-    //     ForeignKey(
-    //         entity = UserProfileEntity::class,
-    //         parentColumns = ["user_id"],
-    //         childColumns = ["user_id"],
-    //         onDelete = ForeignKey.CASCADE
-    //     )
-    // ],
-    indices = [
-        Index(value = ["user_id"]),
-        Index(value = ["calculated_at"]),
-        Index(value = ["user_id", "calculated_at"])
-    ]
-)
-@TypeConverters(DatabaseTypeConverters::class, GoalsTypeConverters::class)
+@Entity(tableName = "daily_goals")
 data class DailyGoalsEntity(
     @PrimaryKey
-    @ColumnInfo(name = "id")
-    val id: String, // UUID for unique identification
-    
-    @ColumnInfo(name = "user_id")
+    val id: String,
     val userId: String,
-    
-    @ColumnInfo(name = "steps_goal")
     val stepsGoal: Int,
-    
-    @ColumnInfo(name = "calories_goal")
     val caloriesGoal: Int,
-    
-    @ColumnInfo(name = "heart_points_goal")
     val heartPointsGoal: Int,
-    
-    @ColumnInfo(name = "calculated_at")
-    val calculatedAt: LocalDateTime,
-    
-    @ColumnInfo(name = "calculation_source")
-    val calculationSource: CalculationSource,
-    
-    @ColumnInfo(name = "created_at")
-    val createdAt: Date,
-    
-    @ColumnInfo(name = "updated_at")
-    val updatedAt: Date,
-    
-    @ColumnInfo(name = "last_sync_at")
-    val lastSyncAt: Date?,
-    
-    @ColumnInfo(name = "is_dirty")
-    val isDirty: Boolean = false // Flag for sync status
+    val calculationSource: GoalCalculationSource,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
+    val isActive: Boolean = true
 ) {
-    /**
-     * Convert to domain DailyGoals model.
-     * 
-     * @return Domain model representation
-     */
-    fun toDomainModel(): DailyGoals {
-        return DailyGoals(
+    companion object {
+        fun create(
+            userId: String,
+            stepsGoal: Int = 10000,
+            caloriesGoal: Int = 2000,
+            heartPointsGoal: Int = 30,
+            calculationSource: GoalCalculationSource = GoalCalculationSource.DEFAULT
+        ): DailyGoalsEntity {
+            val now = LocalDateTime.now()
+            return DailyGoalsEntity(
+                id = "${userId}_${now.toLocalDate()}",
+                userId = userId,
+                stepsGoal = stepsGoal,
+                caloriesGoal = caloriesGoal,
+                heartPointsGoal = heartPointsGoal,
+                calculationSource = calculationSource,
+                createdAt = now,
+                updatedAt = now
+            )
+        }
+        
+        // VIBE_FIX: Phase 3 - Companion function for domain to entity conversion
+        fun fromDomainModel(domainGoals: com.vibehealth.android.domain.goals.DailyGoals, isDirty: Boolean = false): DailyGoalsEntity {
+            return DailyGoalsEntity(
+                id = "${domainGoals.userId}_${domainGoals.calculatedAt.toLocalDate()}",
+                userId = domainGoals.userId,
+                stepsGoal = domainGoals.stepsGoal,
+                caloriesGoal = domainGoals.caloriesGoal,
+                heartPointsGoal = domainGoals.heartPointsGoal,
+                calculationSource = when (domainGoals.calculationSource) {
+                    com.vibehealth.android.domain.goals.CalculationSource.DEFAULT -> GoalCalculationSource.DEFAULT
+                    com.vibehealth.android.domain.goals.CalculationSource.PERSONALIZED -> GoalCalculationSource.PERSONALIZED
+                    com.vibehealth.android.domain.goals.CalculationSource.MANUAL -> GoalCalculationSource.MANUAL
+                    com.vibehealth.android.domain.goals.CalculationSource.WHO_STANDARD -> GoalCalculationSource.WHO_STANDARD
+                    com.vibehealth.android.domain.goals.CalculationSource.FALLBACK_DEFAULT -> GoalCalculationSource.FALLBACK_DEFAULT
+                    com.vibehealth.android.domain.goals.CalculationSource.USER_ADJUSTED -> GoalCalculationSource.USER_ADJUSTED
+                },
+                createdAt = domainGoals.calculatedAt,
+                updatedAt = domainGoals.calculatedAt,
+                isActive = domainGoals.isValid
+            )
+        }
+    }
+    
+    // VIBE_FIX: Phase 3 - Extension methods for domain conversion
+    fun toDomainModel(): com.vibehealth.android.domain.goals.DailyGoals {
+        return com.vibehealth.android.domain.goals.DailyGoals(
             userId = userId,
             stepsGoal = stepsGoal,
             caloriesGoal = caloriesGoal,
             heartPointsGoal = heartPointsGoal,
-            calculatedAt = calculatedAt,
-            calculationSource = calculationSource
+            calculationSource = when (calculationSource) {
+                GoalCalculationSource.DEFAULT -> com.vibehealth.android.domain.goals.CalculationSource.DEFAULT
+                GoalCalculationSource.PERSONALIZED -> com.vibehealth.android.domain.goals.CalculationSource.PERSONALIZED
+                GoalCalculationSource.MANUAL -> com.vibehealth.android.domain.goals.CalculationSource.MANUAL
+                GoalCalculationSource.WHO_STANDARD -> com.vibehealth.android.domain.goals.CalculationSource.WHO_STANDARD
+                GoalCalculationSource.FALLBACK_DEFAULT -> com.vibehealth.android.domain.goals.CalculationSource.FALLBACK_DEFAULT
+                GoalCalculationSource.USER_ADJUSTED -> com.vibehealth.android.domain.goals.CalculationSource.USER_ADJUSTED
+            },
+            calculatedAt = createdAt,
+            isValid = isActive,
+            isFresh = true
         )
-    }
-
-    companion object {
-        /**
-         * Create entity from domain DailyGoals model.
-         * 
-         * @param dailyGoals Domain model to convert
-         * @param isDirty Whether the entity needs sync
-         * @return Database entity representation
-         */
-        fun fromDomainModel(dailyGoals: DailyGoals, isDirty: Boolean = false): DailyGoalsEntity {
-            val now = Date()
-            return DailyGoalsEntity(
-                id = java.util.UUID.randomUUID().toString(),
-                userId = dailyGoals.userId,
-                stepsGoal = dailyGoals.stepsGoal,
-                caloriesGoal = dailyGoals.caloriesGoal,
-                heartPointsGoal = dailyGoals.heartPointsGoal,
-                calculatedAt = dailyGoals.calculatedAt,
-                calculationSource = dailyGoals.calculationSource,
-                createdAt = now,
-                updatedAt = now,
-                lastSyncAt = if (isDirty) null else now,
-                isDirty = isDirty
-            )
-        }
-        
-        /**
-         * Update existing entity with new domain model data.
-         * 
-         * @param existing Existing entity to update
-         * @param dailyGoals New domain model data
-         * @param isDirty Whether the entity needs sync
-         * @return Updated entity
-         */
-        fun updateFromDomainModel(
-            existing: DailyGoalsEntity,
-            dailyGoals: DailyGoals,
-            isDirty: Boolean = false
-        ): DailyGoalsEntity {
-            return existing.copy(
-                stepsGoal = dailyGoals.stepsGoal,
-                caloriesGoal = dailyGoals.caloriesGoal,
-                heartPointsGoal = dailyGoals.heartPointsGoal,
-                calculatedAt = dailyGoals.calculatedAt,
-                calculationSource = dailyGoals.calculationSource,
-                updatedAt = Date(),
-                lastSyncAt = if (isDirty) existing.lastSyncAt else Date(),
-                isDirty = isDirty
-            )
-        }
     }
 }

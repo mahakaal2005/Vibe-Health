@@ -26,7 +26,7 @@ object FallbackGoalVerification {
         results.add("  Calories: ${noProfileGoals.caloriesGoal} (expected: 1800)")
         results.add("  Heart Points: ${noProfileGoals.heartPointsGoal} (expected: 21)")
         results.add("  Source: ${noProfileGoals.calculationSource}")
-        results.add("  Valid: ${noProfileGoals.isValid()}")
+        results.add("  Valid: ${noProfileGoals.isValid}")
         results.add("  Is Fallback: ${noProfileGoals.isFallback()}")
         results.add("")
         
@@ -91,7 +91,7 @@ object FallbackGoalVerification {
         results.add("  Steps: ${emergencyGoals.stepsGoal} (expected: 6000 - most conservative)")
         results.add("  Calories: ${emergencyGoals.caloriesGoal} (expected: 1600 - most conservative)")
         results.add("  Heart Points: ${emergencyGoals.heartPointsGoal} (expected: 18 - most conservative)")
-        results.add("  Valid: ${emergencyGoals.isValid()}")
+        results.add("  Valid: ${emergencyGoals.isValid}")
         results.add("  Passes Validation: ${generator.validateFallbackGoals(emergencyGoals)}")
         results.add("")
         
@@ -108,7 +108,7 @@ object FallbackGoalVerification {
         incompleteProfiles.forEachIndexed { index, profile ->
             val goals = generator.generateFallbackGoals("incomplete-${index + 1}", profile)
             results.add("  Profile ${index + 1}: ${goals.getSummary()}")
-            results.add("    Valid: ${goals.isValid()}")
+            results.add("    Valid: ${goals.isValid}")
         }
         results.add("")
         
@@ -117,25 +117,25 @@ object FallbackGoalVerification {
         val validationTests = listOf(
             // Valid fallback goals
             Triple(
-                DailyGoals("test", 7500, 1800, 21, java.time.LocalDateTime.now(), CalculationSource.FALLBACK_DEFAULT),
+                DailyGoals("test", 7500, 1800, 21, CalculationSource.FALLBACK_DEFAULT, java.time.LocalDateTime.now()),
                 true,
                 "Valid fallback goals"
             ),
             // Invalid steps (too low)
             Triple(
-                DailyGoals("test", 4000, 1800, 21, java.time.LocalDateTime.now(), CalculationSource.FALLBACK_DEFAULT),
+                DailyGoals("test", 4000, 1800, 21, CalculationSource.FALLBACK_DEFAULT, java.time.LocalDateTime.now()),
                 false,
                 "Steps too low"
             ),
             // Invalid calories (too high)
             Triple(
-                DailyGoals("test", 7500, 3000, 21, java.time.LocalDateTime.now(), CalculationSource.FALLBACK_DEFAULT),
+                DailyGoals("test", 7500, 3000, 21, CalculationSource.FALLBACK_DEFAULT, java.time.LocalDateTime.now()),
                 false,
                 "Calories too high"
             ),
             // Wrong source
             Triple(
-                DailyGoals("test", 7500, 1800, 21, java.time.LocalDateTime.now(), CalculationSource.WHO_STANDARD),
+                DailyGoals("test", 7500, 1800, 21, CalculationSource.WHO_STANDARD, java.time.LocalDateTime.now()),
                 false,
                 "Wrong calculation source"
             )
@@ -174,7 +174,7 @@ object FallbackGoalVerification {
         val fallbackGoals = generator.generateFallbackGoals("test-extensions")
         val whoGoals = DailyGoals(
             "test-who", 10000, 2200, 22, 
-            java.time.LocalDateTime.now(), CalculationSource.WHO_STANDARD
+            CalculationSource.WHO_STANDARD, java.time.LocalDateTime.now()
         )
         
         results.add("  Fallback goals isFallback(): ${fallbackGoals.isFallback()}")
@@ -186,7 +186,7 @@ object FallbackGoalVerification {
         // Summary
         results.add("=== Fallback Generation Summary ===")
         val allTestGoals = listOf(noProfileGoals, youthGoals, olderGoals, maleGoals, femaleGoals, neutralGoals, emergencyGoals)
-        val allValid = allTestGoals.all { it.isValid() }
+        val allValid = allTestGoals.all { it.isValid }
         val allFallback = allTestGoals.all { it.isFallback() }
         val allWithinBounds = allTestGoals.all { 
             it.stepsGoal in 6000..9000 && 

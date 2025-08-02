@@ -391,10 +391,7 @@ class GoalRepository @Inject constructor(
      */
     private suspend fun markGoalsAsSynced(userIds: List<String>) {
         try {
-            val syncTime = System.currentTimeMillis()
-            // Note: This is a simplified implementation
-            // In practice, you'd need to get the actual goal IDs
-            goalDao.markGoalsAsSynced(userIds, syncTime)
+            goalDao.markGoalsAsSynced(userIds)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to mark goals as synced", e)
         }

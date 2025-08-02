@@ -48,6 +48,14 @@ class ProfileViewModel @Inject constructor(
     private val _isGoalCalculationLoading = MutableLiveData<Boolean>()
     val isGoalCalculationLoading: LiveData<Boolean> = _isGoalCalculationLoading
 
+    // Profile update state for edit functionality
+    private val _profileUpdateState = MutableLiveData<ProfileUpdateState>(ProfileUpdateState.Idle)
+    val profileUpdateState: LiveData<ProfileUpdateState> = _profileUpdateState
+
+    // User profile flow for edit functionality
+    private val _userProfile = MutableLiveData<UserProfile?>()
+    val userProfile: LiveData<UserProfile?> = _userProfile
+
     // Current jobs for cancellation
     private var profileLoadJob: Job? = null
     private var goalCalculationJob: Job? = null
@@ -82,6 +90,7 @@ class ProfileViewModel @Inject constructor(
                 }
 
                 _profileState.value = ProfileState.Loaded(profile)
+                _userProfile.value = profile
 
                 // Load current goals
                 loadCurrentGoals(userId)
@@ -91,6 +100,90 @@ class ProfileViewModel @Inject constructor(
                 _errorState.value = ProfileErrorState.UnexpectedError(e.message ?: "Unknown error")
             } finally {
                 _isProfileLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Update user profile and trigger goal recalculation if needed.
+     * 
+     * @param updatedProfile Updated profile data
+     */
+    fun updateUserProfile(updatedProfile: UserProfile) {
+        profileUpdateJob?.cancel()
+        profileUpdateJob = viewModelScope.launch {
+            try {
+                _profileUpdateState.value = ProfileUpdateState.Loading
+                _errorState.value = null
+
+                val result = profileUpdateUseCase.updateProfileWithGoalRecalculation(updatedProfile)
+
+                when (result) {
+                    is ProfileUpdateResult.Success -> {
+                        _profileState.value = ProfileState.Loaded(result.updatedProfile)
+                        _profileUpdateState.value = ProfileUpdateState.Success(result.updatedProfile)
+                        
+                        // Update goal calculation state based on result
+                        result.goalRecalculationResult?.let { goalResult ->
+                            when (goalResult) {
+                                is GoalCalculationResult.Success -> {
+                                    _currentGoals.value = goalResult.goals
+                                    _goalCalculationState.value = GoalCalculationState.Success(
+                                        goals = goalResult.goals,
+                                        wasRecalculated = goalResult.wasRecalculated,
+                                        reason = result.changesSummary.reason
+                                    )
+                                }
+                                is GoalCalculationResult.Error -> {
+                                    _goalCalculationState.value = GoalCalculationState.Error(
+                                        goalResult.message,
+                                        canRetry = true
+                                    )
+                                }
+                            }
+                        } ?: run {
+                            // No goal recalculation was needed
+                            _goalCalculationState.value = GoalCalculationState.NoRecalculationNeeded(
+                                result.changesSummary.reason
+                            )
+                        }
+                    }
+                    
+                    is ProfileUpdateResult.Error -> {
+                        _profileUpdateState.value = ProfileUpdateState.Error(result.message)
+                        _errorState.value = when (result.error) {
+                            is ProfileUpdateError.ConcurrentUpdate -> 
+                                ProfileErrorState.ConcurrentUpdate("Another update is in progress")
+                            is ProfileUpdateError.ProfileUpdateFailed -> 
+                                ProfileErrorState.ProfileUpdateFailed(result.message)
+                            is ProfileUpdateError.ProfileNotFound -> 
+                                ProfileErrorState.ProfileNotFound("Profile not found")
+                            is ProfileUpdateError.UnexpectedError -> 
+                                ProfileErrorState.UnexpectedError(result.message)
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                _profileUpdateState.value = ProfileUpdateState.Error("Unexpected error: ${e.message}")
+                _errorState.value = ProfileErrorState.UnexpectedError(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    /**
+     * Load user profile for editing.
+     */
+    fun loadUserProfile() {
+        viewModelScope.launch {
+            try {
+                // Get current profile from state
+                val currentState = _profileState.value
+                if (currentState is ProfileState.Loaded) {
+                    _userProfile.value = currentState.profile
+                }
+            } catch (e: Exception) {
+                _errorState.value = ProfileErrorState.UnexpectedError(e.message ?: "Unknown error")
             }
         }
     }
@@ -288,6 +381,16 @@ class ProfileViewModel @Inject constructor(
         goalCalculationJob?.cancel()
         profileUpdateJob?.cancel()
     }
+
+    /**
+     * State of profile update operations for editing functionality.
+     */
+    sealed class ProfileUpdateState {
+        object Idle : ProfileUpdateState()
+        object Loading : ProfileUpdateState()
+        data class Success(val updatedProfile: UserProfile) : ProfileUpdateState()
+        data class Error(val message: String) : ProfileUpdateState()
+    }
 }
 
 /**
@@ -327,3 +430,4 @@ sealed class ProfileErrorState {
     data class ConcurrentUpdate(val message: String) : ProfileErrorState()
     data class UnexpectedError(val message: String) : ProfileErrorState()
 }
+

@@ -27,6 +27,10 @@ class ProfileGoalsSection @JvmOverloads constructor(
 
     private val binding: ComponentProfileGoalsSectionBinding
     
+    // Track the current content state for proper toggle behavior
+    private enum class ContentState { GOALS, EMPTY, LOADING, ERROR }
+    private var currentContentState = ContentState.EMPTY
+    
     // Callback for recalculation trigger
     var onRecalculateClickListener: (() -> Unit)? = null
     var onLearnMoreClickListener: (() -> Unit)? = null
@@ -48,10 +52,12 @@ class ProfileGoalsSection @JvmOverloads constructor(
      * @param formattedGoals Formatted goals data for display
      */
     fun displayGoals(formattedGoals: FormattedGoals) {
+        currentContentState = ContentState.GOALS
+        
         with(binding) {
-            // Show goals section
-            layoutGoalsContent.visibility = View.VISIBLE
-            layoutEmptyState.visibility = View.GONE
+            // Hide loading indicator and restore normal appearance
+            progressCalculation.visibility = View.GONE
+            layoutGoalValues.alpha = 1.0f
             
             // Display goal values
             textStepsValue.text = formattedGoals.stepsGoal
@@ -70,6 +76,9 @@ class ProfileGoalsSection @JvmOverloads constructor(
             
             // Update accessibility descriptions
             updateAccessibilityDescriptions(formattedGoals)
+            
+            // Start in expanded state so goals are visible
+            setExpanded(true)
         }
     }
 
@@ -79,11 +88,13 @@ class ProfileGoalsSection @JvmOverloads constructor(
      * @param goals Raw daily goals data
      */
     fun displayGoals(goals: DailyGoals) {
+        currentContentState = ContentState.GOALS
         val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
         
         with(binding) {
-            layoutGoalsContent.visibility = View.VISIBLE
-            layoutEmptyState.visibility = View.GONE
+            // Hide loading indicator and restore normal appearance
+            progressCalculation.visibility = View.GONE
+            layoutGoalValues.alpha = 1.0f
             
             textStepsValue.text = context.getString(R.string.steps_goal_format, goals.stepsGoal)
             textCaloriesValue.text = context.getString(R.string.calories_goal_format, goals.caloriesGoal)
@@ -97,6 +108,9 @@ class ProfileGoalsSection @JvmOverloads constructor(
             
             updateGoalStatus(goals.isValid, goals.isFresh)
             buttonRecalculate.visibility = if (goals.isFresh) View.GONE else View.VISIBLE
+            
+            // Start in expanded state so goals are visible
+            setExpanded(true)
         }
     }
 
@@ -104,13 +118,15 @@ class ProfileGoalsSection @JvmOverloads constructor(
      * Show empty state when no goals are available.
      */
     fun showEmptyState() {
+        currentContentState = ContentState.EMPTY
+        
         with(binding) {
-            layoutGoalsContent.visibility = View.GONE
-            layoutEmptyState.visibility = View.VISIBLE
-            
             textEmptyTitle.text = context.getString(R.string.no_goals_calculated)
             textEmptyDescription.text = context.getString(R.string.complete_profile_to_calculate_goals)
             buttonCalculateGoals.text = context.getString(R.string.calculate_my_goals)
+            
+            // Start in expanded state so empty state is visible, but make it collapsible
+            setExpanded(true)
         }
     }
 
@@ -118,10 +134,9 @@ class ProfileGoalsSection @JvmOverloads constructor(
      * Show loading state while goals are being calculated.
      */
     fun showLoadingState() {
+        currentContentState = ContentState.LOADING
+        
         with(binding) {
-            layoutGoalsContent.visibility = View.VISIBLE
-            layoutEmptyState.visibility = View.GONE
-            
             textStepsValue.text = context.getString(R.string.calculating)
             textCaloriesValue.text = context.getString(R.string.calculating)
             textHeartPointsValue.text = context.getString(R.string.calculating)
@@ -135,6 +150,9 @@ class ProfileGoalsSection @JvmOverloads constructor(
             
             // Dim the content
             layoutGoalValues.alpha = 0.6f
+            
+            // Show loading state in expanded form
+            setExpanded(true)
         }
     }
 
@@ -144,10 +162,9 @@ class ProfileGoalsSection @JvmOverloads constructor(
      * @param errorMessage Error message to display
      */
     fun showErrorState(errorMessage: String) {
+        currentContentState = ContentState.ERROR
+        
         with(binding) {
-            layoutGoalsContent.visibility = View.GONE
-            layoutEmptyState.visibility = View.VISIBLE
-            
             textEmptyTitle.text = context.getString(R.string.goals_unavailable)
             textEmptyDescription.text = errorMessage
             buttonCalculateGoals.text = context.getString(R.string.try_again)
@@ -157,6 +174,9 @@ class ProfileGoalsSection @JvmOverloads constructor(
             iconEmptyState.setColorFilter(
                 ContextCompat.getColor(context, R.color.error_color)
             )
+            
+            // Show error state in expanded form
+            setExpanded(true)
         }
     }
 
@@ -167,7 +187,27 @@ class ProfileGoalsSection @JvmOverloads constructor(
      */
     fun setExpanded(expanded: Boolean) {
         with(binding) {
-            layoutGoalDetails.visibility = if (expanded) View.VISIBLE else View.GONE
+            if (expanded) {
+                // Show content based on current state
+                when (currentContentState) {
+                    ContentState.GOALS, ContentState.LOADING -> {
+                        layoutGoalsContent.visibility = View.VISIBLE
+                        layoutGoalDetails.visibility = View.VISIBLE
+                        layoutEmptyState.visibility = View.GONE
+                    }
+                    ContentState.EMPTY, ContentState.ERROR -> {
+                        layoutEmptyState.visibility = View.VISIBLE
+                        layoutGoalsContent.visibility = View.GONE
+                        layoutGoalDetails.visibility = View.GONE
+                    }
+                }
+            } else {
+                // Hide everything when collapsed
+                layoutGoalsContent.visibility = View.GONE
+                layoutGoalDetails.visibility = View.GONE
+                layoutEmptyState.visibility = View.GONE
+            }
+            
             iconExpand.rotation = if (expanded) 180f else 0f
         }
     }
@@ -216,7 +256,11 @@ class ProfileGoalsSection @JvmOverloads constructor(
         with(binding) {
             // Header click to expand/collapse
             layoutSectionHeader.setOnClickListener {
-                val isExpanded = layoutGoalDetails.visibility == View.VISIBLE
+                // Check if any content is currently visible to determine expanded state
+                val isExpanded = when (currentContentState) {
+                    ContentState.GOALS, ContentState.LOADING -> layoutGoalsContent.visibility == View.VISIBLE
+                    ContentState.EMPTY, ContentState.ERROR -> layoutEmptyState.visibility == View.VISIBLE
+                }
                 setExpanded(!isExpanded)
             }
             

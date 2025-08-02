@@ -127,21 +127,31 @@ class TripleRingView @JvmOverloads constructor(
         // Create intent with encouraging context
         val intent = com.vibehealth.android.ui.progress.BasicProgressActivity.createIntent(
             context,
-            supportiveMessage = "Let's explore your wellness journey together!",
+            supportiveMessage = "Let's explore your wellness journey together! 🌟",
             celebrationContext = "We're excited to show you how far you've come on your wellness journey!"
         )
         
-        // Start activity with supportive transition
-        context.startActivity(intent)
-        
-        // Add supportive transition animation if context is an Activity
-        (context as? android.app.Activity)?.overridePendingTransition(
-            com.vibehealth.android.R.anim.supportive_slide_in,
-            com.vibehealth.android.R.anim.gentle_fade_out
-        )
-        
-        // Announce navigation for accessibility
-        announceForAccessibility("Opening your detailed wellness progress view")
+        try {
+            // Start activity with supportive transition
+            context.startActivity(intent)
+            
+            // Add supportive transition animation if context is an Activity
+            (context as? android.app.Activity)?.overridePendingTransition(
+                com.vibehealth.android.R.anim.supportive_slide_in,
+                com.vibehealth.android.R.anim.gentle_fade_out
+            )
+            
+            // Announce navigation for accessibility
+            announceForAccessibility("Opening your detailed wellness progress view")
+            
+            android.util.Log.d("VIBE_FIX", "Navigation to BasicProgressActivity successful")
+            
+        } catch (e: Exception) {
+            android.util.Log.e("VIBE_FIX", "Error navigating to progress activity", e)
+            
+            // Fallback: show encouraging message
+            announceForAccessibility("Your progress details will be available soon!")
+        }
     }
     
     /**

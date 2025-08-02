@@ -26,18 +26,10 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     
-    // VIBE_FIX: Phase 3 - Restored DashboardViewModel
     private val dashboardViewModel: DashboardViewModel by viewModels()
-    
-    // VIBE_FIX: Temporarily removed all injections to fix compilation
-    // Will be restored in Phase 3
-    
-    // VIBE_FIX: Simplified animation management for Phase 1
     private var isInitialized = false
     
-    // Motivational quotes removed for clean ring design
     
-    // Progress summary cards - we'll access them through the binding
     
     override fun onCreateView(
         inflater: LayoutInflater,

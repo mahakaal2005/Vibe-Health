@@ -1,24 +1,369 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/background_light">
 
-    <TextView
+    <!-- Material Design 3 Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Progress Details"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/sage_green"
+        app:title="Your Progress Journey"
+        app:titleTextColor="@color/white"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/white"
+        android:elevation="4dp" />
 
-    <TextView
+    <!-- Main Content Container -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Your detailed wellness progress will be displayed here."
-        android:textSize="16sp"
-        android:gravity="center" />
+        android:layout_height="match_parent">
 
+        <!-- Loading State -->
+        <LinearLayout
+            android:id="@+id/loadingContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="visible"
+            android:padding="32dp">
+            
+            <ProgressBar
+                android:id="@+id/loadingIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/sage_green" />
+            
+            <TextView
+                android:id="@+id/loadingMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preparing your wellness insights..."
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Main Content (Initially Hidden) -->
+        <ScrollView
+            android:id="@+id/contentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:fillViewport="true">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                
+                <!-- Supportive Message Area -->
+                <TextView
+                    android:id="@+id/supportiveMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🎉 Your wellness journey is inspiring!"
+                    android:textSize="18sp"
+                    android:textColor="@color/text_primary"
+                    android:gravity="center"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="24dp"
+                    android:padding="16dp"
+                    android:background="@drawable/card_background"
+                    android:elevation="2dp" />
+                
+                <!-- Progress Graphs Container (Phase 2) -->
+                <LinearLayout
+                    android:id="@+id/graphsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    
+                    <!-- Progress View Header with Toggle (Phase 5) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
+                        
+                        <!-- Progress Title -->
+                        <TextView
+                            android:id="@+id/progressTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="📊 Your Weekly Progress"
+                            android:textSize="20sp"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:layout_marginBottom="12dp"
+                            android:fontFamily="sans-serif-medium" />
+                        
+                        <!-- View Toggle (Weekly/Monthly) -->
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/viewToggleGroup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            app:singleSelection="true"
+                            app:selectionRequired="true">
+                            
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/weeklyViewButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Weekly"
+                                android:textSize="14sp"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:backgroundTint="@color/sage_green"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="16dp"
+                                android:paddingVertical="8dp" />
+                            
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/monthlyViewButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Monthly"
+                                android:textSize="14sp"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:backgroundTint="@color/background_light"
+                                android:textColor="@color/text_primary"
+                                android:paddingHorizontal="16dp"
+                                android:paddingVertical="8dp" />
+                                
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+                        
+                    </LinearLayout>
+                    
+                    <!-- Steps Graph Card -->
+                    <LinearLayout
+                        android:id="@+id/stepsGraphCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/card_background"
+                        android:elevation="2dp"
+                        android:layout_marginBottom="16dp"
+                        android:padding="16dp">
+                        
+                        <TextView
+                            android:id="@+id/stepsGraphTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🚶 Steps Progress"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="sans-serif-medium" />
+                        
+                        <com.vibehealth.android.ui.components.BasicProgressGraph
+                            android:id="@+id/stepsGraph"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_marginBottom="8dp" />
+                        
+                        <TextView
+                            android:id="@+id/stepsGraphSummary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Your steps progress will be displayed here"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:gravity="center" />
+                    </LinearLayout>
+                    
+                    <!-- Calories Graph Card -->
+                    <LinearLayout
+                        android:id="@+id/caloriesGraphCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/card_background"
+                        android:elevation="2dp"
+                        android:layout_marginBottom="16dp"
+                        android:padding="16dp">
+                        
+                        <TextView
+                            android:id="@+id/caloriesGraphTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🔥 Calories Progress"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="sans-serif-medium" />
+                        
+                        <com.vibehealth.android.ui.components.BasicProgressGraph
+                            android:id="@+id/caloriesGraph"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_marginBottom="8dp" />
+                        
+                        <TextView
+                            android:id="@+id/caloriesGraphSummary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Your calories progress will be displayed here"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:gravity="center" />
+                    </LinearLayout>
+                    
+                    <!-- Heart Points Graph Card -->
+                    <LinearLayout
+                        android:id="@+id/heartPointsGraphCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/card_background"
+                        android:elevation="2dp"
+                        android:layout_marginBottom="16dp"
+                        android:padding="16dp">
+                        
+                        <TextView
+                            android:id="@+id/heartPointsGraphTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="❤️ Heart Points Progress"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="sans-serif-medium" />
+                        
+                        <com.vibehealth.android.ui.components.BasicProgressGraph
+                            android:id="@+id/heartPointsGraph"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_marginBottom="8dp" />
+                        
+                        <TextView
+                            android:id="@+id/heartPointsGraphSummary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Your heart points progress will be displayed here"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:gravity="center" />
+                    </LinearLayout>
+                    
+                    <!-- Weekly Summary Card -->
+                    <LinearLayout
+                        android:id="@+id/weeklySummaryCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/card_background"
+                        android:elevation="2dp"
+                        android:layout_marginBottom="16dp"
+                        android:padding="16dp">
+                        
+                        <TextView
+                            android:id="@+id/weeklySummaryTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🌟 Weekly Summary"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="sans-serif-medium" />
+                        
+                        <TextView
+                            android:id="@+id/weeklySummaryText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Your weekly achievements and insights will appear here"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:lineSpacingExtra="4dp" />
+                    </LinearLayout>
+                        
+                </LinearLayout>
+                    
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Error State -->
+        <LinearLayout
+            android:id="@+id/errorContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="32dp">
+            
+            <TextView
+                android:id="@+id/errorMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="We're having trouble loading your progress, but your data is safe."
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+                
+            <Button
+                android:id="@+id/retryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Try Again"
+                android:backgroundTint="@color/sage_green"
+                android:textColor="@color/white"
+                android:layout_marginTop="16dp" />
+        </LinearLayout>
+
+        <!-- Empty State -->
+        <LinearLayout
+            android:id="@+id/emptyContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="32dp">
+            
+            <TextView
+                android:id="@+id/emptyMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your wellness journey is just beginning!"
+                android:textSize="18sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="8dp" />
+                
+            <TextView
+                android:id="@+id/emptySubMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start tracking your activities to see your progress here."
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+                
+            <Button
+                android:id="@+id/startTrackingButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Tracking"
+                android:backgroundTint="@color/sage_green"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+    </FrameLayout>
 </LinearLayout>

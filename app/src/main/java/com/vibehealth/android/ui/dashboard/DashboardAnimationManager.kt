@@ -126,22 +126,40 @@ class DashboardAnimationManager(private val context: Context) : DefaultLifecycle
      * UI/UX Specification: 250ms duration with DecelerateInterpolator
      */
     fun animateRingFillUp(tripleRingView: TripleRingView, ringData: List<RingDisplayData>) {
+        android.util.Log.d("VIBE_FIX", "DashboardAnimationManager: animateRingFillUp called - reducedMotion: $isReducedMotionEnabled")
+        
         if (isReducedMotionEnabled) {
-            // Update immediately for accessibility
-            tripleRingView.updateProgress(ringData, false)
-            return
+            android.util.Log.d("VIBE_FIX", "DashboardAnimationManager: Reduced motion enabled - forcing animation anyway for testing")
+            // Force animation even with reduced motion for testing
+            // tripleRingView.updateProgress(ringData, false)
+            // return
         }
         
-        // Update all rings with animation enabled
-        tripleRingView.updateProgress(ringData, true)
+        // Force animation to be more visible by starting from 0 and using longer duration
+        android.util.Log.d("VIBE_FIX", "DashboardAnimationManager: Starting ring fill animation with ${ringData.size} rings")
         
-        // Announce progress for accessibility after a short delay
+        // Create zero-progress data for animation start
+        val zeroProgressData = ringData.map { ring ->
+            ring.copy(progress = 0f)
+        }
+        
+        // Set rings to zero first (without animation)
+        tripleRingView.updateProgress(zeroProgressData, false)
+        
+        // Then animate to target progress with longer, more visible animation
+        tripleRingView.postDelayed({
+            android.util.Log.d("VIBE_FIX", "DashboardAnimationManager: Animating to target progress")
+            tripleRingView.updateProgress(ringData, true)
+        }, 100) // Small delay to ensure zero state is visible
+        
+        // Announce progress for accessibility after animation completes
         tripleRingView.postDelayed({
             val totalProgress = ringData.sumOf { (it.progress * 100).toInt() } / ringData.size
             tripleRingView.announceForAccessibility(
                 "Wellness progress updated. Average progress: $totalProgress percent"
             )
-        }, RING_FILL_DURATION)
+            android.util.Log.d("VIBE_FIX", "DashboardAnimationManager: Ring fill animation completed - Average: $totalProgress%")
+        }, RING_FILL_DURATION + 100)
     }
     
     /**

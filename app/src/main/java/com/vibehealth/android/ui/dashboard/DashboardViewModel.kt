@@ -52,7 +52,8 @@ class DashboardViewModel @Inject constructor(
     private var lastUpdateTime = 0L
     
     init {
-        android.util.Log.d(TAG, "DashboardViewModel: Initialized with enhanced data integration")
+        android.util.Log.d(TAG, "VIBE_FIX: DashboardViewModel: Initialized with enhanced data integration")
+        android.util.Log.d("VIBE_FIX_CRASH", "VIBE_FIX: DashboardViewModel constructor completed successfully")
     }
     
     /**

@@ -306,12 +306,16 @@ class HomeFragment : Fragment() {
         android.util.Log.d("VIBE_FIX", "Phase 3: Updating triple ring display with animations")
         
         try {
+            android.util.Log.d("VIBE_FIX", "Phase 3: Creating RingDisplayData - Steps: ${progress.stepsProgress.percentage}, Calories: ${progress.caloriesProgress.percentage}, Heart: ${progress.heartPointsProgress.percentage}")
+            
             // Create RingDisplayData for each ring
             val stepsRingData = RingDisplayData.fromProgressData(progress.stepsProgress)
             val caloriesRingData = RingDisplayData.fromProgressData(progress.caloriesProgress)
             val heartPointsRingData = RingDisplayData.fromProgressData(progress.heartPointsProgress)
             
             val ringDataList = listOf(stepsRingData, caloriesRingData, heartPointsRingData)
+            
+            android.util.Log.d("VIBE_FIX", "Phase 3: About to call animateRingFillUp with ${ringDataList.size} rings")
             
             // Animate ring fill-up
             animationManager.animateRingFillUp(binding.tripleRingView, ringDataList)

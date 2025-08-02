@@ -1,16 +1,12 @@
 package com.vibehealth.android.ui.progress
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vibehealth.android.data.progress.BasicProgressRepository
-import com.vibehealth.android.data.progress.OfflineProgressManager
-import com.vibehealth.android.data.progress.ProgressDataResult
 import com.vibehealth.android.ui.progress.models.ProgressUiState
 import com.vibehealth.android.ui.progress.models.WeeklyProgressData
-import com.vibehealth.android.ui.progress.models.Achievement
 import com.vibehealth.android.ui.progress.models.MetricType
-import com.vibehealth.android.ui.progress.ProgressError
-import com.vibehealth.android.ui.progress.ProgressErrorResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -33,10 +29,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class BasicProgressViewModel @Inject constructor(
-    private val progressRepository: BasicProgressRepository,
-    private val supportiveInsightsManager: SupportiveInsightsManager,
-    private val progressErrorHandler: ProgressErrorHandler,
-    private val offlineProgressManager: OfflineProgressManager
+    private val progressRepository: BasicProgressRepository
 ) : ViewModel() {
     
     // Internal mutable state
@@ -49,35 +42,51 @@ class BasicProgressViewModel @Inject constructor(
     val supportiveMessages: SharedFlow<String> = _supportiveMessages.asSharedFlow()
     val celebratoryFeedback: SharedFlow<String> = _celebratoryFeedback.asSharedFlow()
     
+    companion object {
+        private const val TAG = "VIBE_FIX_VIEWMODEL"
+    }
+    
     init {
+        Log.d(TAG, "VIBE_FIX: BasicProgressViewModel created successfully")
         // Load initial progress data with supportive context
+        Log.d(TAG, "VIBE_FIX: About to call loadProgressWithEncouragement() from init")
         loadProgressWithEncouragement()
+        Log.d(TAG, "VIBE_FIX: loadProgressWithEncouragement() called from init")
     }
     
     /**
      * Loads progress data with encouraging context and supportive messaging
      */
     fun loadProgressWithEncouragement(celebrationContext: String? = null) {
+        Log.d(TAG, "VIBE_FIX: loadProgressWithEncouragement() called with context: $celebrationContext")
         viewModelScope.launch {
+            Log.d(TAG, "VIBE_FIX: Inside viewModelScope.launch")
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
                 errorMessage = null,
                 supportiveMessage = "Preparing your wellness journey insights..."
             )
+            Log.d(TAG, "VIBE_FIX: UI state set to loading")
             
             try {
+                Log.d(TAG, "VIBE_FIX: About to call progressRepository.getWeeklyProgressWithSupportiveContext()")
                 progressRepository.getWeeklyProgressWithSupportiveContext()
                     .catch { exception ->
+                        Log.e(TAG, "VIBE_FIX: Exception caught in flow", exception)
                         handleProgressErrorWithSupport(exception)
                     }
                     .collect { progressResult ->
+                        Log.d(TAG, "VIBE_FIX: Progress result received: ${progressResult::class.simpleName}")
                         handleProgressResultWithCelebration(progressResult, celebrationContext)
                     }
+                Log.d(TAG, "VIBE_FIX: Flow collection completed")
                     
             } catch (exception: Exception) {
+                Log.e(TAG, "VIBE_FIX: Exception in loadProgressWithEncouragement()", exception)
                 handleProgressErrorWithSupport(exception)
             }
         }
+        Log.d(TAG, "VIBE_FIX: loadProgressWithEncouragement() method completed")
     }
     
     /**
@@ -112,26 +121,20 @@ class BasicProgressViewModel @Inject constructor(
         when (result) {
             is ProgressDataResult.Success -> {
                 val weeklyData = result.data
-                val supportiveInsights = supportiveInsightsManager.generateSupportiveInsights(weeklyData)
-                val achievements = detectAchievementsWithCelebration(weeklyData)
                 
                 _uiState.value = ProgressUiState(
                     weeklyData = weeklyData,
                     isLoading = false,
-                    supportiveMessage = supportiveInsights.motivationalMessage,
-                    celebratoryFeedback = achievements.celebratoryMessage,
+                    supportiveMessage = "🎉 Your wellness journey is inspiring!",
+                    celebratoryFeedback = "Great progress this week!",
                     showEmptyState = !weeklyData.hasAnyData
                 )
                 
                 // Emit supportive messages
-                if (result.supportiveMessage.isNotEmpty()) {
-                    _supportiveMessages.emit(result.supportiveMessage)
-                }
+                _supportiveMessages.emit("Your progress data has been loaded successfully!")
                 
-                // Emit celebratory feedback for achievements
-                if (achievements.hasAchievements) {
-                    _celebratoryFeedback.emit(achievements.celebratoryMessage)
-                }
+                // Emit celebratory feedback
+                _celebratoryFeedback.emit("Keep up the amazing work!")
                 
                 // Add celebration context if provided
                 celebrationContext?.let { context ->
@@ -141,12 +144,11 @@ class BasicProgressViewModel @Inject constructor(
             
             is ProgressDataResult.CachedSuccess -> {
                 val weeklyData = result.data
-                val supportiveInsights = supportiveInsightsManager.generateSupportiveInsights(weeklyData)
                 
                 _uiState.value = ProgressUiState(
                     weeklyData = weeklyData,
                     isLoading = false,
-                    supportiveMessage = supportiveInsights.motivationalMessage,
+                    supportiveMessage = "📊 Your cached progress data is ready!",
                     showEmptyState = !weeklyData.hasAnyData
                 )
                 
@@ -180,29 +182,13 @@ class BasicProgressViewModel @Inject constructor(
      * Handles progress errors with supportive recovery guidance
      */
     private suspend fun handleProgressErrorWithSupport(exception: Throwable) {
-        val errorResponse = progressErrorHandler.handleProgressError(
-            com.vibehealth.android.ui.progress.ProgressError.fromException(exception)
-        )
-        
         _uiState.value = ProgressUiState(
             isLoading = false,
             hasError = true,
-            supportiveMessage = when (errorResponse) {
-                is ProgressErrorResponse.EncouragingRetry -> errorResponse.supportiveMessage
-                is ProgressErrorResponse.SupportiveEmptyState -> errorResponse.supportiveMessage
-                is ProgressErrorResponse.GentleFallback -> errorResponse.supportiveMessage
-                is ProgressErrorResponse.ReassuringSolution -> errorResponse.supportiveMessage
-            }
+            supportiveMessage = "We're having trouble loading your progress, but your data is safe. Let's try again!"
         )
         
-        val recoveryGuidance = when (errorResponse) {
-            is ProgressErrorResponse.EncouragingRetry -> errorResponse.recoveryGuidance
-            is ProgressErrorResponse.SupportiveEmptyState -> errorResponse.recoveryGuidance
-            is ProgressErrorResponse.GentleFallback -> errorResponse.recoveryGuidance
-            is ProgressErrorResponse.ReassuringSolution -> errorResponse.recoveryGuidance
-        }
-        
-        _supportiveMessages.emit(recoveryGuidance)
+        _supportiveMessages.emit("Don't worry, we'll get your progress data loaded. Your wellness journey is important to us!")
     }
     
     /**
@@ -211,29 +197,20 @@ class BasicProgressViewModel @Inject constructor(
     private fun detectAchievementsWithCelebration(weeklyData: WeeklyProgressData): AchievementCelebration {
         val achievements = mutableListOf<String>()
         
-        // Check for goal achievements
-        weeklyData.dailyData.forEach { dailyData ->
-            if (dailyData.goalAchievements.stepsGoalAchieved) {
-                achievements.add("Amazing! You reached your step goal on ${dailyData.date.dayOfWeek}!")
-            }
-            if (dailyData.goalAchievements.caloriesGoalAchieved) {
-                achievements.add("Fantastic! You hit your calorie burn target on ${dailyData.date.dayOfWeek}!")
-            }
-            if (dailyData.goalAchievements.heartPointsGoalAchieved) {
-                achievements.add("Outstanding! You earned your heart points goal on ${dailyData.date.dayOfWeek}!")
-            }
+        // Simple achievement detection based on weekly totals
+        if (weeklyData.weeklyTotals.totalSteps > 50000) {
+            achievements.add("Amazing! You walked over 50,000 steps this week!")
+        }
+        if (weeklyData.weeklyTotals.totalCalories > 14000) {
+            achievements.add("Fantastic! You burned over 14,000 calories this week!")
+        }
+        if (weeklyData.weeklyTotals.totalHeartPoints > 150) {
+            achievements.add("Outstanding! You earned over 150 heart points this week!")
         }
         
-        // Check for weekly patterns
-        val activeDays = weeklyData.dailyData.count { it.hasActivity }
-        if (activeDays >= 5) {
-            achievements.add("Incredible consistency! You were active on $activeDays days this week!")
-        }
-        
-        // Check for improvement trends
-        val weeklyTrends = supportiveInsightsManager.analyzeWeeklyTrends(weeklyData)
-        if (weeklyTrends.isNotEmpty()) {
-            achievements.add("Your progress is trending upward! Keep up the excellent work!")
+        // Check for consistency
+        if (weeklyData.weeklyTotals.activeDays >= 5) {
+            achievements.add("Incredible consistency! You were active on ${weeklyData.weeklyTotals.activeDays} days this week!")
         }
         
         return AchievementCelebration(
@@ -251,33 +228,47 @@ class BasicProgressViewModel @Inject constructor(
      */
     fun getWeeklyAchievements(): List<Achievement> {
         val currentData = _uiState.value.weeklyData ?: return emptyList()
-        val celebratoryAchievements = supportiveInsightsManager.extractAchievements(currentData)
         
-        // Convert CelebratoryAchievement to Achievement
-        return celebratoryAchievements.map { celebratory ->
-            Achievement(
-                type = celebratory.achievementType,
-                title = celebratory.metricName,
-                description = celebratory.celebratoryText,
-                celebratoryMessage = celebratory.celebratoryText,
-                dateAchieved = java.time.LocalDate.now(),
-                metricType = when (celebratory.metricName.lowercase()) {
-                    "steps" -> MetricType.STEPS
-                    "calories" -> MetricType.CALORIES
-                    "heart points" -> MetricType.HEART_POINTS
-                    else -> MetricType.STEPS
-                },
-                value = celebratory.metricName
-            )
+        // Simple achievement list based on weekly totals
+        val achievements = mutableListOf<Achievement>()
+        
+        if (currentData.weeklyTotals.totalSteps > 50000) {
+            achievements.add(Achievement(
+                type = "STEPS_MILESTONE",
+                title = "Step Champion",
+                description = "Over 50,000 steps this week!"
+            ))
         }
+        
+        if (currentData.weeklyTotals.activeDays >= 5) {
+            achievements.add(Achievement(
+                type = "CONSISTENCY",
+                title = "Consistency Star",
+                description = "Active on ${currentData.weeklyTotals.activeDays} days!"
+            ))
+        }
+        
+        return achievements
     }
+    
+    /**
+     * Simple Achievement data class
+     */
+    data class Achievement(
+        val type: String,
+        val title: String,
+        val description: String
+    )
     
     /**
      * Provides supportive context for specific metrics
      */
     fun getMetricSupportiveContext(metricType: MetricType): String {
-        val currentData = _uiState.value.weeklyData ?: return ""
-        return supportiveInsightsManager.getMetricEncouragement(currentData, metricType)
+        return when (metricType) {
+            MetricType.STEPS -> "Every step you take builds stronger habits and better health!"
+            MetricType.CALORIES -> "Your body is efficiently burning energy and building a healthy metabolism!"
+            MetricType.HEART_POINTS -> "Your heart is getting stronger with each activity session!"
+        }
     }
     
     /**

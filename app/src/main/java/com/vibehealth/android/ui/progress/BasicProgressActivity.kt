@@ -226,34 +226,56 @@ class BasicProgressActivity : AppCompatActivity() {
      */
     private fun setupObservers() {
         try {
+            Log.d(TAG, "VIBE_FIX: Setting up observers - about to access viewModel")
+            
+            // Test ViewModel access first
+            try {
+                Log.d(TAG, "VIBE_FIX: Testing ViewModel access - viewModel: $viewModel")
+                val currentState = viewModel.uiState.value
+                Log.d(TAG, "VIBE_FIX: ViewModel accessed successfully - current state: $currentState")
+            } catch (e: Exception) {
+                Log.e(TAG, "VIBE_FIX: CRITICAL ERROR - Cannot access ViewModel", e)
+                throw e
+            }
+            
             // Observe UI state changes
+            Log.d(TAG, "VIBE_FIX: Setting up UI state observer")
             lifecycleScope.launch {
+                Log.d(TAG, "VIBE_FIX: Inside UI state observer coroutine")
                 viewModel.uiState.collect { state ->
                     Log.d(TAG, "VIBE_FIX: UI state updated - Loading: ${state.isLoading}, Error: ${state.hasError}")
                     updateUI(state)
                 }
             }
+            Log.d(TAG, "VIBE_FIX: UI state observer setup completed")
             
             // Observe supportive messages
+            Log.d(TAG, "VIBE_FIX: Setting up supportive messages observer")
             lifecycleScope.launch {
+                Log.d(TAG, "VIBE_FIX: Inside supportive messages observer coroutine")
                 viewModel.supportiveMessages.collect { message ->
                     Log.d(TAG, "VIBE_FIX: Supportive message received: $message")
                     showSupportiveMessage(message)
                 }
             }
+            Log.d(TAG, "VIBE_FIX: Supportive messages observer setup completed")
             
             // Observe celebratory feedback
+            Log.d(TAG, "VIBE_FIX: Setting up celebratory feedback observer")
             lifecycleScope.launch {
+                Log.d(TAG, "VIBE_FIX: Inside celebratory feedback observer coroutine")
                 viewModel.celebratoryFeedback.collect { feedback ->
                     Log.d(TAG, "VIBE_FIX: Celebratory feedback received: $feedback")
                     showCelebratoryFeedback(feedback)
                 }
             }
+            Log.d(TAG, "VIBE_FIX: Celebratory feedback observer setup completed")
             
-            Log.d(TAG, "VIBE_FIX: Observers setup completed")
+            Log.d(TAG, "VIBE_FIX: All observers setup completed successfully")
             
         } catch (e: Exception) {
-            Log.e(TAG, "VIBE_FIX: Error setting up observers", e)
+            Log.e(TAG, "VIBE_FIX: CRITICAL ERROR setting up observers", e)
+            throw e
         }
     }
     
@@ -1249,44 +1271,65 @@ class BasicProgressActivity : AppCompatActivity() {
     }
     
     /**
-     * Creates and shows monthly sample data with caching optimization (Phase 6)
+     * Creates and shows monthly sample data using existing weekly data logic (Phase 6)
      */
     private fun createAndShowMonthlyData() {
         try {
-            Log.d(TAG, "VIBE_FIX: Creating and showing monthly sample data with caching")
+            Log.d(TAG, "VIBE_FIX: Creating and showing monthly sample data using existing logic")
             
-            val currentTime = System.currentTimeMillis()
+            // Generate monthly data using simple multiplication of weekly patterns
+            // This simulates 4 weeks of data with some variation
+            val baseStepsData = listOf(6500, 8200, 7800, 9100, 10500, 8900, 7600)
+            val baseCaloriesData = listOf(1800.0, 2100.0, 1950.0, 2200.0, 2400.0, 2050.0, 1900.0)
+            val baseHeartPointsData = listOf(18, 25, 22, 28, 35, 26, 20)
             
-            // Check if we have valid cached data
-            val cachedData = if (monthlyDataCache != null && (currentTime - lastCacheTime) < cacheValidityDuration) {
-                Log.d(TAG, "VIBE_FIX: Using cached monthly data")
-                monthlyDataCache!!
-            } else {
-                Log.d(TAG, "VIBE_FIX: Generating fresh monthly data")
-                val dataGenerationStart = System.currentTimeMillis()
+            // Create monthly data by extending weekly patterns with variation
+            val monthlyStepsData = mutableListOf<Int>()
+            val monthlyCaloriesData = mutableListOf<Double>()
+            val monthlyHeartPointsData = mutableListOf<Int>()
+            
+            // Generate 4 weeks of data (28 days) with slight variations
+            for (week in 0..3) {
+                val weekMultiplier = when (week) {
+                    0 -> 0.9 // First week slightly lower
+                    1 -> 1.0 // Second week baseline
+                    2 -> 1.1 // Third week slightly higher
+                    3 -> 1.05 // Fourth week good
+                    else -> 1.0
+                }
                 
-                // Generate data with performance optimization for low memory mode
-                val monthlyStepsData = if (isLowMemoryMode) generateOptimizedMonthlyStepsData() else generateMonthlyStepsData()
-                val monthlyCaloriesData = if (isLowMemoryMode) generateOptimizedMonthlyCaloriesData() else generateMonthlyCaloriesData()
-                val monthlyHeartPointsData = if (isLowMemoryMode) generateOptimizedMonthlyHeartPointsData() else generateMonthlyHeartPointsData()
-                
-                val generationTime = System.currentTimeMillis() - dataGenerationStart
-                Log.d(TAG, "VIBE_FIX: Monthly data generation completed in ${generationTime}ms")
-                
-                // Cache the data
-                val newCachedData = Triple(monthlyStepsData, monthlyCaloriesData, monthlyHeartPointsData)
-                monthlyDataCache = newCachedData
-                lastCacheTime = currentTime
-                
-                newCachedData
+                baseStepsData.forEach { steps ->
+                    monthlyStepsData.add((steps * weekMultiplier).toInt())
+                }
+                baseCaloriesData.forEach { calories ->
+                    monthlyCaloriesData.add(calories * weekMultiplier)
+                }
+                baseHeartPointsData.forEach { heartPoints ->
+                    monthlyHeartPointsData.add((heartPoints * weekMultiplier).toInt())
+                }
             }
             
-            val (monthlyStepsData, monthlyCaloriesData, monthlyHeartPointsData) = cachedData
+            // Create weekly averages for display (4 weeks)
+            sampleStepsData = listOf(
+                monthlyStepsData.take(7).average().toInt(),
+                monthlyStepsData.drop(7).take(7).average().toInt(),
+                monthlyStepsData.drop(14).take(7).average().toInt(),
+                monthlyStepsData.drop(21).take(7).average().toInt()
+            )
             
-            // Store monthly data for graphs (show weekly averages for better monthly representation)
-            sampleStepsData = createWeeklyAveragesFromMonthly(monthlyStepsData)
-            sampleCaloriesData = createWeeklyAveragesFromMonthlyCalories(monthlyCaloriesData)
-            sampleHeartPointsData = createWeeklyAveragesFromMonthlyHeartPoints(monthlyHeartPointsData)
+            sampleCaloriesData = listOf(
+                monthlyCaloriesData.take(7).average(),
+                monthlyCaloriesData.drop(7).take(7).average(),
+                monthlyCaloriesData.drop(14).take(7).average(),
+                monthlyCaloriesData.drop(21).take(7).average()
+            )
+            
+            sampleHeartPointsData = listOf(
+                monthlyHeartPointsData.take(7).average().toInt(),
+                monthlyHeartPointsData.drop(7).take(7).average().toInt(),
+                monthlyHeartPointsData.drop(14).take(7).average().toInt(),
+                monthlyHeartPointsData.drop(21).take(7).average().toInt()
+            )
             
             // Set monthly view mode on graphs
             stepsGraph.setViewMode(true)
@@ -1299,22 +1342,17 @@ class BasicProgressActivity : AppCompatActivity() {
             updateHeartPointsGraphWithSampleData(sampleHeartPointsData)
             
             // Update summaries with monthly totals and weekly breakdown
-            binding.stepsGraphSummary.text = "Steps this month: ${monthlyStepsData.sum()} total (${monthlyStepsData.average().toInt()} avg/day) • Weekly view: ${sampleStepsData.joinToString(", ")}"
+            binding.stepsGraphSummary.text = "Steps this month: ${monthlyStepsData.sum()} total (${monthlyStepsData.average().toInt()} avg/day) • Weekly averages: ${sampleStepsData.joinToString(", ")}"
             binding.caloriesGraphSummary.text = "Calories this month: ${monthlyCaloriesData.sum().toInt()} total (${monthlyCaloriesData.average().toInt()} avg/day) • Weekly averages shown"
             binding.heartPointsGraphSummary.text = "Heart Points this month: ${monthlyHeartPointsData.sum()} total (${monthlyHeartPointsData.average().toInt()} avg/day) • 4-week breakdown"
             
-            // Update summary with monthly insights (different from weekly)
-            binding.weeklySummaryText.text = generateMonthlySummaryMessage(monthlyStepsData, monthlyCaloriesData, monthlyHeartPointsData)
+            // Update summary with monthly insights
+            binding.weeklySummaryText.text = "🌟 Monthly Summary: Amazing consistency this month! You've averaged ${monthlyStepsData.average().toInt()} steps/day, burned ${monthlyCaloriesData.average().toInt()} calories/day, and earned ${monthlyHeartPointsData.average().toInt()} heart points/day. Your wellness journey shows real commitment! 💪"
             
-            // Animate entrance (with reduced animation in low memory mode)
-            if (isLowMemoryMode) {
-                // Skip animations in low memory mode
-                Log.d(TAG, "VIBE_FIX: Skipping animations due to low memory mode")
-            } else {
-                animateGraphsEntrance()
-            }
+            // Animate entrance
+            animateGraphsEntrance()
             
-            Log.d(TAG, "VIBE_FIX: Monthly data displayed successfully")
+            Log.d(TAG, "VIBE_FIX: Monthly data displayed successfully using existing logic")
         } catch (e: Exception) {
             Log.e(TAG, "VIBE_FIX: Error creating and showing monthly data", e)
             // Fallback to weekly data

@@ -4,10 +4,15 @@ import android.util.Log
 
 import com.vibehealth.android.ui.progress.BasicProgressViewModel.ProgressDataResult
 import com.vibehealth.android.ui.progress.models.WeeklyProgressData
+import com.vibehealth.android.ui.progress.models.MonthlyProgressData
 import com.vibehealth.android.ui.progress.models.DailyProgressData
 import com.vibehealth.android.ui.progress.models.SupportiveInsights
 import com.vibehealth.android.ui.progress.models.GoalAchievements
 import com.vibehealth.android.ui.progress.models.WeeklyTotals
+import com.vibehealth.android.ui.progress.models.TrendDirection
+import com.vibehealth.android.ui.progress.models.Achievement
+import com.vibehealth.android.ui.progress.models.AchievementType
+import com.vibehealth.android.ui.progress.models.MetricType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.catch
@@ -143,6 +148,136 @@ class BasicProgressRepository @Inject constructor() {
         } catch (exception: Exception) {
             Log.e(TAG, "VIBE_FIX: Exception in createSampleWeeklyData()", exception)
             throw exception
+        }
+    }
+    
+    /**
+     * MONTHLY EXTENSION: Gets monthly progress data using existing data sources
+     */
+    suspend fun getMonthlyProgress(): MonthlyProgressData {
+        Log.d("MONTHLY_INTEGRATION", "Fetching monthly progress using existing data sources")
+        
+        return try {
+            // Create sample monthly data for now - in real implementation this would
+            // use existing caching patterns and database queries
+            val monthStartDate = LocalDate.now().withDayOfMonth(1)
+            val dailyDataList = mutableListOf<DailyProgressData>()
+            
+            // Generate 30 days of sample data
+            val sampleStepsData = generateMonthlyStepsData()
+            val sampleCaloriesData = generateMonthlyCaloriesData()
+            val sampleHeartPointsData = generateMonthlyHeartPointsData()
+            
+            for (i in 0..29) {
+                val date = monthStartDate.plusDays(i.toLong())
+                val steps = sampleStepsData[i]
+                val calories = sampleCaloriesData[i]
+                val heartPoints = sampleHeartPointsData[i]
+                
+                val goalAchievements = GoalAchievements(
+                    stepsGoalAchieved = steps >= 10000,
+                    caloriesGoalAchieved = calories >= 2000,
+                    heartPointsGoalAchieved = heartPoints >= 30
+                )
+                
+                dailyDataList.add(DailyProgressData(
+                    date = date,
+                    steps = steps,
+                    calories = calories,
+                    heartPoints = heartPoints,
+                    goalAchievements = goalAchievements,
+                    supportiveContext = "Great progress on ${date.dayOfWeek}!"
+                ))
+            }
+            
+            val totalSteps = sampleStepsData.sum()
+            val averageSteps = (totalSteps / 30.0).toInt()
+            
+            // Calculate trend direction
+            val firstWeekAvg = sampleStepsData.take(7).average()
+            val lastWeekAvg = sampleStepsData.takeLast(7).average()
+            val trendDirection = when {
+                lastWeekAvg > firstWeekAvg * 1.1 -> TrendDirection.IMPROVING
+                lastWeekAvg < firstWeekAvg * 0.9 -> TrendDirection.DECLINING
+                else -> TrendDirection.STABLE
+            }
+            
+            val achievements = listOf(
+                Achievement(
+                    type = AchievementType.CONSISTENCY_MILESTONE,
+                    title = "Monthly Consistency Champion",
+                    description = "Active for 30 days straight!",
+                    celebratoryMessage = "🎉 Amazing dedication!",
+                    dateAchieved = LocalDate.now(),
+                    metricType = MetricType.STEPS,
+                    value = "$totalSteps steps"
+                )
+            )
+            
+            val insights = SupportiveInsights(
+                weeklyTrends = emptyList(),
+                achievements = emptyList(),
+                gentleGuidance = emptyList(),
+                wellnessJourneyContext = "Your monthly progress shows incredible dedication!",
+                motivationalMessage = "30 days of consistent effort - you're building lasting habits!"
+            )
+            
+            val monthlyData = MonthlyProgressData(
+                month = monthStartDate.month.name,
+                year = monthStartDate.year,
+                dailyEntries = dailyDataList,
+                totalSteps = totalSteps,
+                averageSteps = averageSteps,
+                trendDirection = trendDirection,
+                achievements = achievements,
+                insights = insights
+            )
+            
+            Log.d("MONTHLY_INTEGRATION", "Monthly data fetched successfully: ${monthlyData.totalSteps} total steps")
+            monthlyData
+            
+        } catch (e: Exception) {
+            Log.e("MONTHLY_ERRORS", "Failed to fetch monthly progress", e)
+            throw e
+        }
+    }
+    
+    /**
+     * Generates sample monthly steps data with realistic variation
+     */
+    private fun generateMonthlyStepsData(): List<Int> {
+        val baseSteps = 8000
+        val variation = 3000
+        return (0..29).map { day ->
+            val weekdayMultiplier = if (day % 7 in 0..4) 1.2 else 0.8 // Higher on weekdays
+            val randomVariation = (Math.random() * variation).toInt()
+            ((baseSteps * weekdayMultiplier).toInt() + randomVariation).coerceAtLeast(2000)
+        }
+    }
+    
+    /**
+     * Generates sample monthly calories data with realistic variation
+     */
+    private fun generateMonthlyCaloriesData(): List<Double> {
+        val baseCalories = 2000.0
+        val variation = 400.0
+        return (0..29).map { day ->
+            val weekdayMultiplier = if (day % 7 in 0..4) 1.1 else 0.9
+            val randomVariation = (Math.random() * variation)
+            ((baseCalories * weekdayMultiplier) + randomVariation).coerceAtLeast(1500.0)
+        }
+    }
+    
+    /**
+     * Generates sample monthly heart points data with realistic variation
+     */
+    private fun generateMonthlyHeartPointsData(): List<Int> {
+        val baseHeartPoints = 25
+        val variation = 15
+        return (0..29).map { day ->
+            val weekdayMultiplier = if (day % 7 in 0..4) 1.3 else 0.7
+            val randomVariation = (Math.random() * variation).toInt()
+            ((baseHeartPoints * weekdayMultiplier).toInt() + randomVariation).coerceAtLeast(5)
         }
     }
 }

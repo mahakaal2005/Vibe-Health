@@ -2,6 +2,7 @@ package com.vibehealth.android.ui.components
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
@@ -74,6 +75,63 @@ class ProgressSummaryCard @JvmOverloads constructor(
         
         // Update accessibility
         updateAccessibilityDescription(progressData)
+    }
+    
+    /**
+     * MONTHLY EXTENSION: Updates card with monthly summary data
+     */
+    fun updateMonthlyProgress(
+        metricType: com.vibehealth.android.ui.progress.models.MetricType,
+        currentValue: String,
+        targetValue: String,
+        progressPercentage: Int,
+        isGoalAchieved: Boolean,
+        supportiveMessage: String
+    ) {
+        Log.d("MONTHLY_INTEGRATION", "Extending existing card component for monthly summaries")
+        
+        showLoadedState()
+        
+        // Set metric type icon and label
+        val iconRes = when (metricType) {
+            com.vibehealth.android.ui.progress.models.MetricType.STEPS -> R.drawable.ic_directions_walk
+            com.vibehealth.android.ui.progress.models.MetricType.CALORIES -> R.drawable.ic_local_fire_department
+            com.vibehealth.android.ui.progress.models.MetricType.HEART_POINTS -> R.drawable.ic_favorite
+        }
+        
+        val progressColor = when (metricType) {
+            com.vibehealth.android.ui.progress.models.MetricType.STEPS -> ContextCompat.getColor(context, R.color.sage_green_primary)
+            com.vibehealth.android.ui.progress.models.MetricType.CALORIES -> ContextCompat.getColor(context, R.color.warm_gray_green)
+            com.vibehealth.android.ui.progress.models.MetricType.HEART_POINTS -> ContextCompat.getColor(context, R.color.soft_coral)
+        }
+        
+        binding.ringTypeIcon.setImageResource(iconRes)
+        binding.ringTypeIcon.setColorFilter(progressColor)
+        binding.ringTypeLabel.text = "${metricType.displayName.uppercase()} - MONTHLY"
+        
+        // Set progress values
+        binding.currentValue.text = currentValue
+        binding.targetValue.text = targetValue
+        binding.unitLabel.text = metricType.displayName.lowercase()
+        binding.progressPercentage.text = "$progressPercentage%"
+        binding.progressPercentage.setTextColor(progressColor)
+        
+        // Set progress bar
+        binding.progressBar.progress = progressPercentage
+        binding.progressBar.progressDrawable.setTint(progressColor)
+        
+        // Show achievement indicator if goal is achieved
+        if (isGoalAchieved) {
+            binding.achievementIndicator.visibility = VISIBLE
+            binding.achievementText.text = "Monthly goal achieved!"
+        } else {
+            binding.achievementIndicator.visibility = GONE
+        }
+        
+        // Update accessibility for monthly view
+        contentDescription = "Monthly ${metricType.displayName} progress: $currentValue of $targetValue. $progressPercentage percent complete. $supportiveMessage"
+        
+        Log.d("MONTHLY_INTEGRATION", "Monthly summary card updated successfully")
     }
     
     /**

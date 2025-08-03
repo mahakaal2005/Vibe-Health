@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.vibehealth.android.data.progress.BasicProgressRepository
 import com.vibehealth.android.ui.progress.models.ProgressUiState
 import com.vibehealth.android.ui.progress.models.WeeklyProgressData
+import com.vibehealth.android.ui.progress.models.MonthlyProgressData
 import com.vibehealth.android.ui.progress.models.MetricType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -37,10 +38,19 @@ class BasicProgressViewModel @Inject constructor(
     private val _supportiveMessages = MutableSharedFlow<String>()
     private val _celebratoryFeedback = MutableSharedFlow<String>()
     
+    // NEW MONTHLY EXTENSIONS
+    private val _viewMode = MutableStateFlow(ViewMode.WEEKLY)
+    val viewMode: StateFlow<ViewMode> = _viewMode.asStateFlow()
+    
+    private val _monthlyProgressData = MutableStateFlow<MonthlyProgressData?>(null)
+    val monthlyProgressData: StateFlow<MonthlyProgressData?> = _monthlyProgressData.asStateFlow()
+    
     // Public read-only state
     val uiState: StateFlow<ProgressUiState> = _uiState.asStateFlow()
     val supportiveMessages: SharedFlow<String> = _supportiveMessages.asSharedFlow()
     val celebratoryFeedback: SharedFlow<String> = _celebratoryFeedback.asSharedFlow()
+    
+    enum class ViewMode { WEEKLY, MONTHLY }
     
     companion object {
         private const val TAG = "VIBE_FIX_VIEWMODEL"
@@ -259,6 +269,56 @@ class BasicProgressViewModel @Inject constructor(
         val title: String,
         val description: String
     )
+    
+    /**
+     * MONTHLY EXTENSION: Sets view mode and loads appropriate data
+     */
+    fun setViewMode(mode: ViewMode) {
+        Log.d("MONTHLY_VIEWMODEL", "Setting view mode to: $mode")
+        _viewMode.value = mode
+        
+        when (mode) {
+            ViewMode.WEEKLY -> loadProgressWithEncouragement("Showing your weekly progress") // EXISTING METHOD
+            ViewMode.MONTHLY -> loadMonthlyData() // NEW EXTENSION
+        }
+    }
+    
+    /**
+     * MONTHLY EXTENSION: Loads monthly progress data using existing repository patterns
+     */
+    fun loadMonthlyData() {
+        Log.d("MONTHLY_VIEWMODEL", "Loading monthly progress data using existing repository")
+        
+        viewModelScope.launch {
+            try {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = true,
+                    errorMessage = null,
+                    supportiveMessage = "Preparing your monthly wellness insights..."
+                )
+                
+                // Use existing repository patterns - extend with monthly support
+                val monthlyData = progressRepository.getMonthlyProgress() // EXTEND EXISTING
+                _monthlyProgressData.value = monthlyData
+                
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    supportiveMessage = "🎉 Your monthly progress is inspiring!",
+                    showEmptyState = !monthlyData.hasAnyData
+                )
+                
+                Log.d("MONTHLY_VIEWMODEL", "Monthly data loaded successfully: ${monthlyData.totalSteps} total steps")
+                
+                // Emit supportive message
+                _supportiveMessages.emit("Your monthly progress shows amazing consistency!")
+                
+            } catch (e: Exception) {
+                Log.e("MONTHLY_ERRORS", "Failed to load monthly data", e)
+                // Use existing error handling patterns
+                handleProgressErrorWithSupport(e) // EXISTING METHOD
+            }
+        }
+    }
     
     /**
      * Provides supportive context for specific metrics

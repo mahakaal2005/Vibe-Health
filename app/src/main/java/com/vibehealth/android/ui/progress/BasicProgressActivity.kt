@@ -83,9 +83,8 @@ class BasicProgressActivity : AppCompatActivity() {
     // Animation manager
     private lateinit var animationManager: ProgressAnimationManager
     
-    // Phase 5: View mode state
-    private enum class ViewMode { WEEKLY, MONTHLY }
-    private var currentViewMode = ViewMode.WEEKLY
+    // Phase 5: View mode state - EXTENDED FOR MONTHLY SUPPORT
+    private var currentViewMode = BasicProgressViewModel.ViewMode.WEEKLY
     
     // Phase 6: Performance monitoring and optimization
     private var activityStartTime = 0L
@@ -271,6 +270,20 @@ class BasicProgressActivity : AppCompatActivity() {
             }
             Log.d(TAG, "VIBE_FIX: Celebratory feedback observer setup completed")
             
+            // MONTHLY EXTENSION: Observe monthly progress data
+            Log.d("MONTHLY_EXTENSION", "Setting up monthly data observer")
+            lifecycleScope.launch {
+                Log.d("MONTHLY_EXTENSION", "Inside monthly data observer coroutine")
+                viewModel.monthlyProgressData.collect { monthlyData ->
+                    Log.d("MONTHLY_EXTENSION", "Monthly data received: ${monthlyData?.hasAnyData}")
+                    // Update UI when monthly data changes and we're in monthly view
+                    if (currentViewMode == BasicProgressViewModel.ViewMode.MONTHLY && monthlyData != null) {
+                        updateGraphsWithMonthlyData(monthlyData)
+                    }
+                }
+            }
+            Log.d("MONTHLY_EXTENSION", "Monthly data observer setup completed")
+            
             Log.d(TAG, "VIBE_FIX: All observers setup completed successfully")
             
         } catch (e: Exception) {
@@ -455,8 +468,9 @@ class BasicProgressActivity : AppCompatActivity() {
                 finish() // For now, just go back
             }
             
-            // Phase 5: View toggle listeners
+            // Phase 5: View toggle listeners - EXTENDED FOR MONTHLY SUPPORT
             setupViewToggleListeners()
+            setupMonthlyToggle()
             
             Log.d(TAG, "VIBE_FIX: Click listeners setup completed")
             
@@ -472,15 +486,15 @@ class BasicProgressActivity : AppCompatActivity() {
         try {
             // Weekly view button
             binding.weeklyViewButton.setOnClickListener {
-                if (currentViewMode != ViewMode.WEEKLY) {
-                    switchToWeeklyView()
+                if (currentViewMode != BasicProgressViewModel.ViewMode.WEEKLY) {
+                    switchToWeeklyViewMonthly()
                 }
             }
             
             // Monthly view button
             binding.monthlyViewButton.setOnClickListener {
-                if (currentViewMode != ViewMode.MONTHLY) {
-                    switchToMonthlyView()
+                if (currentViewMode != BasicProgressViewModel.ViewMode.MONTHLY) {
+                    switchToMonthlyViewMonthly()
                 }
             }
             
@@ -490,6 +504,33 @@ class BasicProgressActivity : AppCompatActivity() {
             Log.d(TAG, "VIBE_FIX: View toggle listeners setup completed")
         } catch (e: Exception) {
             Log.e(TAG, "VIBE_FIX: Error setting up view toggle listeners", e)
+        }
+    }
+    
+    /**
+     * MONTHLY EXTENSION: Sets up Material Design 3 view mode toggle
+     */
+    private fun setupMonthlyToggle() {
+        Log.d("MONTHLY_EXTENSION", "Setting up Material Design 3 view mode toggle")
+        
+        try {
+            val viewModeToggle = binding.viewToggleGroup
+            viewModeToggle.addOnButtonCheckedListener { _, checkedId, isChecked ->
+                if (isChecked) {
+                    val viewMode = when (checkedId) {
+                        binding.weeklyViewButton.id -> BasicProgressViewModel.ViewMode.WEEKLY
+                        binding.monthlyViewButton.id -> BasicProgressViewModel.ViewMode.MONTHLY
+                        else -> BasicProgressViewModel.ViewMode.WEEKLY
+                    }
+                    
+                    Log.d("MONTHLY_EXTENSION", "View mode changed to: $viewMode")
+                    viewModel.setViewMode(viewMode) // EXTEND EXISTING VIEWMODEL
+                }
+            }
+            
+            Log.d("MONTHLY_EXTENSION", "Monthly view toggle integrated with existing activity structure")
+        } catch (e: Exception) {
+            Log.e("MONTHLY_EXTENSION", "Error setting up monthly toggle", e)
         }
     }
     
@@ -534,6 +575,99 @@ class BasicProgressActivity : AppCompatActivity() {
             // Fallback: show sample data immediately
             createAndShowSampleData()
         }
+    }
+    
+    /**
+     * MONTHLY EXTENSION: Switches to weekly view
+     */
+    private fun switchToWeeklyViewMonthly() {
+        Log.d("MONTHLY_EXTENSION", "Switching to weekly view")
+        currentViewMode = BasicProgressViewModel.ViewMode.WEEKLY
+        binding.progressTitle.text = "📊 Your Weekly Progress"
+        
+        // Update supportive message for weekly view
+        binding.supportiveMessage.text = "🎉 Great progress this week! Your weekly wellness journey is inspiring!"
+        
+        // Update button states - Weekly selected should match Monthly selected, Weekly unselected should match Monthly unselected  
+        binding.weeklyViewButton.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            androidx.core.content.ContextCompat.getColor(this, com.vibehealth.android.R.color.sage_green)
+        )
+        binding.weeklyViewButton.setTextColor(
+            androidx.core.content.ContextCompat.getColor(this, android.R.color.white)
+        )
+        
+        binding.monthlyViewButton.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            androidx.core.content.ContextCompat.getColor(this, com.vibehealth.android.R.color.background_light)
+        )
+        binding.monthlyViewButton.setTextColor(
+            androidx.core.content.ContextCompat.getColor(this, android.R.color.black)
+        )
+        
+        // Set weekly data directly on graphs using the correct method
+        Log.d("MONTHLY_EXTENSION", "Setting weekly data on graphs")
+        
+        // Ensure sample data is available and reset to full week (7 days) for weekly view
+        if (sampleStepsData.isEmpty() || sampleStepsData.size != 7) {
+            Log.d("MONTHLY_EXTENSION", "Sample data not available or corrupted, initializing default weekly data (7 days)")
+            sampleStepsData = listOf(6500, 8200, 7800, 9100, 10500, 8900, 7600)
+            sampleCaloriesData = listOf(1800.0, 2100.0, 1950.0, 2200.0, 2400.0, 2050.0, 1900.0)
+            sampleHeartPointsData = listOf(18, 25, 22, 28, 35, 26, 20)
+        }
+        
+        val stepsMetricData = convertStepsDataToDailyMetricData(sampleStepsData)
+        val caloriesMetricData = convertCaloriesDataToDailyMetricData(sampleCaloriesData)
+        val heartPointsMetricData = convertHeartPointsDataToDailyMetricData(sampleHeartPointsData)
+        
+        stepsGraph.setMonthlyData(stepsMetricData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.WEEKLY)
+        caloriesGraph.setMonthlyData(caloriesMetricData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.WEEKLY)
+        heartPointsGraph.setMonthlyData(heartPointsMetricData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.WEEKLY)
+        
+        // Update summaries
+        binding.stepsGraphSummary.text = generateSupportiveStepsMessage(sampleStepsData)
+        binding.caloriesGraphSummary.text = generateSupportiveCaloriesMessage(sampleCaloriesData)
+        binding.heartPointsGraphSummary.text = generateSupportiveHeartPointsMessage(sampleHeartPointsData)
+        
+        // Animate entrance
+        animateGraphsEntrance()
+        Log.d("MONTHLY_EXTENSION", "Weekly data set on all graphs")
+        
+        // Also refresh data for weekly view in background
+        viewModel.loadProgressWithEncouragement("Showing your weekly progress")
+    }
+    
+    /**
+     * MONTHLY EXTENSION: Switches to monthly view
+     */
+    private fun switchToMonthlyViewMonthly() {
+        Log.d("MONTHLY_EXTENSION", "Switching to monthly view")
+        currentViewMode = BasicProgressViewModel.ViewMode.MONTHLY
+        binding.progressTitle.text = "📊 Your Monthly Progress"
+        
+        // Update supportive message for monthly view
+        binding.supportiveMessage.text = "🎉 Amazing monthly progress! Your dedication to wellness this month is inspiring!"
+        
+        // Update button states - Monthly selected should match Weekly selected, Monthly unselected should match Weekly unselected
+        binding.monthlyViewButton.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            androidx.core.content.ContextCompat.getColor(this, com.vibehealth.android.R.color.sage_green)
+        )
+        binding.monthlyViewButton.setTextColor(
+            androidx.core.content.ContextCompat.getColor(this, android.R.color.white)
+        )
+        
+        binding.weeklyViewButton.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            androidx.core.content.ContextCompat.getColor(this, com.vibehealth.android.R.color.background_light)
+        )
+        binding.weeklyViewButton.setTextColor(
+            androidx.core.content.ContextCompat.getColor(this, android.R.color.black)
+        )
+        
+        // Show monthly data immediately using existing method
+        Log.d("MONTHLY_EXTENSION", "About to call createAndShowMonthlyData()")
+        createAndShowMonthlyData()
+        Log.d("MONTHLY_EXTENSION", "createAndShowMonthlyData() completed")
+        
+        // Also load monthly data in background for future use
+        viewModel.loadMonthlyData()
     }
     
     /**
@@ -626,6 +760,7 @@ class BasicProgressActivity : AppCompatActivity() {
     
     /**
      * Shows content state with progress data
+     * MONTHLY EXTENSION: Now handles both weekly and monthly data
      */
     private fun showContentState(state: ProgressUiState) {
         binding.loadingContainer.visibility = View.GONE
@@ -633,18 +768,36 @@ class BasicProgressActivity : AppCompatActivity() {
         binding.errorContainer.visibility = View.GONE
         binding.emptyContainer.visibility = View.GONE
         
-        // Update supportive message
-        binding.supportiveMessage.text = state.primarySupportiveMessage ?: "🎉 Your wellness journey is inspiring!"
+        // Update supportive message based on current view mode
+        val supportiveMessage = when (currentViewMode) {
+            BasicProgressViewModel.ViewMode.WEEKLY -> state.primarySupportiveMessage ?: "🎉 Great progress this week! Your weekly wellness journey is inspiring!"
+            BasicProgressViewModel.ViewMode.MONTHLY -> state.primarySupportiveMessage ?: "🎉 Amazing monthly progress! Your dedication to wellness this month is inspiring!"
+        }
+        binding.supportiveMessage.text = supportiveMessage
         
-        Log.d(TAG, "VIBE_FIX: Content state displayed")
+        Log.d(TAG, "VIBE_FIX: Content state displayed for ${currentViewMode} view")
         
-        // Phase 2: Update graphs with real data
-        state.weeklyData?.let { weeklyData ->
-            Log.d(TAG, "VIBE_FIX: Weekly data available - hasAnyData: ${weeklyData.hasAnyData}, dailyData size: ${weeklyData.dailyData.size}")
-            updateGraphsWithData(weeklyData)
-        } ?: run {
-            Log.w(TAG, "VIBE_FIX: No weekly data available for graphs - state.weeklyData is null")
-            showEmptyGraphs()
+        // Update graphs based on current view mode
+        when (currentViewMode) {
+            BasicProgressViewModel.ViewMode.WEEKLY -> {
+                state.weeklyData?.let { weeklyData ->
+                    Log.d(TAG, "VIBE_FIX: Weekly data available - hasAnyData: ${weeklyData.hasAnyData}, dailyData size: ${weeklyData.dailyData.size}")
+                    updateGraphsWithData(weeklyData)
+                } ?: run {
+                    Log.w(TAG, "VIBE_FIX: No weekly data available for graphs - state.weeklyData is null")
+                    showEmptyGraphs()
+                }
+            }
+            BasicProgressViewModel.ViewMode.MONTHLY -> {
+                // Check if we have monthly data from ViewModel
+                viewModel.monthlyProgressData.value?.let { monthlyData ->
+                    Log.d("MONTHLY_EXTENSION", "Monthly data available - hasAnyData: ${monthlyData.hasAnyData}, dailyData size: ${monthlyData.dailyEntries.size}")
+                    updateGraphsWithMonthlyData(monthlyData)
+                } ?: run {
+                    Log.w("MONTHLY_EXTENSION", "No monthly data available for graphs")
+                    showEmptyGraphs()
+                }
+            }
         }
     }
 
@@ -727,6 +880,57 @@ class BasicProgressActivity : AppCompatActivity() {
     }
     
     /**
+     * MONTHLY EXTENSION: Updates graphs with monthly progress data
+     */
+    private fun updateGraphsWithMonthlyData(monthlyData: com.vibehealth.android.ui.progress.models.MonthlyProgressData) {
+        try {
+            Log.d("MONTHLY_EXTENSION", "Updating graphs with monthly data - Has data: ${monthlyData.hasAnyData}")
+            
+            if (monthlyData.hasAnyData) {
+                Log.d("MONTHLY_EXTENSION", "Using real monthly data")
+                
+                // Convert monthly data to graph format and update graphs
+                val stepsData = monthlyData.getStepsData()
+                val caloriesData = monthlyData.getCaloriesData()
+                val heartPointsData = monthlyData.getHeartPointsData()
+                
+                // Update graphs with monthly data using the new setMonthlyData method
+                stepsGraph.setMonthlyData(stepsData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.MONTHLY)
+                caloriesGraph.setMonthlyData(caloriesData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.MONTHLY)
+                heartPointsGraph.setMonthlyData(heartPointsData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.MONTHLY)
+                
+                // Animate graph entrance
+                animateGraphsEntrance()
+                Log.d("MONTHLY_EXTENSION", "Monthly graphs updated successfully")
+                
+            } else {
+                Log.w("MONTHLY_EXTENSION", "No real monthly data available, using sample data fallback")
+                // Use sample data but with monthly view mode
+                if (sampleStepsData.isNotEmpty()) {
+                    updateStepsGraphWithSampleData(sampleStepsData)
+                    updateCaloriesGraphWithSampleData(sampleCaloriesData)
+                    updateHeartPointsGraphWithSampleData(sampleHeartPointsData)
+                    animateGraphsEntrance()
+                } else {
+                    showEmptyGraphs()
+                }
+            }
+            
+        } catch (e: Exception) {
+            Log.e("MONTHLY_EXTENSION", "Error updating graphs with monthly data", e)
+            // Fallback to sample data
+            if (sampleStepsData.isNotEmpty()) {
+                updateStepsGraphWithSampleData(sampleStepsData)
+                updateCaloriesGraphWithSampleData(sampleCaloriesData)
+                updateHeartPointsGraphWithSampleData(sampleHeartPointsData)
+                animateGraphsEntrance()
+            } else {
+                showEmptyGraphs()
+            }
+        }
+    }
+    
+    /**
      * Updates graphs with real data from WeeklyProgressData
      */
     private fun updateGraphsWithRealData(weeklyData: WeeklyProgressData) {
@@ -796,6 +1000,7 @@ class BasicProgressActivity : AppCompatActivity() {
             
             // Convert sample data to DailyMetricData format for graph
             val dailyMetricData = convertStepsDataToDailyMetricData(stepsData)
+            Log.d("MONTHLY_EXTENSION", "Converted to ${dailyMetricData.size} daily metric data points")
             
             // Update the actual graph component
             stepsGraph.updateWithSupportiveData(
@@ -809,6 +1014,7 @@ class BasicProgressActivity : AppCompatActivity() {
             Log.d(TAG, "VIBE_FIX: Steps graph updated successfully with ${dailyMetricData.size} data points")
         } catch (e: Exception) {
             Log.e(TAG, "VIBE_FIX: Error updating steps graph with sample data", e)
+            e.printStackTrace()
             // Fallback to text summary
             binding.stepsGraphSummary.text = "Steps this week: ${stepsData.sum()} total"
         }
@@ -957,102 +1163,7 @@ class BasicProgressActivity : AppCompatActivity() {
         }
     }
     
-    /**
-     * Switches to weekly view with supportive transition (Phase 5)
-     */
-    private fun switchToWeeklyView() {
-        try {
-            Log.d(TAG, "VIBE_FIX: Switching to weekly view")
-            
-            currentViewMode = ViewMode.WEEKLY
-            
-            // Update title
-            binding.progressTitle.text = "📊 Your Weekly Progress"
-            
-            // Update button states
-            updateViewToggleButtons()
-            
-            // Show supportive message
-            showSupportiveMessage("📅 Viewing your weekly progress - great for tracking recent habits!")
-            
-            // Set weekly view mode on graphs
-            stepsGraph.setViewMode(false)
-            caloriesGraph.setViewMode(false)
-            heartPointsGraph.setViewMode(false)
-            
-            // Show weekly sample data directly instead of calling ViewModel
-            createAndShowSampleData()
-            
-            // Animate transition
-            animationManager.animateSupportiveStateTransition(
-                binding.graphsContainer,
-                binding.graphsContainer
-            ) {
-                Log.d(TAG, "VIBE_FIX: Weekly view transition completed")
-            }
-            
-        } catch (e: Exception) {
-            Log.e(TAG, "VIBE_FIX: Error switching to weekly view", e)
-        }
-    }
-    
-    /**
-     * Switches to monthly view with supportive transition (Phase 5)
-     */
-    private fun switchToMonthlyView() {
-        try {
-            Log.d(TAG, "VIBE_FIX: Switching to monthly view")
-            
-            currentViewMode = ViewMode.MONTHLY
-            
-            // Update title
-            binding.progressTitle.text = "📊 Your Monthly Progress"
-            
-            // Update button states
-            updateViewToggleButtons()
-            
-            // Show supportive message
-            showSupportiveMessage("📅 Viewing your monthly progress - perfect for seeing long-term trends!")
-            
-            // For Phase 5, we'll show extended sample data for monthly view
-            createAndShowMonthlyData()
-            
-            // Animate transition
-            animationManager.animateSupportiveStateTransition(
-                binding.graphsContainer,
-                binding.graphsContainer
-            ) {
-                Log.d(TAG, "VIBE_FIX: Monthly view transition completed")
-            }
-            
-        } catch (e: Exception) {
-            Log.e(TAG, "VIBE_FIX: Error switching to monthly view", e)
-        }
-    }
-    
-    /**
-     * Updates view toggle button states with consistent Sage Green styling
-     */
-    private fun updateViewToggleButtons() {
-        when (currentViewMode) {
-            ViewMode.WEEKLY -> {
-                // Weekly button active (Sage Green)
-                binding.weeklyViewButton.setBackgroundColor(getColor(R.color.sage_green))
-                binding.weeklyViewButton.setTextColor(getColor(android.R.color.white))
-                // Monthly button inactive
-                binding.monthlyViewButton.setBackgroundColor(getColor(R.color.background_light))
-                binding.monthlyViewButton.setTextColor(getColor(R.color.text_primary))
-            }
-            ViewMode.MONTHLY -> {
-                // Monthly button active (Sage Green - same as Weekly)
-                binding.monthlyViewButton.setBackgroundColor(getColor(R.color.sage_green))
-                binding.monthlyViewButton.setTextColor(getColor(android.R.color.white))
-                // Weekly button inactive
-                binding.weeklyViewButton.setBackgroundColor(getColor(R.color.background_light))
-                binding.weeklyViewButton.setTextColor(getColor(R.color.text_primary))
-            }
-        }
-    }
+    // REMOVED DUPLICATE METHODS - Using switchToWeeklyViewMonthly and switchToMonthlyViewMonthly instead
     
     /**
      * Shows supportive message to user (Phase 4: Enhanced UI Feedback)
@@ -1309,40 +1420,43 @@ class BasicProgressActivity : AppCompatActivity() {
                 }
             }
             
-            // Create weekly averages for display (4 weeks)
-            sampleStepsData = listOf(
+            // Create weekly averages for display (4 weeks) - use separate variables for monthly data
+            val monthlyStepsDisplayData = listOf(
                 monthlyStepsData.take(7).average().toInt(),
                 monthlyStepsData.drop(7).take(7).average().toInt(),
                 monthlyStepsData.drop(14).take(7).average().toInt(),
                 monthlyStepsData.drop(21).take(7).average().toInt()
             )
             
-            sampleCaloriesData = listOf(
+            val monthlyCaloriesDisplayData = listOf(
                 monthlyCaloriesData.take(7).average(),
                 monthlyCaloriesData.drop(7).take(7).average(),
                 monthlyCaloriesData.drop(14).take(7).average(),
                 monthlyCaloriesData.drop(21).take(7).average()
             )
             
-            sampleHeartPointsData = listOf(
+            val monthlyHeartPointsDisplayData = listOf(
                 monthlyHeartPointsData.take(7).average().toInt(),
                 monthlyHeartPointsData.drop(7).take(7).average().toInt(),
                 monthlyHeartPointsData.drop(14).take(7).average().toInt(),
                 monthlyHeartPointsData.drop(21).take(7).average().toInt()
             )
             
-            // Set monthly view mode on graphs
-            stepsGraph.setViewMode(true)
-            caloriesGraph.setViewMode(true)
-            heartPointsGraph.setViewMode(true)
+            // Convert data to DailyMetricData format for monthly graphs
+            Log.d("MONTHLY_EXTENSION", "Converting data for monthly graphs")
+            val stepsMetricData = convertStepsDataToDailyMetricData(monthlyStepsDisplayData)
+            val caloriesMetricData = convertCaloriesDataToDailyMetricData(monthlyCaloriesDisplayData)
+            val heartPointsMetricData = convertHeartPointsDataToDailyMetricData(monthlyHeartPointsDisplayData)
             
-            // Update graphs with monthly context
-            updateStepsGraphWithSampleData(sampleStepsData)
-            updateCaloriesGraphWithSampleData(sampleCaloriesData)
-            updateHeartPointsGraphWithSampleData(sampleHeartPointsData)
+            // Set monthly data directly on graphs (this sets the correct viewMode)
+            Log.d("MONTHLY_EXTENSION", "Setting monthly data on graphs")
+            stepsGraph.setMonthlyData(stepsMetricData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.MONTHLY)
+            caloriesGraph.setMonthlyData(caloriesMetricData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.MONTHLY)
+            heartPointsGraph.setMonthlyData(heartPointsMetricData, com.vibehealth.android.ui.components.BasicProgressGraph.ViewMode.MONTHLY)
+            Log.d("MONTHLY_EXTENSION", "Monthly data set on all graphs")
             
             // Update summaries with monthly totals and weekly breakdown
-            binding.stepsGraphSummary.text = "Steps this month: ${monthlyStepsData.sum()} total (${monthlyStepsData.average().toInt()} avg/day) • Weekly averages: ${sampleStepsData.joinToString(", ")}"
+            binding.stepsGraphSummary.text = "Steps this month: ${monthlyStepsData.sum()} total (${monthlyStepsData.average().toInt()} avg/day) • Weekly averages: ${monthlyStepsDisplayData.joinToString(", ")}"
             binding.caloriesGraphSummary.text = "Calories this month: ${monthlyCaloriesData.sum().toInt()} total (${monthlyCaloriesData.average().toInt()} avg/day) • Weekly averages shown"
             binding.heartPointsGraphSummary.text = "Heart Points this month: ${monthlyHeartPointsData.sum()} total (${monthlyHeartPointsData.average().toInt()} avg/day) • 4-week breakdown"
             

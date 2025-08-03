@@ -84,8 +84,15 @@ class BasicProgressGraph @JvmOverloads constructor(
     
     // Data properties
     private var weeklyData: List<DailyMetricData> = emptyList()
+    private var monthlyData: List<DailyMetricData> = emptyList() // NEW MONTHLY EXTENSION
     private var metricType: MetricType = MetricType.STEPS
     private var supportiveMessage: String = ""
+    
+    // NEW MONTHLY EXTENSIONS
+    private var viewMode: ViewMode = ViewMode.WEEKLY
+    private val trendLinePaint = Paint(Paint.ANTI_ALIAS_FLAG) // NEW
+    
+    enum class ViewMode { WEEKLY, MONTHLY }
     
     /**
      * Updates the graph with supportive data and encouraging messaging
@@ -104,6 +111,31 @@ class BasicProgressGraph @JvmOverloads constructor(
         
         // Update accessibility description
         contentDescription = generateAccessibilityDescription()
+    }
+    
+    /**
+     * MONTHLY EXTENSION: Sets monthly data with view mode
+     */
+    fun setMonthlyData(data: List<DailyMetricData>, mode: ViewMode) {
+        Log.d("MONTHLY_GRAPHS", "Setting monthly data with ${data.size} entries")
+        
+        when (mode) {
+            ViewMode.WEEKLY -> {
+                weeklyData = data
+                viewMode = ViewMode.WEEKLY
+            }
+            ViewMode.MONTHLY -> {
+                monthlyData = data
+                viewMode = ViewMode.MONTHLY
+            }
+        }
+        
+        // Use existing invalidation patterns
+        isDirty = true
+        clearBitmapCache()
+        invalidate() // EXISTING METHOD
+        
+        Log.d("MONTHLY_GRAPHS", "Monthly data set successfully with view mode: $mode")
     }
     
     /**
@@ -175,7 +207,12 @@ class BasicProgressGraph @JvmOverloads constructor(
         }
         lastDrawTime = currentTime
         
-        if (weeklyData.isEmpty()) {
+        val currentData = when (viewMode) {
+            ViewMode.WEEKLY -> weeklyData
+            ViewMode.MONTHLY -> monthlyData
+        }
+        
+        if (currentData.isEmpty()) {
             drawEmptyState(canvas)
             return
         }
@@ -239,21 +276,29 @@ class BasicProgressGraph @JvmOverloads constructor(
     
     /**
      * Draws the supportive progress graph with encouraging visualization (Phase 5: Enhanced)
+     * MONTHLY EXTENSION: Now supports both weekly and monthly data visualization
      */
     private fun drawSupportiveGraph(canvas: Canvas) {
+        Log.d("MONTHLY_GRAPHS", "Drawing graph with view mode: $viewMode")
+        
+        val currentData = when (viewMode) {
+            ViewMode.WEEKLY -> weeklyData
+            ViewMode.MONTHLY -> monthlyData
+        }
+        
         val graphWidth = width - (GRAPH_PADDING * 2)
         val graphHeight = height - (GRAPH_PADDING * 2)
-        val barWidth = (graphWidth / weeklyData.size) * BAR_WIDTH_RATIO
-        val barSpacing = graphWidth / weeklyData.size
+        val barWidth = (graphWidth / currentData.size) * BAR_WIDTH_RATIO
+        val barSpacing = graphWidth / currentData.size
         
         // Find max value for scaling
-        val maxValue = weeklyData.maxOfOrNull { it.value } ?: 1f
+        val maxValue = currentData.maxOfOrNull { it.value } ?: 1f
         
         // Draw gentle grid lines
         drawSupportiveGridLines(canvas, graphHeight)
         
         // Draw encouraging progress bars
-        weeklyData.forEachIndexed { index, data ->
+        currentData.forEachIndexed { index, data ->
             val barHeight = (data.value / maxValue) * graphHeight * 0.8f // Leave space for labels
             val barLeft = GRAPH_PADDING + (index * barSpacing) + ((barSpacing - barWidth) / 2)
             val barTop = GRAPH_PADDING + graphHeight - barHeight
@@ -278,11 +323,10 @@ class BasicProgressGraph @JvmOverloads constructor(
             val barRect = RectF(barLeft, barTop, barRight, barBottom)
             canvas.drawRoundRect(barRect, CORNER_RADIUS, CORNER_RADIUS, currentBarPaint)
             
-            // Draw encouraging label (day for weekly, week for monthly)
-            val label = if (isMonthlyView) {
-                "W${index + 1}" // Week 1, Week 2, etc.
-            } else {
-                data.date.dayOfWeek.name.take(3) // MON, TUE, etc.
+            // Draw encouraging label (day for weekly, date for monthly)
+            val label = when (viewMode) {
+                ViewMode.WEEKLY -> data.date.dayOfWeek.name.take(3) // MON, TUE, etc.
+                ViewMode.MONTHLY -> "${data.date.dayOfMonth}" // 1, 2, 3, etc.
             }
             canvas.drawText(
                 label,
@@ -304,6 +348,11 @@ class BasicProgressGraph @JvmOverloads constructor(
                     achievementPaint
                 )
             }
+        }
+        
+        // MONTHLY EXTENSION: Draw trend line for monthly view
+        if (viewMode == ViewMode.MONTHLY && currentData.size > 1) {
+            drawTrendLine(canvas, currentData, graphWidth, graphHeight, maxValue)
         }
         
         // Phase 5: Draw tooltip if showing
@@ -367,6 +416,55 @@ class BasicProgressGraph @JvmOverloads constructor(
     }
     
     /**
+     * MONTHLY EXTENSION: Draws trend line using existing Sage Green palette
+     */
+    private fun drawTrendLine(canvas: Canvas, data: List<DailyMetricData>, graphWidth: Float, graphHeight: Float, maxValue: Float) {
+        Log.d("MONTHLY_GRAPHS", "Drawing trend line using existing Sage Green palette")
+        
+        // Use existing color resources
+        trendLinePaint.color = sageGreenPrimary
+        trendLinePaint.strokeWidth = 4f
+        trendLinePaint.style = Paint.Style.STROKE
+        trendLinePaint.pathEffect = android.graphics.DashPathEffect(floatArrayOf(10f, 5f), 0f)
+        
+        // Calculate trend line using existing mathematical utilities
+        val trendPoints = calculateTrendLine(data, graphWidth, graphHeight, maxValue)
+        
+        if (trendPoints.size >= 2) {
+            val path = Path()
+            path.moveTo(trendPoints[0].x, trendPoints[0].y)
+            
+            for (i in 1 until trendPoints.size) {
+                path.lineTo(trendPoints[i].x, trendPoints[i].y)
+            }
+            
+            canvas.drawPath(path, trendLinePaint)
+            Log.d("MONTHLY_GRAPHS", "Trend line drawn with ${trendPoints.size} points")
+        }
+    }
+    
+    /**
+     * MONTHLY EXTENSION: Calculates trend line points using existing patterns
+     */
+    private fun calculateTrendLine(data: List<DailyMetricData>, graphWidth: Float, graphHeight: Float, maxValue: Float): List<PointF> {
+        val barSpacing = graphWidth / data.size
+        val points = mutableListOf<PointF>()
+        
+        // Simple moving average for trend line
+        val windowSize = minOf(7, data.size / 3) // Use 7-day or 1/3 of data window
+        
+        for (i in windowSize until data.size) {
+            val avgValue = data.subList(i - windowSize, i).map { it.value }.average().toFloat()
+            val x = GRAPH_PADDING + (i * barSpacing) + (barSpacing / 2)
+            val y = GRAPH_PADDING + graphHeight - ((avgValue / maxValue) * graphHeight * 0.8f)
+            
+            points.add(PointF(x, y))
+        }
+        
+        return points
+    }
+    
+    /**
      * Draws supportive grid lines for better data readability
      */
     private fun drawSupportiveGridLines(canvas: Canvas, graphHeight: Float) {
@@ -416,20 +514,29 @@ class BasicProgressGraph @JvmOverloads constructor(
     
     /**
      * Generates accessibility description for the graph
+     * MONTHLY EXTENSION: Now supports both weekly and monthly descriptions
      */
     private fun generateAccessibilityDescription(): String {
-        if (weeklyData.isEmpty()) {
-            return "Empty progress graph for ${metricType.displayName}. Ready to start tracking your wellness journey!"
+        val currentData = when (viewMode) {
+            ViewMode.WEEKLY -> weeklyData
+            ViewMode.MONTHLY -> monthlyData
         }
         
-        val activeDays = weeklyData.count { it.value > 0 }
-        val achievedDays = weeklyData.count { it.isGoalAchieved }
+        if (currentData.isEmpty()) {
+            val period = if (viewMode == ViewMode.MONTHLY) "month" else "week"
+            return "Empty progress graph for ${metricType.displayName}. Ready to start tracking your wellness journey this $period!"
+        }
+        
+        val activeDays = currentData.count { it.value > 0 }
+        val achievedDays = currentData.count { it.isGoalAchieved }
+        val period = if (viewMode == ViewMode.MONTHLY) "month" else "week"
+        val timeUnit = if (viewMode == ViewMode.MONTHLY) "days" else "days"
         
         return buildString {
-            append("${metricType.displayName} progress graph for this week. ")
-            append("You were active on $activeDays days")
+            append("${metricType.displayName} progress graph for this $period. ")
+            append("You were active on $activeDays $timeUnit")
             if (achievedDays > 0) {
-                append(" and achieved your goal on $achievedDays days")
+                append(" and achieved your goal on $achievedDays $timeUnit")
             }
             append(". $supportiveMessage")
         }
@@ -491,17 +598,23 @@ class BasicProgressGraph @JvmOverloads constructor(
     
     /**
      * Handles tap events for data point selection (Phase 5)
+     * MONTHLY EXTENSION: Now works with both weekly and monthly data
      */
     private fun handleTap(x: Float, y: Float): Boolean {
-        if (weeklyData.isEmpty()) return false
+        val currentData = when (viewMode) {
+            ViewMode.WEEKLY -> weeklyData
+            ViewMode.MONTHLY -> monthlyData
+        }
+        
+        if (currentData.isEmpty()) return false
         
         val graphWidth = width - (GRAPH_PADDING * 2)
-        val barSpacing = graphWidth / weeklyData.size
+        val barSpacing = graphWidth / currentData.size
         
         // Find which bar was tapped
         val tappedIndex = ((x - GRAPH_PADDING) / barSpacing).toInt()
         
-        if (tappedIndex in weeklyData.indices) {
+        if (tappedIndex in currentData.indices) {
             selectedDataPointIndex = tappedIndex
             showTooltipForDataPoint(tappedIndex, x, y)
             invalidate()
@@ -513,17 +626,26 @@ class BasicProgressGraph @JvmOverloads constructor(
     
     /**
      * Handles long press for detailed insights (Phase 5)
+     * MONTHLY EXTENSION: Now works with both weekly and monthly data
      */
     private fun handleLongPress(x: Float, y: Float) {
-        if (weeklyData.isEmpty()) return
+        val currentData = when (viewMode) {
+            ViewMode.WEEKLY -> weeklyData
+            ViewMode.MONTHLY -> monthlyData
+        }
+        
+        if (currentData.isEmpty()) return
         
         val graphWidth = width - (GRAPH_PADDING * 2)
-        val barSpacing = graphWidth / weeklyData.size
+        val barSpacing = graphWidth / currentData.size
         val tappedIndex = ((x - GRAPH_PADDING) / barSpacing).toInt()
         
-        if (tappedIndex in weeklyData.indices) {
-            val dataPoint = weeklyData[tappedIndex]
-            val detailedMessage = "📊 ${dataPoint.date.dayOfWeek.name}: ${dataPoint.displayValue}\n${dataPoint.supportiveLabel}"
+        if (tappedIndex in currentData.indices) {
+            val dataPoint = currentData[tappedIndex]
+            val detailedMessage = when (viewMode) {
+                ViewMode.WEEKLY -> "📊 ${dataPoint.date.dayOfWeek.name}: ${dataPoint.displayValue}\n${dataPoint.supportiveLabel}"
+                ViewMode.MONTHLY -> "📊 ${dataPoint.date.month.name} ${dataPoint.date.dayOfMonth}: ${dataPoint.displayValue}\n${dataPoint.supportiveLabel}"
+            }
             
             // Announce for accessibility
             announceForAccessibility(detailedMessage)
@@ -535,9 +657,15 @@ class BasicProgressGraph @JvmOverloads constructor(
     
     /**
      * Shows tooltip for selected data point (Phase 5)
+     * MONTHLY EXTENSION: Now works with both weekly and monthly data
      */
     private fun showTooltipForDataPoint(index: Int, x: Float, y: Float) {
-        val dataPoint = weeklyData[index]
+        val currentData = when (viewMode) {
+            ViewMode.WEEKLY -> weeklyData
+            ViewMode.MONTHLY -> monthlyData
+        }
+        
+        val dataPoint = currentData[index]
         tooltipText = "${dataPoint.displayValue}\n${if (dataPoint.isGoalAchieved) "✅ Goal achieved!" else "📈 ${(dataPoint.progressPercentage * 100).toInt()}% of goal"}"
         tooltipX = x
         tooltipY = y - 50f

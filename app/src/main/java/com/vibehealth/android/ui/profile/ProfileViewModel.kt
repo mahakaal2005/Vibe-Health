@@ -4,12 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.asLiveData
 import com.vibehealth.android.data.user.UserProfileRepository
 import com.vibehealth.android.domain.goals.*
 import com.vibehealth.android.domain.user.UserProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 /**
@@ -57,9 +59,21 @@ class ProfileViewModel @Inject constructor(
     private val _profileUpdateState = MutableLiveData<ProfileUpdateState>(ProfileUpdateState.Idle)
     val profileUpdateState: LiveData<ProfileUpdateState> = _profileUpdateState
 
-    // User profile flow for edit functionality
+    // TASK 11: REAL-TIME UPDATES - Reactive user profile flow for immediate app-wide reflection
     private val _userProfile = MutableLiveData<UserProfile?>()
     val userProfile: LiveData<UserProfile?> = _userProfile
+    
+    // TASK 11: Real-time profile updates with Flow for cross-fragment communication
+    private val _profileFlow = MutableStateFlow<UserProfile?>(null)
+    val profileFlow: StateFlow<UserProfile?> = _profileFlow.asStateFlow()
+    
+    // TASK 11: Unit system changes for immediate app-wide unit display updates
+    private val _unitSystemFlow = MutableStateFlow<com.vibehealth.android.domain.common.UnitSystem?>(null)
+    val unitSystemFlow: StateFlow<com.vibehealth.android.domain.common.UnitSystem?> = _unitSystemFlow.asStateFlow()
+    
+    // TASK 11: Display name changes for navigation headers and UI elements
+    private val _displayNameFlow = MutableStateFlow<String?>(null)
+    val displayNameFlow: StateFlow<String?> = _displayNameFlow.asStateFlow()
 
     // Current jobs for cancellation
     private var profileLoadJob: Job? = null
@@ -100,7 +114,16 @@ class ProfileViewModel @Inject constructor(
                 }
 
                 _profileState.value = ProfileState.Loaded(profile)
+                
+                // TASK 11: REAL_TIME_UPDATES - Ensure userProfile LiveData is updated for real-time reflection
                 _userProfile.value = profile
+                
+                // TASK 11: Trigger immediate app-wide updates through reactive flows
+                android.util.Log.d("PROFILE_REALTIME", "Triggering real-time profile updates")
+                _profileFlow.value = profile
+                _unitSystemFlow.value = profile.unitSystem
+                _displayNameFlow.value = profile.displayName.ifEmpty { profile.email }
+                android.util.Log.d("PROFILE_REALTIME", "Real-time flows updated - Unit: ${profile.unitSystem}, Name: ${profile.displayName}")
 
                 // Load current goals
                 loadCurrentGoals(userId)
@@ -132,6 +155,16 @@ class ProfileViewModel @Inject constructor(
                     is ProfileUpdateResult.Success -> {
                         _profileState.value = ProfileState.Loaded(result.updatedProfile)
                         _profileUpdateState.value = ProfileUpdateState.Success(result.updatedProfile)
+                        
+                        // TASK 11: REAL_TIME_UPDATES - Trigger immediate app-wide reflection
+                        _userProfile.value = result.updatedProfile
+                        
+                        // TASK 11: Immediate cross-fragment updates through reactive flows
+                        android.util.Log.d("PROFILE_REALTIME", "Profile updated - triggering app-wide updates")
+                        _profileFlow.value = result.updatedProfile
+                        _unitSystemFlow.value = result.updatedProfile.unitSystem
+                        _displayNameFlow.value = result.updatedProfile.displayName.ifEmpty { result.updatedProfile.email }
+                        android.util.Log.d("PROFILE_REALTIME", "Cross-fragment updates triggered for profile changes")
                         
                         // Update goal calculation state based on result
                         result.goalRecalculationResult?.let { goalResult ->
@@ -399,6 +432,42 @@ class ProfileViewModel @Inject constructor(
         return "${profile.birthday?.time}_${profile.gender}_${profile.heightInCm}_${profile.weightInKg}"
     }
     
+    /**
+     * TASK 11: Handle unit system preference changes with immediate app-wide unit display updates
+     */
+    fun updateUnitSystem(newUnitSystem: com.vibehealth.android.domain.common.UnitSystem) {
+        android.util.Log.d("PROFILE_REALTIME", "Unit system change requested: $newUnitSystem")
+        
+        val currentProfile = _userProfile.value
+        if (currentProfile != null) {
+            val updatedProfile = currentProfile.copy(unitSystem = newUnitSystem)
+            android.util.Log.d("PROFILE_REALTIME", "Triggering profile update for unit system change")
+            updateUserProfile(updatedProfile)
+        } else {
+            // Update flow immediately even if profile isn't loaded yet
+            _unitSystemFlow.value = newUnitSystem
+            android.util.Log.d("PROFILE_REALTIME", "Unit system flow updated immediately")
+        }
+    }
+    
+    /**
+     * TASK 11: Handle display name changes for navigation headers and UI elements
+     */
+    fun updateDisplayName(newDisplayName: String) {
+        android.util.Log.d("PROFILE_REALTIME", "Display name change requested: $newDisplayName")
+        
+        val currentProfile = _userProfile.value
+        if (currentProfile != null) {
+            val updatedProfile = currentProfile.copy(displayName = newDisplayName)
+            android.util.Log.d("PROFILE_REALTIME", "Triggering profile update for display name change")
+            updateUserProfile(updatedProfile)
+        } else {
+            // Update flow immediately even if profile isn't loaded yet
+            _displayNameFlow.value = newDisplayName
+            android.util.Log.d("PROFILE_REALTIME", "Display name flow updated immediately")
+        }
+    }
+
     /**
      * Clear goal cache when user logs out or profile changes significantly.
      */

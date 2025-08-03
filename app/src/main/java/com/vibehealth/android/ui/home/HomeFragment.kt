@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.vibehealth.android.databinding.FragmentHomeBinding
 import com.vibehealth.android.ui.dashboard.DashboardViewModel
 import com.vibehealth.android.ui.dashboard.models.*
+import com.vibehealth.android.ui.profile.ProfileViewModel
 import kotlinx.coroutines.launch
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
@@ -27,6 +29,10 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     
     private val dashboardViewModel: DashboardViewModel by viewModels()
+    
+    // TASK 11: Access shared ProfileViewModel for real-time profile updates
+    private val profileViewModel: ProfileViewModel by activityViewModels()
+    
     private var isInitialized = false
     
     
@@ -137,6 +143,9 @@ class HomeFragment : Fragment() {
     // VIBE_FIX: Phase 3 - Restored basic observers
     private fun setupObservers() {
         android.util.Log.d("VIBE_FIX", "Phase 3: Setting up enhanced dashboard observers")
+        
+        // TASK 11: Observe profile changes for immediate dashboard updates
+        setupProfileObservers()
         
         // Enhanced dashboard state observer with animation integration
         viewLifecycleOwner.lifecycleScope.launch {
@@ -466,6 +475,64 @@ class HomeFragment : Fragment() {
         }
     }
     
+    /**
+     * TASK 11: Setup profile observers for real-time dashboard updates
+     */
+    private fun setupProfileObservers() {
+        Log.d("PROFILE_REALTIME", "Setting up profile observers in HomeFragment")
+        
+        // Observe profile changes for immediate dashboard updates
+        viewLifecycleOwner.lifecycleScope.launch {
+            profileViewModel.profileFlow.collect { profile ->
+                if (profile != null) {
+                    Log.d("PROFILE_REALTIME", "Profile updated in HomeFragment - triggering dashboard refresh")
+                    
+                    // Update greeting with new display name
+                    val greeting = if (profile.displayName.isNotEmpty()) {
+                        "Hello, ${profile.displayName}!"
+                    } else {
+                        getPersonalizedGreeting()
+                    }
+                    binding.greetingText.text = greeting
+                    
+                    // Trigger dashboard refresh to reflect profile changes
+                    dashboardViewModel.refreshDashboard()
+                }
+            }
+        }
+        
+        // Observe unit system changes for immediate unit display updates
+        viewLifecycleOwner.lifecycleScope.launch {
+            profileViewModel.unitSystemFlow.collect { unitSystem ->
+                if (unitSystem != null) {
+                    Log.d("PROFILE_REALTIME", "Unit system updated in HomeFragment: $unitSystem")
+                    
+                    // Refresh dashboard to update unit displays
+                    dashboardViewModel.refreshDashboard()
+                    
+                    // Show feedback about unit system change
+                    val unitMessage = when (unitSystem) {
+                        com.vibehealth.android.domain.common.UnitSystem.METRIC -> "Units updated to metric system 📏"
+                        com.vibehealth.android.domain.common.UnitSystem.IMPERIAL -> "Units updated to imperial system 📐"
+                    }
+                    android.widget.Toast.makeText(context, unitMessage, android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        
+        // Observe display name changes for navigation headers and UI elements
+        viewLifecycleOwner.lifecycleScope.launch {
+            profileViewModel.displayNameFlow.collect { displayName ->
+                if (displayName != null) {
+                    Log.d("PROFILE_REALTIME", "Display name updated in HomeFragment: $displayName")
+                    
+                    // Update greeting immediately
+                    binding.greetingText.text = "Hello, $displayName!"
+                }
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         android.util.Log.d("VIBE_FIX", "Phase 3: HomeFragment onDestroyView")

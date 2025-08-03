@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -12,6 +13,7 @@ import com.vibehealth.android.databinding.ActivityMainBinding
 import com.vibehealth.android.ui.auth.AuthViewModel
 import com.vibehealth.android.ui.profile.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 /**
  * VIBE_FIX: Phase 3 - MainActivity with comprehensive crash logging
@@ -127,7 +129,7 @@ class MainActivity : AppCompatActivity() {
     }
     
     /**
-     * Preload profile data for seamless user experience
+     * Preload profile data for seamless user experience and enable cross-fragment communication
      */
     private fun preloadProfileData() {
         try {
@@ -148,8 +150,48 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             
+            // TASK 11: Enable cross-fragment communication through shared ProfileViewModel
+            setupCrossFragmentCommunication()
+            
         } catch (e: Exception) {
             Log.e(TAG, "❌ Profile preload failed", e)
+        }
+    }
+    
+    /**
+     * TASK 11: Setup cross-fragment communication for real-time profile updates
+     */
+    private fun setupCrossFragmentCommunication() {
+        Log.d("PROFILE_REALTIME", "Setting up cross-fragment communication")
+        
+        // Observe profile changes for app-wide updates using StateFlow
+        lifecycleScope.launch {
+            profileViewModel.profileFlow.collect { profile ->
+                if (profile != null) {
+                    Log.d("PROFILE_REALTIME", "Profile updated across app - Name: ${profile.displayName}, Unit: ${profile.unitSystem}")
+                    // Profile changes are automatically reflected through shared ViewModel
+                }
+            }
+        }
+        
+        // Observe unit system changes for immediate app-wide unit display updates
+        lifecycleScope.launch {
+            profileViewModel.unitSystemFlow.collect { unitSystem ->
+                if (unitSystem != null) {
+                    Log.d("PROFILE_REALTIME", "Unit system updated app-wide: $unitSystem")
+                    // Unit system changes are automatically reflected through shared ViewModel
+                }
+            }
+        }
+        
+        // Observe display name changes for navigation headers and UI elements
+        lifecycleScope.launch {
+            profileViewModel.displayNameFlow.collect { displayName ->
+                if (displayName != null) {
+                    Log.d("PROFILE_REALTIME", "Display name updated app-wide: $displayName")
+                    // Display name changes are automatically reflected through shared ViewModel
+                }
+            }
         }
     }
 

@@ -267,6 +267,9 @@ class ProfileFragment : AuthenticatedFragment() {
             handleProfileState(profileState)
         }
         
+        // TASK 11: Observe real-time profile updates for immediate UI reflection
+        setupRealTimeProfileObservers()
+        
         // NEW: Observe goal calculation state
         profileViewModel.goalCalculationState.observe(viewLifecycleOwner) { goalState ->
             Log.d(TAG_GOALS, "Goal calculation state changed: ${goalState.javaClass.simpleName}")
@@ -1376,6 +1379,112 @@ class ProfileFragment : AuthenticatedFragment() {
     }
 
 
+
+    /**
+     * TASK 11: Setup real-time profile observers for immediate UI reflection
+     */
+    private fun setupRealTimeProfileObservers() {
+        Log.d("PROFILE_REALTIME", "Setting up real-time profile observers")
+        
+        // Observe profile changes for immediate view updates without refresh
+        profileViewModel.userProfile.observe(viewLifecycleOwner) { profile ->
+            if (profile != null) {
+                Log.d("PROFILE_REALTIME", "Profile updated - reflecting changes immediately")
+                
+                // Update display name immediately
+                binding.userName.text = profile.displayName.ifEmpty { profile.email }
+                
+                // Update profile information sections immediately
+                updateProfileDisplaySections(profile)
+                
+                Log.d("PROFILE_REALTIME", "Profile UI updated without refresh")
+            }
+        }
+        
+        // Observe unit system changes for immediate app-wide unit display updates
+        lifecycleScope.launch {
+            profileViewModel.unitSystemFlow.collect { unitSystem ->
+                if (unitSystem != null) {
+                    Log.d("PROFILE_REALTIME", "Unit system changed - updating displays: $unitSystem")
+                    
+                    // Update unit displays immediately
+                    updateUnitDisplays(unitSystem)
+                }
+            }
+        }
+        
+        // Observe display name changes for navigation headers and UI elements
+        lifecycleScope.launch {
+            profileViewModel.displayNameFlow.collect { displayName ->
+                if (displayName != null) {
+                    Log.d("PROFILE_REALTIME", "Display name changed - updating UI: $displayName")
+                    
+                    // Update display name immediately
+                    binding.userName.text = displayName
+                }
+            }
+        }
+    }
+    
+    /**
+     * TASK 11: Update profile display sections with immediate reflection
+     */
+    private fun updateProfileDisplaySections(profile: UserProfile) {
+        Log.d("PROFILE_REALTIME", "Updating profile display sections")
+        
+        try {
+            // Update personal information section
+            binding.birthdayValue.text = profile.birthday?.let { 
+                java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault()).format(it)
+            } ?: "Not set"
+            
+            binding.genderValue.text = profile.gender.getDisplayName()
+            
+            // Update health information section
+            binding.heightValue.text = profile.getFormattedHeight()
+            binding.weightValue.text = profile.getFormattedWeight()
+            binding.bmiValue.text = profile.getBMI()?.let { 
+                String.format("%.1f", it) 
+            } ?: "Not calculated"
+            
+            // Update preferences section
+            binding.unitSystemValue.text = when (profile.unitSystem) {
+                com.vibehealth.android.domain.common.UnitSystem.METRIC -> "Metric"
+                com.vibehealth.android.domain.common.UnitSystem.IMPERIAL -> "Imperial"
+            }
+            
+            Log.d("PROFILE_REALTIME", "Profile display sections updated successfully")
+            
+        } catch (e: Exception) {
+            Log.e("PROFILE_REALTIME", "Error updating profile display sections", e)
+        }
+    }
+    
+    /**
+     * TASK 11: Update unit displays for immediate app-wide unit display updates
+     */
+    private fun updateUnitDisplays(unitSystem: com.vibehealth.android.domain.common.UnitSystem) {
+        Log.d("PROFILE_REALTIME", "Updating unit displays for: $unitSystem")
+        
+        try {
+            val currentProfile = profileViewModel.userProfile.value
+            if (currentProfile != null) {
+                // Update height and weight displays with new unit system
+                val updatedProfile = currentProfile.copy(unitSystem = unitSystem)
+                binding.heightValue.text = updatedProfile.getFormattedHeight()
+                binding.weightValue.text = updatedProfile.getFormattedWeight()
+                binding.unitSystemValue.text = when (unitSystem) {
+                    com.vibehealth.android.domain.common.UnitSystem.METRIC -> "Metric"
+                    com.vibehealth.android.domain.common.UnitSystem.IMPERIAL -> "Imperial"
+                }
+                
+                Log.d("PROFILE_REALTIME", "Unit displays updated successfully")
+            }
+            
+        } catch (e: Exception) {
+            Log.e("PROFILE_REALTIME", "Error updating unit displays", e)
+        }
+    }
 
     private fun logout() {
         Log.d(TAG_INTEGRATION, "Logout initiated - maintaining existing functionality")

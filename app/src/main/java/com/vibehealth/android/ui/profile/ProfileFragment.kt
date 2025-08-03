@@ -217,6 +217,18 @@ class ProfileFragment : AuthenticatedFragment() {
         Log.d(TAG_INTEGRATION, "Setting up observers for enhanced profile management")
         
         // EXTEND EXISTING: Enhanced authentication state observation
+        // Load profile data immediately if user is authenticated
+        try {
+            val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+            if (currentUser != null) {
+                Log.d(TAG_INTEGRATION, "User authenticated - loading profile data")
+                profileViewModel.loadProfile(currentUser.uid)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG_INTEGRATION, "Error loading profile data", e)
+        }
+        
+        // Continue with existing observer
         authViewModel.authState.observe(viewLifecycleOwner) { authState ->
             Log.d(TAG_VALIDATION, "Auth state changed: ${authState.javaClass.simpleName}")
             

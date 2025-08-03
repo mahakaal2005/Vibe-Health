@@ -33,9 +33,14 @@ class ProfileViewModel @Inject constructor(
     private val _goalCalculationState = MutableLiveData<GoalCalculationState>()
     val goalCalculationState: LiveData<GoalCalculationState> = _goalCalculationState
 
-    // Current goals
+    // Current goals with caching
     private val _currentGoals = MutableLiveData<DailyGoals?>()
     val currentGoals: LiveData<DailyGoals?> = _currentGoals
+    
+    // Goal cache to avoid unnecessary recalculations
+    private var cachedGoals: DailyGoals? = null
+    private var cachedGoalsUserId: String? = null
+    private var cachedGoalsProfileHash: String? = null
 
     // Error state
     private val _errorState = MutableLiveData<ProfileErrorState?>()
@@ -67,6 +72,7 @@ class ProfileViewModel @Inject constructor(
      * @param userId User ID to load profile for
      */
     fun loadProfile(userId: String) {
+        android.util.Log.d("ProfileViewModel", "🔄 loadProfile called for: $userId")
         profileLoadJob?.cancel()
         profileLoadJob = viewModelScope.launch {
             try {
@@ -74,17 +80,21 @@ class ProfileViewModel @Inject constructor(
                 _errorState.value = null
 
                 // Load profile
+                android.util.Log.d("ProfileViewModel", "📞 Calling repository.getUserProfile")
                 val profileResult = userProfileRepository.getUserProfile(userId)
+                android.util.Log.d("ProfileViewModel", "📋 Repository result success: ${profileResult.isSuccess}")
                 if (profileResult.isFailure) {
+                    val error = profileResult.exceptionOrNull()?.message ?: "Unknown error"
+                    android.util.Log.e("ProfileViewModel", "❌ Profile load failed: $error")
                     _profileState.value = ProfileState.Error("Failed to load profile")
-                    _errorState.value = ProfileErrorState.ProfileLoadFailed(
-                        profileResult.exceptionOrNull()?.message ?: "Unknown error"
-                    )
+                    _errorState.value = ProfileErrorState.ProfileLoadFailed(error)
                     return@launch
                 }
 
                 val profile = profileResult.getOrNull()
+                android.util.Log.d("ProfileViewModel", "👤 Profile data: $profile")
                 if (profile == null) {
+                    android.util.Log.w("ProfileViewModel", "⚠️ Profile is null - user needs onboarding")
                     _profileState.value = ProfileState.NotFound
                     return@launch
                 }
@@ -271,12 +281,19 @@ class ProfileViewModel @Inject constructor(
 
                 when (result) {
                     is GoalCalculationResult.Success -> {
+                        // Update cache with new goals
+                        val currentProfile = (_profileState.value as? ProfileState.Loaded)?.profile
+                        cachedGoals = result.goals
+                        cachedGoalsUserId = userId
+                        cachedGoalsProfileHash = currentProfile?.let { generateProfileHash(it) }
+                        
                         _currentGoals.value = result.goals
                         _goalCalculationState.value = GoalCalculationState.Success(
                             goals = result.goals,
                             wasRecalculated = result.wasRecalculated,
                             reason = "Manual recalculation requested"
                         )
+                        android.util.Log.d("ProfileViewModel", "✅ Goals recalculated and cached")
                     }
                     
                     is GoalCalculationResult.Error -> {
@@ -301,32 +318,95 @@ class ProfileViewModel @Inject constructor(
     }
 
     /**
-     * Load current goals for a user.
+     * Load current goals for a user with smart caching.
      * 
      * @param userId User ID to load goals for
      */
     private fun loadCurrentGoals(userId: String) {
         viewModelScope.launch {
             try {
+                android.util.Log.d("ProfileViewModel", "🎯 Loading goals for user: $userId")
+                
+                // Get current profile for cache validation
+                val currentProfile = (_profileState.value as? ProfileState.Loaded)?.profile
+                val profileHash = currentProfile?.let { generateProfileHash(it) }
+                
+                // Check if we have valid cached goals
+                if (cachedGoals != null && 
+                    cachedGoalsUserId == userId && 
+                    cachedGoalsProfileHash == profileHash) {
+                    android.util.Log.d("ProfileViewModel", "✅ Using cached goals")
+                    _currentGoals.value = cachedGoals
+                    _goalCalculationState.value = GoalCalculationState.Success(
+                        goals = cachedGoals!!,
+                        wasRecalculated = false,
+                        reason = "Using cached goals"
+                    )
+                    return@launch
+                }
+                
+                android.util.Log.d("ProfileViewModel", "🔄 Checking for valid goals in storage")
                 val hasValidGoals = goalCalculationUseCase.hasValidGoals(userId)
                 
                 if (hasValidGoals) {
-                    // Goals exist and are valid, trigger a load (this would typically come from repository)
-                    _goalCalculationState.value = GoalCalculationState.Loaded("Goals are up to date")
+                    android.util.Log.d("ProfileViewModel", "📋 Valid goals found, loading from storage")
+                    // Try to load existing goals
+                    val result = goalCalculationUseCase.calculateAndStoreGoals(userId, forceRecalculation = false)
+                    when (result) {
+                        is GoalCalculationResult.Success -> {
+                            // Cache the loaded goals
+                            cachedGoals = result.goals
+                            cachedGoalsUserId = userId
+                            cachedGoalsProfileHash = profileHash
+                            
+                            _currentGoals.value = result.goals
+                            _goalCalculationState.value = GoalCalculationState.Success(
+                                goals = result.goals,
+                                wasRecalculated = false,
+                                reason = "Loaded existing goals"
+                            )
+                            android.util.Log.d("ProfileViewModel", "✅ Goals loaded and cached")
+                        }
+                        is GoalCalculationResult.Error -> {
+                            android.util.Log.w("ProfileViewModel", "⚠️ Failed to load goals: ${result.message}")
+                            _goalCalculationState.value = GoalCalculationState.NeedsRecalculation(
+                                "Your goals need to be calculated based on your current profile"
+                            )
+                        }
+                    }
                 } else {
-                    // No valid goals, suggest recalculation
+                    android.util.Log.d("ProfileViewModel", "🆕 No valid goals found, need calculation")
                     _goalCalculationState.value = GoalCalculationState.NeedsRecalculation(
                         "Your goals need to be calculated based on your current profile"
                     )
                 }
 
             } catch (e: Exception) {
+                android.util.Log.e("ProfileViewModel", "❌ Error loading goals", e)
                 _goalCalculationState.value = GoalCalculationState.Error(
                     "Failed to check goal status",
                     canRetry = true
                 )
             }
         }
+    }
+
+    /**
+     * Generate a hash of profile data that affects goal calculation.
+     * This is used to determine if goals need to be recalculated.
+     */
+    private fun generateProfileHash(profile: UserProfile): String {
+        return "${profile.birthday?.time}_${profile.gender}_${profile.heightInCm}_${profile.weightInKg}"
+    }
+    
+    /**
+     * Clear goal cache when user logs out or profile changes significantly.
+     */
+    fun clearGoalCache() {
+        android.util.Log.d("ProfileViewModel", "🗑️ Clearing goal cache")
+        cachedGoals = null
+        cachedGoalsUserId = null
+        cachedGoalsProfileHash = null
     }
 
     /**
@@ -380,6 +460,7 @@ class ProfileViewModel @Inject constructor(
         profileLoadJob?.cancel()
         goalCalculationJob?.cancel()
         profileUpdateJob?.cancel()
+        clearGoalCache()
     }
 
     /**

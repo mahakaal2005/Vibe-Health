@@ -88,15 +88,20 @@ class UserProfileService @Inject constructor() {
     suspend fun getUserProfile(uid: String): Result<UserProfile?> {
         return executeWithRetry("getUserProfile") {
             try {
+                android.util.Log.d("UserProfileService", "Fetching profile for UID: $uid")
                 val document = firestore.collection(USERS_COLLECTION)
                     .document(uid)
                     .get()
                     .await()
 
+                android.util.Log.d("UserProfileService", "Document exists: ${document.exists()}")
                 if (document.exists()) {
+                    android.util.Log.d("UserProfileService", "Document data: ${document.data}")
                     val userProfile = document.toObject(UserProfile::class.java)
+                    android.util.Log.d("UserProfileService", "Parsed profile: $userProfile")
                     Result.success(userProfile)
                 } else {
+                    android.util.Log.d("UserProfileService", "No document found for UID: $uid")
                     Result.success(null)
                 }
             } catch (e: Exception) {

@@ -3,10 +3,14 @@ package com.vibehealth.android
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.vibehealth.android.databinding.ActivityMainBinding
+import com.vibehealth.android.ui.auth.AuthViewModel
+import com.vibehealth.android.ui.profile.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -20,6 +24,10 @@ class MainActivity : AppCompatActivity() {
     }
     
     private lateinit var binding: ActivityMainBinding
+    
+    // ViewModels for preloading data
+    private val authViewModel: AuthViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "VIBE_FIX: MainActivity onCreate() started")
@@ -39,6 +47,10 @@ class MainActivity : AppCompatActivity() {
             
             setupNavigation()
             Log.d(TAG, "VIBE_FIX: setupNavigation completed")
+            
+            // Preload profile data for seamless experience
+            preloadProfileData()
+            Log.d(TAG, "VIBE_FIX: preloadProfileData initiated")
             
             Log.d(TAG, "VIBE_FIX: MainActivity onCreate() completed successfully")
             
@@ -114,5 +126,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
+    /**
+     * Preload profile data for seamless user experience
+     */
+    private fun preloadProfileData() {
+        try {
+            Log.d(TAG, "🚀 Starting profile data preload")
+            
+            // Observe auth state and preload profile when user is authenticated
+            authViewModel.authState.observe(this) { authState ->
+                Log.d(TAG, "🔍 Auth state changed: ${authState?.javaClass?.simpleName}")
+                // Check if user is authenticated and preload profile
+                try {
+                    val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+                    if (currentUser != null) {
+                        Log.d(TAG, "🔄 Preloading profile for user: ${currentUser.uid}")
+                        profileViewModel.loadProfile(currentUser.uid)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "❌ Error preloading profile", e)
+                }
+            }
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Profile preload failed", e)
+        }
+    }
 
 }

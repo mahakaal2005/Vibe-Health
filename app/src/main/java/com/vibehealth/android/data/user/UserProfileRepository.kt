@@ -70,15 +70,25 @@ class UserProfileRepository @Inject constructor(
      */
     override suspend fun getUserProfile(uid: String): Result<UserProfile?> {
         return try {
+            android.util.Log.d("UserProfileRepository", "🔍 getUserProfile called for: $uid")
+            
             // Try local storage first
             val localEntity = userProfileDao.getUserProfile(uid)
             val localProfile = localEntity?.toDomainModel()
+            android.util.Log.d("UserProfileRepository", "💾 Local profile found: ${localProfile != null}")
 
             // If network is available, try to sync with cloud
-            if (isNetworkAvailable()) {
+            val networkAvailable = isNetworkAvailable()
+            android.util.Log.d("UserProfileRepository", "🌐 Network available: $networkAvailable")
+            
+            if (networkAvailable) {
+                android.util.Log.d("UserProfileRepository", "☁️ Fetching from Firestore...")
                 val cloudResult = userProfileService.getUserProfile(uid)
+                android.util.Log.d("UserProfileRepository", "☁️ Firestore result success: ${cloudResult.isSuccess}")
+                
                 if (cloudResult.isSuccess) {
                     val cloudProfile = cloudResult.getOrNull()
+                    android.util.Log.d("UserProfileRepository", "☁️ Cloud profile found: ${cloudProfile != null}")
                     
                     // Resolve conflicts if both local and cloud data exist
                     val resolvedProfile = resolveConflicts(localProfile, cloudProfile)

@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TASK 4 ANALYSIS: Reminder settings card layout with seamless ProfileFragment integration -->
+<!-- INTEGRATION_PATTERNS: Following existing personal_info_card and profile component patterns -->
+<!-- DESIGN_CONSISTENCY: Sage Green palette, 8-point grid, Material Design 3 compliance -->
+<!-- COMPANION_PRINCIPLE: Supportive, encouraging language throughout all UI elements -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Section Title following existing personal_info_card patterns -->
+    <TextView
+        android:id="@+id/section_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Activity Reminders"
+        android:textColor="@color/sage_green"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:contentDescription="Activity reminder settings section" />
+
+    <!-- Reminder Enable/Disable Switch with Companion Principle messaging -->
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/reminder_enabled_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Activity Reminders"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:contentDescription="Enable or disable gentle activity reminders"
+        app:thumbTint="@color/sage_green"
+        app:trackTint="@color/sage_green_light" />
+
+    <!-- Supportive Description with Companion Principle language -->
+    <TextView
+        android:id="@+id/reminder_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get gentle, encouraging reminders when you've been inactive for a while. These supportive nudges help you maintain wellness throughout your day."
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif"
+        android:layout_marginBottom="@dimen/spacing_large"
+        android:lineSpacingExtra="2dp" />
+
+    <!-- Inactivity Threshold Section -->
+    <LinearLayout
+        android:id="@+id/threshold_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/spacing_large">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reminder Timing"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="@dimen/spacing_small" />
+
+        <TextView
+            android:id="@+id/threshold_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Every hour - Balanced wellness reminders"
+            android:textColor="@color/sage_green"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif"
+            android:layout_marginBottom="@dimen/spacing_small" />
+
+        <!-- Threshold Slider with Sage Green styling -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/threshold_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0"
+            android:valueTo="3"
+            android:stepSize="1"
+            android:value="1"
+            android:contentDescription="Adjust how long to wait before sending a gentle reminder"
+            app:trackColorActive="@color/sage_green"
+            app:trackColorInactive="@color/sage_green_light"
+            app:thumbColor="@color/sage_green" />
+
+        <!-- Threshold Labels -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="30min"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:gravity="start" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1hr"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1.5hr"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2hr"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:gravity="end" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Reminder Frequency Section -->
+    <LinearLayout
+        android:id="@+id/frequency_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/spacing_large">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reminder Frequency"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="@dimen/spacing_small" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose how often you'd like to receive gentle wellness nudges"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif"
+            android:layout_marginBottom="@dimen/spacing_medium" />
+
+        <!-- Frequency Button Group - Fixed layout for better text display -->
+        <LinearLayout
+            android:id="@+id/frequency_button_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="4"
+            android:baselineAligned="false">
+
+            <!-- Every Time Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/frequency_every_time"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:text="Every\ntime"
+                android:textSize="11sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="none"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                app:strokeColor="@color/sage_green_light"
+                app:strokeWidth="1dp"
+                app:cornerRadius="8dp"
+                android:contentDescription="Receive a reminder every time you're inactive" />
+
+            <!-- Every 2nd Time Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/frequency_every_second"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:text="Every\n2nd time"
+                android:textSize="11sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="none"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                app:strokeColor="@color/sage_green_light"
+                app:strokeWidth="1dp"
+                app:cornerRadius="8dp"
+                android:contentDescription="Receive a reminder every second time you're inactive" />
+
+            <!-- Every 3rd Time Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/frequency_every_third"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:text="Every\n3rd time"
+                android:textSize="11sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="none"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                app:strokeColor="@color/sage_green_light"
+                app:strokeWidth="1dp"
+                app:cornerRadius="8dp"
+                android:contentDescription="Receive a reminder every third time you're inactive" />
+
+            <!-- Once Per Hour Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/frequency_once_per_hour"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:layout_marginStart="2dp"
+                android:text="Once\nper hour"
+                android:textSize="11sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="none"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                app:strokeColor="@color/sage_green_light"
+                app:strokeWidth="1dp"
+                app:cornerRadius="8dp"
+                android:contentDescription="Receive at most one reminder per hour" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Waking Hours Section -->
+    <LinearLayout
+        android:id="@+id/waking_hours_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Active Hours"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="@dimen/spacing_small" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set the hours when you'd like to receive wellness reminders (24-hour format)"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif"
+            android:layout_marginBottom="@dimen/spacing_medium" />
+
+        <!-- Waking Hours Input Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <!-- Start Hour Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/waking_hours_start_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_medium"
+                android:hint="Start Hour"
+                app:boxBackgroundColor="@color/surface_sage_neutral"
+                app:boxStrokeColor="@color/sage_green"
+                app:hintTextColor="@color/sage_green">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/waking_hours_start_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:contentDescription="Set the hour when you want reminders to start (6 AM recommended)"
+                    tools:text="6" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- End Hour Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/waking_hours_end_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/spacing_medium"
+                android:hint="End Hour"
+                app:boxBackgroundColor="@color/surface_sage_neutral"
+                app:boxStrokeColor="@color/sage_green"
+                app:hintTextColor="@color/sage_green">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/waking_hours_end_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:contentDescription="Set the hour when you want reminders to end (10 PM recommended)"
+                    tools:text="22" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <!-- Helpful hint with Companion Principle messaging -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💡 We recommend 6 AM to 10 PM for balanced wellness support throughout your day"
+            android:textColor="@color/sage_green"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:background="@drawable/rounded_background_sage_light"
+            android:padding="@dimen/spacing_small" />
+
+    </LinearLayout>
+
+</LinearLayout>

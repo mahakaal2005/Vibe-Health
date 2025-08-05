@@ -29,9 +29,11 @@ import com.vibehealth.android.domain.auth.AuthState
 import com.vibehealth.android.ui.auth.AuthViewModel
 import com.vibehealth.android.ui.base.AuthenticatedFragment
 import com.vibehealth.android.ui.profile.components.ProfileGoalsSection
+import com.vibehealth.android.ui.profile.components.ReminderSettingsCard
 import com.vibehealth.android.domain.user.UserProfile
 import com.vibehealth.android.ui.components.ValidationHelper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -86,8 +88,16 @@ class ProfileFragment : AuthenticatedFragment() {
     private val authViewModel: AuthViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
     
+    // TASK 4 ANALYSIS: Reminder preferences ViewModel integration
+    private val reminderPreferencesViewModel: ReminderPreferencesViewModel by viewModels()
+    
     // ANALYSIS: Discovered existing ProfileGoalsSection component
     private lateinit var profileGoalsSection: ProfileGoalsSection
+    
+    // TASK 4 ANALYSIS: Reminder settings card component integration
+    private lateinit var reminderSettingsCard: ReminderSettingsCard
+    
+    // Toast management removed - no success messages needed
     
     // TASK 3: Inline editing variables
     @Inject
@@ -135,6 +145,7 @@ class ProfileFragment : AuthenticatedFragment() {
         setupUI()
         setupObservers()
         setupProfileGoalsIntegration()
+        setupReminderSettingsIntegration()
     }
     
     /**
@@ -295,6 +306,56 @@ class ProfileFragment : AuthenticatedFragment() {
                 }
             }
         }
+        
+        // TASK 4 ANALYSIS: Reminder preferences observers
+        setupReminderPreferencesObservers()
+    }
+    
+    /**
+     * TASK 4 ANALYSIS: Setup reminder preferences observers
+     * Integrates with existing observer patterns for seamless data flow
+     */
+    private fun setupReminderPreferencesObservers() {
+        Log.d("REMINDER_PREFERENCES", "Setting up reminder preferences observers")
+        
+        // Load reminder preferences when user is authenticated
+        authViewModel.authState.observe(viewLifecycleOwner) { authState ->
+            if (authState is AuthState.Authenticated) {
+                authState.user.uid?.let { userId ->
+                    Log.d("REMINDER_PREFERENCES", "Loading reminder preferences for user: $userId")
+                    reminderPreferencesViewModel.loadReminderPreferences(userId)
+                }
+            }
+        }
+        
+        // Observe reminder preferences changes
+        reminderPreferencesViewModel.reminderPreferences.observe(viewLifecycleOwner) { preferences ->
+            Log.d("REMINDER_PREFERENCES", "Reminder preferences updated - updating UI")
+            reminderSettingsCard.displayPreferences(preferences)
+        }
+        
+        // Observe loading state
+        reminderPreferencesViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            Log.d("REMINDER_PREFERENCES", "Loading state: $isLoading")
+            // TODO: Show loading indicator if needed
+        }
+        
+        // Observe error state
+        reminderPreferencesViewModel.errorState.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                Log.e("REMINDER_PREFERENCES", "Error: ${it.message}")
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    it.message,
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+                reminderPreferencesViewModel.clearError()
+            }
+        }
+        
+        // Success messages removed - no toast needed for UI interactions
+        
+        Log.d("REMINDER_PREFERENCES", "Reminder preferences observers setup complete")
     }
     
     /**
@@ -447,6 +508,55 @@ class ProfileFragment : AuthenticatedFragment() {
         } catch (e: Exception) {
             Log.e(TAG_ERRORS, "Error setting up ProfileGoalsSection: ${e.message}", e)
         }
+    }
+    
+    /**
+     * TASK 4 ANALYSIS: Setup reminder settings integration following existing patterns
+     * Seamless integration with ProfileFragment using established component patterns
+     */
+    private fun setupReminderSettingsIntegration() {
+        Log.d("REMINDER_PREFERENCES", "=== REMINDER SETTINGS INTEGRATION SETUP ===")
+        Log.d("REMINDER_PREFERENCES", "Seamless ProfileFragment integration:")
+        Log.d("REMINDER_PREFERENCES", "  ✓ Following existing ProfileGoalsSection integration patterns")
+        Log.d("REMINDER_PREFERENCES", "  ✓ Material Design 3 consistency with existing components")
+        Log.d("REMINDER_PREFERENCES", "  ✓ Sage Green palette and 8-point grid compliance")
+        Log.d("REMINDER_PREFERENCES", "  ✓ Companion Principle supportive messaging")
+        
+        try {
+            // Initialize ReminderSettingsCard from layout
+            reminderSettingsCard = binding.reminderSettingsCard
+            
+            // Setup preferences changed callback
+            reminderSettingsCard.onPreferencesChangedListener = { preferences ->
+                Log.d("REMINDER_PREFERENCES", "Reminder preferences changed - updating via ViewModel")
+                Log.d("REMINDER_PREFERENCES", "  Enabled: ${preferences.isEnabled}")
+                Log.d("REMINDER_PREFERENCES", "  Threshold: ${preferences.inactivityThresholdMinutes} minutes")
+                Log.d("REMINDER_PREFERENCES", "  Frequency: ${preferences.reminderFrequency}")
+                
+                // Update preferences using ReminderPreferencesViewModel
+                reminderPreferencesViewModel.saveReminderPreferences(preferences)
+            }
+            
+            // Setup validation error callback
+            reminderSettingsCard.onValidationErrorListener = { errorMessage ->
+                Log.w("REMINDER_VALIDATION", "Validation error: $errorMessage")
+                
+                // Show error message using existing patterns
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    errorMessage,
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            }
+            
+            Log.d("REMINDER_PREFERENCES", "ReminderSettingsCard integration complete")
+            Log.d("REMINDER_INTEGRATION", "Component callbacks configured successfully")
+            
+        } catch (e: Exception) {
+            Log.e("REMINDER_ERRORS", "Error setting up ReminderSettingsCard: ${e.message}", e)
+        }
+        
+        Log.d("REMINDER_PREFERENCES", "=== REMINDER SETTINGS INTEGRATION SETUP COMPLETE ===")
     }
     
     /**
@@ -1496,6 +1606,9 @@ class ProfileFragment : AuthenticatedFragment() {
     
     override fun onDestroyView() {
         Log.d(TAG_INTEGRATION, "ProfileFragment onDestroyView - cleaning up enhanced components")
+        
+        // Toast cleanup removed - no success toasts used
+        
         super.onDestroyView()
         _binding = null
     }

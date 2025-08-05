@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_sage_neutral">
+    
+    <!-- Main News Content -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/news_swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_16dp">
+                
+                <!-- News RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/news_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"
+                    android:paddingBottom="@dimen/spacing_16dp" />
+                
+            </LinearLayout>
+            
+        </androidx.core.widget.NestedScrollView>
+        
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    
+    <!-- News Loading State -->
+    <include
+        android:id="@+id/news_loading_state"
+        layout="@layout/view_loading_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+    
+    <!-- News Error State -->
+    <include
+        android:id="@+id/news_error_state"
+        layout="@layout/view_offline_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+    
+    <!-- News Empty State -->
+    <LinearLayout
+        android:id="@+id/news_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_24dp"
+        android:background="@color/surface_sage_neutral"
+        android:visibility="gone">
+        
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="@dimen/spacing_24dp"
+            android:src="@drawable/ic_discover"
+            android:tint="@color/sage_green_light"
+            android:contentDescription="No news available" />
+        
+        <TextView
+            android:id="@+id/news_empty_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No health news available right now.\nCheck back soon for updates!"
+            android:textSize="18sp"
+            android:textColor="@color/sage_green_primary"
+            android:gravity="center"
+            android:lineSpacingExtra="4dp" />
+        
+    </LinearLayout>
+    
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

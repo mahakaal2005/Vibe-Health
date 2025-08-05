@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_sage_neutral">
+    
+    <!-- App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="2dp"
+        android:background="@color/surface_sage_neutral">
+        
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:titleTextColor="@color/sage_green_primary"
+            app:navigationIconTint="@color/sage_green_primary" />
+        
+    </com.google.android.material.appbar.AppBarLayout>
+    
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            
+            <!-- WebView for Content -->
+            <WebView
+                android:id="@+id/content_web_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/spacing_16dp"
+                android:background="@color/surface"
+                android:visibility="gone" />
+            
+            <!-- Loading Progress Bar -->
+            <ProgressBar
+                android:id="@+id/loading_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/spacing_32dp"
+                android:indeterminateTint="@color/sage_green_primary"
+                android:visibility="visible" />
+            
+        </LinearLayout>
+        
+    </androidx.core.widget.NestedScrollView>
+    
+    <!-- Floating Action Button for Sharing -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/share_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/spacing_16dp"
+        android:src="@drawable/ic_share"
+        app:backgroundTint="@color/sage_green_primary"
+        app:tint="@color/white"
+        android:contentDescription="Share content" />
+    
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

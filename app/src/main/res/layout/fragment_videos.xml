@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_sage_neutral">
+    
+    <!-- Main Videos Content -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/videos_swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/videos_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/spacing_16dp"
+            android:clipToPadding="false" />
+        
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    
+    <!-- Videos Loading State -->
+    <include
+        android:id="@+id/videos_loading_state"
+        layout="@layout/view_loading_state"
+        android:visibility="gone" />
+    
+    <!-- Videos Error State -->
+    <include
+        android:id="@+id/videos_error_state"
+        layout="@layout/view_offline_state"
+        android:visibility="gone" />
+    
+    <!-- Videos Empty State -->
+    <LinearLayout
+        android:id="@+id/videos_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_24dp"
+        android:visibility="gone">
+        
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="@dimen/spacing_16dp"
+            android:src="@drawable/ic_discover"
+            android:tint="@color/sage_green_light"
+            android:contentDescription="No videos available" />
+        
+        <TextView
+            android:id="@+id/videos_empty_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No wellness videos available right now. Check back soon for inspiring content!"
+            android:textSize="16sp"
+            android:textColor="@color/sage_green_primary"
+            android:gravity="center" />
+        
+    </LinearLayout>
+    
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

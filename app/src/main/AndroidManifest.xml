@@ -63,6 +63,13 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.VibeHealth" />
+            
+        <activity
+            android:name=".ui.discover.ContentViewerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.VibeHealth"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

@@ -595,6 +595,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/preferences_card" />
 
+    <!-- TASK 4 ANALYSIS: Reminder Settings Card Integration -->
+    <!-- SEAMLESS_INTEGRATION: Following existing ProfileGoalsSection patterns -->
+    <!-- DESIGN_CONSISTENCY: Sage Green palette and Material Design 3 compliance -->
+    <com.vibehealth.android.ui.profile.components.ReminderSettingsCard
+        android:id="@+id/reminder_settings_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_goals_section" />
+
     <!-- Edit Mode Action Buttons -->
     <LinearLayout
         android:id="@+id/edit_action_buttons"
@@ -605,7 +617,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_goals_section">
+        app:layout_constraintTop_toBottomOf="@id/reminder_settings_card">
 
         <Button
             android:id="@+id/btn_cancel_edit"

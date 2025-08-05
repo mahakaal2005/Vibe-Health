@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -24,6 +26,20 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
         }
+        
+        // Health Content API Keys - Loaded securely from local.properties
+        val localPropertiesFile = rootProject.file("local.properties")
+        val localProperties = Properties()
+        
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+        
+        buildConfigField("String", "HEALTHLINE_API_KEY", "\"${localProperties.getProperty("HEALTHLINE_API_KEY") ?: "demo_key"}\"")
+        buildConfigField("String", "WEBMD_API_KEY", "\"${localProperties.getProperty("WEBMD_API_KEY") ?: "demo_key"}\"")
+        buildConfigField("String", "YOUTUBE_HEALTH_API_KEY", "\"${localProperties.getProperty("YOUTUBE_HEALTH_API_KEY") ?: "demo_key"}\"")
+        buildConfigField("String", "NEWS_API_KEY", "\"${localProperties.getProperty("NEWS_API_KEY") ?: "demo_key"}\"")
+        buildConfigField("String", "NUTRITION_API_KEY", "\"${localProperties.getProperty("NUTRITION_API_KEY") ?: "demo_key"}\"")
     }
 
     buildTypes {
@@ -131,9 +147,18 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.1.0")
     ksp("androidx.hilt:hilt-compiler:1.1.0") // VIBE_FIX: Replaced kapt with ksp
     
-    // OkHttp for networking
+    // Networking - Retrofit and OkHttp
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    
+    // Image loading for content thumbnails
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    ksp("com.github.bumptech.glide:compiler:4.16.0")
+    
+    // SwipeRefreshLayout for news refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     
     // Testing
     testImplementation(libs.junit)
